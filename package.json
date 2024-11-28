@@ -9,8 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@coreui/icons": "^3.0.1",
+    "@coreui/vue": "^5.4.1",
+    "axios": "^1.7.8",
     "vue": "^3.5.12",
-    "vue-router": "^4.5.0"
+    "vue-router": "^4.5.0",
+    "vue-spinner": "^1.0.4",
+    "vue-toastification": "^2.0.0-rc.5"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.4",
