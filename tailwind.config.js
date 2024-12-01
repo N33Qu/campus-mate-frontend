@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-const colors = require('tailwindcss/colors')
+
 
 
 export default {
@@ -11,12 +11,14 @@ export default {
           'sm': '860px',
           'md': '1024px',
           'lg': '1280px',
-          'xl': '1536px',
+          'xl': '1876px',
       },
       colors: {
         purple: '#67527A',
         pink: '#8D7F9F',
-        snow: '#F7F0F0'
+        snow: '#F7F0F0',
+        el_color : "black"
+
       },
       fontFamily:{
         sans: ['Roboto', 'sans-serif']

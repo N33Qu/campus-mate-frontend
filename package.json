@@ -12,12 +12,12 @@
     "@coreui/icons": "^3.0.1",
     "@coreui/vue": "^5.4.1",
     "axios": "^1.7.8",
-    "bootstrap": "^5.3.3",
     "primeicons": "^7.0.0",
     "vue": "^3.5.12",
     "vue-router": "^4.5.0",
     "vue-spinner": "^1.0.4",
-    "vue-toastification": "^2.0.0-rc.5"
+    "vue-toastification": "^2.0.0-rc.5",
+    "vue3-carousel": "^0.8.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.4",

@@ -46,14 +46,9 @@ onBeforeUnmount(() => {
 
 <template>
   <nav
-      class="bg-[#4B5D44] border-b border-zinc-700 fixed top-0 left-0 w-full z-50 transition-transform duration-300"
+      class="bg-el_color border-b border-zinc-700 fixed top-0 left-0 w-full z-50 transition-transform duration-300"
       :class="isNavbarVisible ? 'translate-y-0' : '-translate-y-full'"
   >
-<!--    bg-[#3E4A46] bg-[#4C4F3A] bg-[#4B5D44]
-
-
--->
-
     <div class="mx-auto max-w-9xl px-4 sm:px-6 lg:px-8">
       <div class="flex h-16 items-center justify-between">
         <!-- Logo -->
