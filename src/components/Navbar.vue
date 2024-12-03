@@ -46,7 +46,7 @@ onBeforeUnmount(() => {
 
 <template>
   <nav
-      class="bg-el_color border-b border-zinc-700 fixed top-0 left-0 w-full z-50 transition-transform duration-300"
+      class="bg-zinc-900 border-b border-zinc-700 fixed top-0 left-0 w-full z-0 transition-transform duration-300"
       :class="isNavbarVisible ? 'translate-y-0' : '-translate-y-full'"
   >
     <div class="mx-auto max-w-9xl px-4 sm:px-6 lg:px-8">
@@ -105,7 +105,7 @@ onBeforeUnmount(() => {
     <div
         v-if="isMenuOpen"
         id="mobile-menu"
-        class="xl:hidden bg-black border-t border-zinc-800"
+        class="xl:hidden bg-zinc-800 border-t border-zinc-800"
     >
       <div class="space-y-1 px-4 py-2">
         <RouterLink

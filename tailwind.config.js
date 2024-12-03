@@ -17,7 +17,12 @@ export default {
         purple: '#67527A',
         pink: '#8D7F9F',
         snow: '#F7F0F0',
-        el_color : "black"
+        button: "#4e4945",
+        buttonHover: "#57534e",
+        appBg: '#6a5d54',
+        element: '#dcd7d2',
+        elementLight: '#f4f2ef',
+        textLink: '#6c6865',
 
       },
       fontFamily:{
