@@ -2,40 +2,27 @@
 import router from '@/router';
 import { ref } from 'vue';
 import { useToast } from 'vue-toastification';
-import api from '@/axios.js';
+import {login} from '@/axios.js';
 
 const form = ref({
-  userName: '',
+  email: '',
   password: '',
 });
 
 const toast = useToast();
 
 const handleSubmit = async () => {
-  const credentials = {
-    userName: form.userName,
-    password: form.password,
-  };
-
   try {
-    const response = await api.post('/auth/authenticate', credentials);
-  console.log(response)
-    console.log(response.data)
-    const cookieHeader = response.headers.get('Set-Cookie');
-    console.log('Cookie Header:', cookieHeader);
-    const cookies = document.cookie.split(';');
-    const jwt = cookies.find(cookie => cookie.trim().startsWith('jwt='));
-    console.log(jwt);
-    if (cookieHeader) {
-      // Set the cookie in the browser
-      document.cookie = cookieHeader;
-    }
+    await login({
+      email: form.value.email,
+      password: form.value.password,
+    });
 
-    toast.success(response);
-    await router.push(`/`);
+    toast.success('Zalogowano pomyślnie!');
+    await router.push('/'); // Przekierowanie do strony głównej
   } catch (error) {
-    console.error('Error logging in', error);
-    toast.error('Bład logowania');
+    console.error('Błąd logowania:', error);
+    toast.error('Nieprawidłowe dane logowania.');
   }
 };
 </script>
@@ -50,14 +37,14 @@ const handleSubmit = async () => {
           <h2 class="text-3xl text-center font-semibold mb-6">Logowanie</h2>
 
           <div class="mb-4">
-            <label for="userName" class="block text-gray-700 font-bold mb-2"
+            <label for="email" class="block text-gray-700 font-bold mb-2"
             >Email</label
             >
             <input
                 type="text"
-                v-model="form.userName"
-                id="userName"
-                name="userName"
+                v-model="form.email"
+                id="email"
+                name="email"
                 class="border rounded w-full py-2 px-3 mb-2"
                 placeholder="email@domain.com"
                 required
@@ -77,7 +64,7 @@ const handleSubmit = async () => {
                 placeholder="password"
                 required
                 autocomplete="current-password"
-            ></input>
+            />
           </div>
           <div>
             <button

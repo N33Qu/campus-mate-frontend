@@ -4,7 +4,9 @@ import { defineProps, ref, computed } from 'vue';
 
 const props = defineProps({
   post: {
-    type: Object,
+    type: {
+      Object,
+    },
     required: true,
   },
 });
@@ -48,7 +50,7 @@ const truncatedContent = computed(() => {
         </button>
       </div>
       <!--Post info-->
-      <h3 class="text-violet-500 mb-2">Stowrzony: {{ post.createdAt }}</h3>
+      <h3 class="text-textLink mb-2">Stworzony: {{ post.createdAt }}</h3>
 
       <div class="border border-gray-100 mb-5"></div>
 

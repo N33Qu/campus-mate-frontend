@@ -25,6 +25,7 @@ onMounted(async () => {
   try {
     const response = await api.get('/post');
     state.value.posts = response.data;
+    console.log(state.value.posts);
   } catch (error) {
     console.error('Error fetching posts', error);
   } finally {

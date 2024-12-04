@@ -5,10 +5,22 @@ const api =  axios.create({
     withCredentials: true,
     headers: {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
 
     }
 
 });
 
 export default api;
+
+export async function login(credentials) {
+    const { email, password } = credentials;
+    try {
+        const response = await api.post("/auth/authenticate", {
+            email,
+            password
+        });
+        console.log("Logged in successfully:", response.data);
+    } catch (error) {
+        console.error("Error logging in:", error);
+    }
+}
