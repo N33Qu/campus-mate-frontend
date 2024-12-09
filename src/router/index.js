@@ -142,11 +142,32 @@ const router = createRouter({
             name: 'add-user',
             component: () => import('@/views/user/AddUserView.vue'),
         },
-        //Login Routes
+        //Auth Routes
         {
             path: '/login',
             name: 'login',
             component: () => import('@/views/auth/LoginView.vue'),
+        },
+        {
+            path: '/logout',
+            name: 'logout',
+            component: () => import('@/views/auth/LogoutView.vue'),
+        },
+        //Static: About, Contact, FAQ
+        {
+            path: '/about',
+            name: 'about',
+            component: () => import('@/views/static/AboutView.vue'),
+        },
+        {
+            path: '/contact',
+            name: 'contact',
+            component: () => import('@/views/static/ContactView.vue'),
+        },
+        {
+            path: '/faq',
+            name: 'faq',
+            component: () => import('@/views/static/FAQView.vue'),
         },
 
     ]

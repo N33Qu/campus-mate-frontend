@@ -1,6 +1,6 @@
 <script setup>
 import RiseLoader from 'vue-spinner/src/RiseLoader.vue';
-import BackButton from '@/components/BackButton.vue';
+import BackButton from '@/components/TextButton.vue';
 import { ref, onMounted } from 'vue';
 import { useRoute, RouterLink, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';

@@ -3,6 +3,7 @@ import router from '@/router';
 import { ref } from 'vue';
 import { useToast } from 'vue-toastification';
 import {login} from '@/axios.js';
+import Box from "@/components/Box.vue";
 
 const form = ref({
   email: '',
@@ -19,20 +20,19 @@ const handleSubmit = async () => {
     });
 
     toast.success('Zalogowano pomyślnie!');
-    await router.push('/'); // Przekierowanie do strony głównej
+    await router.push('/');
   } catch (error) {
     console.error('Błąd logowania:', error);
     toast.error('Nieprawidłowe dane logowania.');
+  } finally {
+    form.value.email = '';
+    form.value.password = '';
   }
 };
 </script>
 
 <template>
-  <section class="bg-appBg h-screen">
-    <div class="container m-auto max-w-2xl py-24">
-      <div
-          class="bg-elementLight px-6 py-8 mb-4 shadow-md rounded-md border m-4 md:m-0"
-      >
+  <Box>
         <form @submit.prevent="handleSubmit">
           <h2 class="text-3xl text-center font-semibold mb-6">Logowanie</h2>
 
@@ -75,7 +75,5 @@ const handleSubmit = async () => {
             </button>
           </div>
         </form>
-      </div>
-    </div>
-  </section>
+  </Box>
 </template>

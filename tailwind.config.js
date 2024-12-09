@@ -22,7 +22,9 @@ export default {
         appBg: '#6a5d54',
         element: '#dcd7d2',
         elementLight: '#f4f2ef',
-        textLink: '#6c6865',
+        textLink: '#888580',
+        textLinkHover: '#3a3832',
+        headerText: '#4e4945',
 
       },
       fontFamily:{

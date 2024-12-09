@@ -1,8 +1,13 @@
 <script setup>
-import {ref, onMounted, onBeforeUnmount} from 'vue';
-import {useRoute, RouterLink} from 'vue-router';
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
+import { useRoute, RouterLink } from 'vue-router';
 import logo from '@/assets/img/logo.png';
 import 'primeicons/primeicons.css';
+import { useAuthStore } from '@/stores/auth';
+
+const authStore = useAuthStore();
+
+const isLoggedIn = computed(() => authStore.isLoggedIn);
 
 const isActiveLink = (routePath) => {
   const route = useRoute();
@@ -13,16 +18,22 @@ const isMenuOpen = ref(false);
 const isNavbarVisible = ref(true);
 let lastScrollPosition = 0;
 
-const links = [
-  {path: '/', label: 'Strona Główna', icon: 'pi pi-home'},
-  {path: '/addressbook', label: 'Książka Adresowa', icon: 'pi pi-address-book'},
-  {path: '/calendar', label: 'Kalendarz', icon: 'pi pi-calendar'},
-  {path: '/grades', label: 'Oceny', icon: 'pi pi-chart-line'},
-  {path: '/schedule', label: 'Plan', icon: 'pi pi-server'},
-  {path: '/teams', label: 'Zespoły', icon: 'pi pi-users'},
-  {path: '/user/:id', label: 'Profil', icon: 'pi pi-user'},
-  {path: '/login', label: 'Zaloguj Się', icon: 'pi pi-sign-in'},
-];
+// Reactive links based on token validity
+
+  const links = [
+    { path: '/', label: 'Strona Główna', icon: 'pi pi-home' },
+    { path: '/posts', label: 'Ogłoszenia', icon: 'pi pi-file' },
+    { path: '/addressbook', label: 'Książka Adresowa', icon: 'pi pi-address-book' },
+    { path: '/calendar', label: 'Kalendarz', icon: 'pi pi-calendar' },
+    { path: '/grades', label: 'Oceny', icon: 'pi pi-chart-line' },
+    { path: '/schedule', label: 'Plan', icon: 'pi pi-server' },
+    { path: '/teams', label: 'Zespoły', icon: 'pi pi-users' },
+    { path: '/user/:id', label: 'Profil', icon: 'pi pi-user' },
+      ...(isLoggedIn.value ?
+          [{ path: '/logout', label: 'Wyloguj Się', icon: 'pi pi-sign-out' }]
+           :[{ path: '/login', label: 'Zaloguj Się', icon: 'pi pi-sign-in' }]),
+  ];
+
 
 const handleScroll = () => {
   const currentScrollPosition = window.scrollY;
@@ -38,6 +49,7 @@ onMounted(() => {
   window.addEventListener('scroll', handleScroll);
   window.addEventListener('scroll', closeMenuOnScroll);
 });
+
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', handleScroll);
   window.removeEventListener('scroll', closeMenuOnScroll);
@@ -54,7 +66,7 @@ onBeforeUnmount(() => {
         <!-- Logo -->
         <div class="flex items-center flex-grow">
           <RouterLink class="flex items-center mr-4" to="/">
-            <img class="h-10 w-auto" :src="logo" alt="Campus Mate"/>
+            <img class="h-10 w-auto" :src="logo" alt="Campus Mate" />
             <span class="hidden md:block text-white text-3xl font-bold ml-2">
               CampusMate
             </span>
@@ -72,10 +84,7 @@ onBeforeUnmount(() => {
           >
             <span class="sr-only">Toggle main menu</span>
             <i
-                :class="[
-                isMenuOpen ? 'pi pi-times' : 'pi pi-bars',
-                'text-2xl text-gray-400 hover:text-white',
-              ]"
+                :class="[isMenuOpen ? 'pi pi-times' : 'pi pi-bars', 'text-2xl text-gray-400 hover:text-white']"
             ></i>
           </button>
         </div>
@@ -86,9 +95,8 @@ onBeforeUnmount(() => {
               v-for="link in links"
               :key="link.path"
               :to="link.path"
-              :class="[isActiveLink(link.path)
-                ? 'bg-stone-800 text-white'
-                : 'text-gray-300 hover:bg-stone-700 hover:text-white',
+              :class="[
+              isActiveLink(link.path) ? 'bg-stone-800 text-white' : 'text-gray-300 hover:bg-stone-700 hover:text-white',
               'px-3 py-2 rounded-md text-lg font-medium transition'
             ]"
           >
@@ -102,19 +110,14 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- Mobile menu -->
-    <div
-        v-if="isMenuOpen"
-        id="mobile-menu"
-        class="xl:hidden bg-zinc-800 border-t border-zinc-800"
-    >
+    <div v-if="isMenuOpen" id="mobile-menu" class="xl:hidden bg-zinc-800 border-t border-zinc-800">
       <div class="space-y-1 px-4 py-2">
         <RouterLink
             v-for="link in links"
             :key="link.path"
             :to="link.path"
-            :class="[isActiveLink(link.path)
-              ? 'bg-stone-800 text-white'
-              : 'text-gray-300 hover:bg-stone-700 hover:text-white',
+            :class="[
+            isActiveLink(link.path) ? 'bg-stone-800 text-white' : 'text-gray-300 hover:bg-stone-700 hover:text-white',
             'block px-3 py-2 rounded-md text-lg font-medium transition'
           ]"
         >

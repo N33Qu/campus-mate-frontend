@@ -2,7 +2,7 @@
 
 import PostListings from "@/components/PostListings.vue";
 import {RouterLink} from "vue-router";
-import AddButton from "@/components/AddButton.vue";
+import AddButton from "@/components/TextButton.vue";
 </script>
 
 <template>

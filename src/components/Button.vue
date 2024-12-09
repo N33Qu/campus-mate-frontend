@@ -1,6 +1,6 @@
 <script setup>
-import { RouterLink } from 'vue-router';
 
+import {RouterLink} from "vue-router";
 
 defineProps({
   to: {
@@ -15,14 +15,14 @@ defineProps({
 </script>
 
 <template>
-  <section>
     <div class="container m-auto py-6 px-6">
       <RouterLink
           :to= "$props.to"
-          class="text-violet-500 hover:text-violet-600 flex items-center"
       >
-        <i class="pi pi-plus-circle text-2xl mr-3"></i> {{text}}
+        <button
+            class="bg-button hover:bg-buttonHover text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block">
+          {{text}}
+        </button>
       </RouterLink>
     </div>
-  </section>
 </template>
