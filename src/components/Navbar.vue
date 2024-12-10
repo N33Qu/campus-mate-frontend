@@ -1,13 +1,17 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue';
 import { useRoute, RouterLink } from 'vue-router';
 import logo from '@/assets/img/logo.png';
 import 'primeicons/primeicons.css';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/stores/authStore.js';
 
 const authStore = useAuthStore();
 
-const isLoggedIn = computed(() => authStore.isLoggedIn);
+const isLoggedIn = computed(() => authStore.isTokenValid);
+const userRole = computed(() => authStore.userRole);
+const userId = computed(() => authStore.userId);
+
+
 
 const isActiveLink = (routePath) => {
   const route = useRoute();
@@ -18,22 +22,20 @@ const isMenuOpen = ref(false);
 const isNavbarVisible = ref(true);
 let lastScrollPosition = 0;
 
-// Reactive links based on token validity
-
-  const links = [
-    { path: '/', label: 'Strona Główna', icon: 'pi pi-home' },
-    { path: '/posts', label: 'Ogłoszenia', icon: 'pi pi-file' },
-    { path: '/addressbook', label: 'Książka Adresowa', icon: 'pi pi-address-book' },
-    { path: '/calendar', label: 'Kalendarz', icon: 'pi pi-calendar' },
-    { path: '/grades', label: 'Oceny', icon: 'pi pi-chart-line' },
-    { path: '/schedule', label: 'Plan', icon: 'pi pi-server' },
-    { path: '/teams', label: 'Zespoły', icon: 'pi pi-users' },
-    { path: '/user/:id', label: 'Profil', icon: 'pi pi-user' },
-      ...(isLoggedIn.value ?
-          [{ path: '/logout', label: 'Wyloguj Się', icon: 'pi pi-sign-out' }]
-           :[{ path: '/login', label: 'Zaloguj Się', icon: 'pi pi-sign-in' }]),
-  ];
-
+const links = computed(() => [
+  { path: '/', label: 'Strona Główna', icon: 'pi pi-home' },
+  { path: '/posts', label: 'Ogłoszenia', icon: 'pi pi-file' },
+  { path: '/addressbook', label: 'Książka Adresowa', icon: 'pi pi-address-book' },
+  { path: '/calendar', label: 'Kalendarz', icon: 'pi pi-calendar' },
+  { path: '/grades', label: 'Oceny', icon: 'pi pi-chart-line' },
+  { path: '/schedule', label: 'Plan', icon: 'pi pi-server' },
+  { path: '/teams', label: 'Zespoły', icon: 'pi pi-users' },
+  ...(isLoggedIn.value
+      ? [{ path: '/users/' + userId.value, label: 'Profil', icon: 'pi pi-user' },
+          { path: '/logout', label: 'Wyloguj Się', icon: 'pi pi-sign-out' },
+        ]
+      : [{ path: '/login', label: 'Zaloguj Się', icon: 'pi pi-sign-in' }]),
+]);
 
 const handleScroll = () => {
   const currentScrollPosition = window.scrollY;

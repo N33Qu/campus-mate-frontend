@@ -1,9 +1,9 @@
 <script setup>
-import BackButton from '@/components/BackButton.vue';
 import { ref, onMounted } from 'vue';
 import { useRoute, RouterLink, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import api from '@/axios.js'
+import AddressBookEntry from "@/components/AddressBookEntry.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -43,5 +43,5 @@ const deleteJob = async () => {
 </script>
 
 <template>
-
+  <AddressBookEntry entry="state.addressBookEntry" />
 </template>

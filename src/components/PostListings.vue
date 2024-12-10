@@ -49,7 +49,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="bg-appBg py-12">
+  <section class="bg-appBg py-12 h-screen">
     <section class="bg-elementLight px-4 py-10">
       <div class="container-xl lg:container m-auto">
         <h2 class="text-3xl font-bold text-headerText mb-6 text-center">

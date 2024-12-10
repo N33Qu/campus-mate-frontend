@@ -1,7 +1,8 @@
 import axios from "axios";
-import {useAuthStore} from "@/stores/auth.js";
+import {useAuthStore} from "@/stores/authStore.js";
 import {setActivePinia, createPinia, getActivePinia} from 'pinia';
-import Cookies from "js-cookie";
+
+const baseUrl = `${import.meta.env.VITE_API_URL}/api`;
 
 if (!getActivePinia()) {
     const pinia = createPinia();
@@ -11,13 +12,11 @@ if (!getActivePinia()) {
 const authStore = useAuthStore();
 
 const api =  axios.create({
-    baseURL: "http://localhost:8080/api",
+    baseURL: baseUrl,
     withCredentials: true,
     headers: {
         "Content-Type": "application/json",
-
     }
-
 });
 
 export default api;

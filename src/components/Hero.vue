@@ -1,6 +1,16 @@
 <script setup>
 import 'primeicons/primeicons.css';
-import Carousel from "@/components/Carousel.vue";
+import { useAuthStore } from '@/stores/authStore.js';
+import {computed, watch} from "vue";
+
+const authStore = useAuthStore();
+
+const isLoggedIn = computed(() => authStore.isTokenValid);
+
+
+watch(() => authStore.isLoggedIn, (newValue) => {
+  isLoggedIn.value = newValue;
+});
 
 defineProps({
   title: {
@@ -25,10 +35,12 @@ defineProps({
         <p class="my-4 text-2xl text-white">
           {{ subtitle }}
         </p>
-        <RouterLink class=" bg-button hover:bg-buttonHover text-white text-xl font-bold py-2 px-4 rounded transition-colors duration-300" to="/login">
-          Zaloguj się
-          <i class="pi pi-sign-in ml-2"></i>
-        </RouterLink>
+        <div  v-if="isLoggedIn === false">
+          <RouterLink class=" bg-button hover:bg-buttonHover text-white text-xl font-bold py-2 px-4 rounded transition-colors duration-300" to="/login">
+            Zaloguj się
+            <i class="pi pi-sign-in ml-2"></i>
+          </RouterLink>
+        </div>
       </div>
     </div>
   </section>

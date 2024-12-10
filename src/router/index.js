@@ -169,6 +169,12 @@ const router = createRouter({
             name: 'faq',
             component: () => import('@/views/static/FAQView.vue'),
         },
+        //404
+        {
+            path: '/:catchAll(.*)',
+            name: 'not-found',
+            component: () => import('@/views/NotFoundView.vue'),
+        },
 
     ]
 

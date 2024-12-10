@@ -25,6 +25,7 @@ export default {
         textLink: '#888580',
         textLinkHover: '#3a3832',
         headerText: '#4e4945',
+        formFocus: '#3a3832',
 
       },
       fontFamily:{

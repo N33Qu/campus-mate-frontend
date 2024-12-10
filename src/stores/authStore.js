@@ -14,22 +14,20 @@ export const useAuthStore = defineStore('auth', {
     state: () => ({
         isLoggedIn: false,
         role: null,
+        id: null,
     }),
     actions: {
         login() {
-            console.log('Login method called');
             this.isLoggedIn = this.isTokenValid;
             this.role = this.userRole;
-            console.log('Final login state:', {
-                isLoggedIn: this.isLoggedIn,
-                role: this.role
-            });
+            this.id = this.userId;
         },
 
         logout() {
             Cookies.remove('jwt');
             this.isLoggedIn = false;
             this.role = null;
+            this.id = null;
         },
     },
     getters: {
@@ -39,14 +37,11 @@ export const useAuthStore = defineStore('auth', {
          */
         isTokenValid() {
             const token = Cookies.get('jwt');
-            console.log("isTokenValid called with token:", token);
             if (!token) return false;
 
             try {
                 const decodedToken = jwtDecode(token);
-                console.log('Decoded token:', decodedToken);
                 const currentTime = Math.floor(Date.now() / 1000);
-                console.log('Current time:', currentTime);
                 return decodedToken.exp && decodedToken.exp > currentTime;
             } catch (error) {
                 console.error('Error decoding token:', error);
@@ -66,6 +61,23 @@ export const useAuthStore = defineStore('auth', {
                 return decodedToken.role || null;
             } catch (error) {
                 console.error('Error retrieving role from JWT:', error);
+                return null;
+            }
+        },
+
+        /**
+         * Checks the user's role from the token if the token is valid.
+         * @returns {string|null} - The user's role, or null if the token is invalid or missing.
+         */
+        userId() {
+            if (!this.isTokenValid) return null;
+
+            try {
+                const token = Cookies.get('jwt');
+                const decodedToken = jwtDecode(token);
+                return decodedToken.userId || null;
+            } catch (error) {
+                console.error('Error retrieving user ID from JWT:', error);
                 return null;
             }
         },

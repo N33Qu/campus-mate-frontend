@@ -11,6 +11,10 @@ defineProps({
     type: String,
     default: "Add",
   },
+  icon: {
+    type: String,
+    default: "pi pi-plus-circle",
+  },
 });
 </script>
 
@@ -21,7 +25,7 @@ defineProps({
           :to= "$props.to"
           class="text-textLink hover:text-textLinkHover flex items-center"
       >
-        <i class="pi pi-plus-circle text-2xl mr-3"></i> {{text}}
+        <i :class="icon + ' text-2xl mr-2' "></i> {{text}}
       </RouterLink>
     </div>
   </section>

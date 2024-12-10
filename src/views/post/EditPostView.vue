@@ -1,249 +1,144 @@
 <script setup>
-import router from '@/router';
-import { reactive, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
-import axios from 'axios';
+import { useForm } from 'vee-validate';
+import * as yup from 'yup';
+import BackButton from '@/components/TextButton.vue';
+import RiseLoader from 'vue-spinner/src/RiseLoader.vue';
+import api from '@/axios.js';
 
 const route = useRoute();
-
-const jobId = route.params.id;
-
-const form = reactive({
-  type: 'Full-Time',
-  title: '',
-  description: '',
-  salary: '',
-  location: '',
-  company: {
-    name: '',
-    description: '',
-    contactEmail: '',
-    contactPhone: '',
-  },
-});
-
-const state = reactive({
-  job: {},
-  isLoading: true,
-});
-
+const router = useRouter();
 const toast = useToast();
 
-const handleSubmit = async () => {
-  const updatedJob = {
-    title: form.title,
-    type: form.type,
-    location: form.location,
-    description: form.description,
-    salary: form.salary,
-    company: {
-      name: form.company.name,
-      description: form.company.description,
-      contactEmail: form.company.contactEmail,
-      contactPhone: form.company.contactPhone,
-    },
-  };
+const postId = route.params.id;
 
-  try {
-    const response = await axios.put(`/api/jobs/${jobId}`, updatedJob);
-    toast.success('Job Updated Successfully');
-    router.push(`/jobs/${response.data.id}`);
-  } catch (error) {
-    console.error('Error fetching job', error);
-    toast.error('Job Was Not Added');
-  }
-};
+// Validation schema
+const validationSchema = yup.object({
+  postTitle: yup.string()
+      .required('Tytuł jest wymagany')
+      .min(5, 'Tytuł musi mieć co najmniej 5 znaków')
+      .max(100, 'Tytuł nie może przekraczać 100 znaków'),
+  postContent: yup.string()
+      .required('Treść jest wymagana')
+      .min(10, 'Treść musi mieć co najmniej 10 znaków')
+});
 
+// Use Vee-Validate
+const { handleSubmit, errors, defineField } = useForm({
+  validationSchema
+});
+
+// Define form fields with Vee-Validate
+const [author, authorProps] = defineField('author');
+const [postTitle, postTitleProps] = defineField('postTitle');
+const [postContent, postContentProps] = defineField('postContent');
+
+// Loading state
+const isLoading = ref(true);
+const isSaving = ref(false);
+
+// Fetch post data on component mount
 onMounted(async () => {
   try {
-    const response = await axios.get(`/api/jobs/${jobId}`);
-    state.job = response.data;
-    // Populate inputs
-    form.type = state.job.type;
-    form.title = state.job.title;
-    form.description = state.job.description;
-    form.salary = state.job.salary;
-    form.location = state.job.location;
-    form.company.name = state.job.company.name;
-    form.company.description = state.job.company.description;
-    form.company.contactEmail = state.job.company.contactEmail;
-    form.company.contactPhone = state.job.company.contactPhone;
+    const response = await api.get(`/post/${postId}`);
+    postTitle.value = response.data.postTitle;
+    postContent.value = response.data.postContent;
   } catch (error) {
-    console.error('Error fetching job', error);
+    console.error('Error fetching post', error);
+    toast.error('Błąd pobierania ogłoszenia');
   } finally {
-    state.isLoading = false;
+    isLoading.value = false;
+  }
+});
+
+// Handle form submission
+const onSubmit = handleSubmit(async (values) => {
+  isSaving.value = true;
+  try {
+    await api.put(`/post/${postId}`, {
+      postTitle: values.postTitle,
+      postContent: values.postContent
+    });
+
+    toast.success('Ogłoszenie zaktualizowane pomyślnie');
+    await router.push(`/posts/${postId}`);
+  } catch (error) {
+    console.error('Error updating post', error);
+    toast.error('Błąd aktualizacji ogłoszenia');
+  } finally {
+    isSaving.value = false;
   }
 });
 </script>
 
 <template>
-  <section class="bg-green-50">
-    <div class="container m-auto max-w-2xl py-24">
-      <div
-          class="bg-white px-6 py-8 mb-4 shadow-md rounded-md border m-4 md:m-0"
-      >
-        <form @submit.prevent="handleSubmit">
-          <h2 class="text-3xl text-center font-semibold mb-6">Edit Job</h2>
+  <div class="bg-violet-50 min-h-screen py-10">
+    <div class="container mx-auto px-6">
+      <BackButton
+          :to="`/posts/${postId}`"
+          text="Powrót do Ogłoszeń"
+          icon="pi pi-arrow-circle-left"
+      />
 
-          <div class="mb-4">
-            <label for="type" class="block text-gray-700 font-bold mb-2"
-            >Job Type</label
-            >
-            <select
-                v-model="form.type"
-                id="type"
-                name="type"
-                class="border rounded w-full py-2 px-3"
-                required
-            >
-              <option value="Full-Time">Full-Time</option>
-              <option value="Part-Time">Part-Time</option>
-              <option value="Remote">Remote</option>
-              <option value="Internship">Internship</option>
-            </select>
-          </div>
-
-          <div class="mb-4">
-            <label class="block text-gray-700 font-bold mb-2"
-            >Job Listing Name</label
-            >
-            <input
-                type="text"
-                v-model="form.title"
-                id="name"
-                name="name"
-                class="border rounded w-full py-2 px-3 mb-2"
-                placeholder="eg. Beautiful Apartment In Miami"
-                required
-            />
-          </div>
-          <div class="mb-4">
-            <label for="description" class="block text-gray-700 font-bold mb-2"
-            >Description</label
-            >
-            <textarea
-                id="description"
-                v-model="form.description"
-                name="description"
-                class="border rounded w-full py-2 px-3"
-                rows="4"
-                placeholder="Add any job duties, expectations, requirements, etc"
-            ></textarea>
-          </div>
-
-          <div class="mb-4">
-            <label for="type" class="block text-gray-700 font-bold mb-2"
-            >Salary</label
-            >
-            <select
-                id="salary"
-                v-model="form.salary"
-                name="salary"
-                class="border rounded w-full py-2 px-3"
-                required
-            >
-              <option value="Under $50K">under $50K</option>
-              <option value="$50K - $60K">$50 - $60K</option>
-              <option value="$60K - $70K">$60 - $70K</option>
-              <option value="$70K - $80K">$70 - $80K</option>
-              <option value="$80K - $90K">$80 - $90K</option>
-              <option value="$90K - $100K">$90 - $100K</option>
-              <option value="$100K - $125K">$100 - $125K</option>
-              <option value="$125K - $150K">$125 - $150K</option>
-              <option value="$150K - $175K">$150 - $175K</option>
-              <option value="$175K - $200K">$175 - $200K</option>
-              <option value="Over $200K">Over $200K</option>
-            </select>
-          </div>
-
-          <div class="mb-4">
-            <label class="block text-gray-700 font-bold mb-2"> Location </label>
-            <input
-                type="text"
-                v-model="form.location"
-                id="location"
-                name="location"
-                class="border rounded w-full py-2 px-3 mb-2"
-                placeholder="Company Location"
-                required
-            />
-          </div>
-
-          <h3 class="text-2xl mb-5">Company Info</h3>
-
-          <div class="mb-4">
-            <label for="company" class="block text-gray-700 font-bold mb-2"
-            >Company Name</label
-            >
-            <input
-                type="text"
-                v-model="form.company.name"
-                id="company"
-                name="company"
-                class="border rounded w-full py-2 px-3"
-                placeholder="Company Name"
-            />
-          </div>
-
-          <div class="mb-4">
-            <label
-                for="company_description"
-                class="block text-gray-700 font-bold mb-2"
-            >Company Description</label
-            >
-            <textarea
-                id="company_description"
-                v-model="form.company.description"
-                name="company_description"
-                class="border rounded w-full py-2 px-3"
-                rows="4"
-                placeholder="What does your company do?"
-            ></textarea>
-          </div>
-
-          <div class="mb-4">
-            <label
-                for="contact_email"
-                class="block text-gray-700 font-bold mb-2"
-            >Contact Email</label
-            >
-            <input
-                type="email"
-                v-model="form.company.contactEmail"
-                id="contact_email"
-                name="contact_email"
-                class="border rounded w-full py-2 px-3"
-                placeholder="Email address for applicants"
-                required
-            />
-          </div>
-          <div class="mb-4">
-            <label
-                for="contact_phone"
-                class="block text-gray-700 font-bold mb-2"
-            >Contact Phone</label
-            >
-            <input
-                type="tel"
-                v-model="form.company.contactPhone"
-                id="contact_phone"
-                name="contact_phone"
-                class="border rounded w-full py-2 px-3"
-                placeholder="Optional phone for applicants"
-            />
-          </div>
-
-          <div>
-            <button
-                class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline"
-                type="submit"
-            >
-              Update Job
-            </button>
-          </div>
-        </form>
+      <div v-if="isLoading" class="text-center text-gray-500 py-6">
+        <RiseLoader color="#8b5cf6" />
       </div>
+
+      <form v-else @submit.prevent="onSubmit" class="max-w-2xl mx-auto">
+        <div class="bg-white shadow-md rounded-lg p-8">
+          <h2 class="text-2xl font-bold mb-6 text-center">Edytuj Ogłoszenie</h2>
+
+          <div class="mb-4">
+            <label
+                for="title"
+                class="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Tytuł
+            </label>
+            <input
+                id="title"
+                v-model="postTitle"
+                v-bind="postTitleProps"
+                type="text"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-appBg"
+                placeholder="Enter post title"
+            />
+            <p v-if="errors.postTitle" class="text-red-500 text-sm mt-1">
+              {{ errors.postTitle }}
+            </p>
+          </div>
+
+          <div class="mb-6">
+            <label
+                for="content"
+                class="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Treść
+            </label>
+            <textarea
+                id="content"
+                v-model="postContent"
+                v-bind="postContentProps"
+                rows="8"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-appBg"
+                placeholder="Write your post content here"
+            ></textarea>
+            <p v-if="errors.postContent" class="text-red-500 text-sm mt-1">
+              {{ errors.postContent }}
+            </p>
+          </div>
+
+          <button
+              type="submit"
+              :disabled="isSaving"
+              class="w-full bg-button hover:bg-buttonHover text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline transition duration-300 ease-in-out"
+          >
+            {{ isSaving ? 'Updating...' : 'Update Post' }}
+          </button>
+        </div>
+      </form>
     </div>
-  </section>
+  </div>
 </template>

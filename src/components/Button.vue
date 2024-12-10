@@ -20,7 +20,8 @@ defineProps({
           :to= "$props.to"
       >
         <button
-            class="bg-button hover:bg-buttonHover text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block">
+            class="bg-button hover:bg-buttonHover text-white font-bold py-2 px-4 rounded-full
+            w-full focus:outline-none focus:shadow-outline mt-4 block">
           {{text}}
         </button>
       </RouterLink>

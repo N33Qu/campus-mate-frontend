@@ -4,7 +4,8 @@ import { useRouter } from 'vue-router';
 import {useToast} from "vue-toastification";
 import Box from "@/components/Box.vue";
 import Button from "@/components/Button.vue";
-
+import {useToastStore} from "@/stores/toastStore.js";
+const toastStore = useToastStore();
 
 const router = useRouter();
 const toast = useToast();
@@ -12,13 +13,11 @@ const toast = useToast();
 const handleLogout = async () => {
   try {
     await logout();
-    toast.success('Wylogowano pomyślnie!');
+    await router.push('/').then(() => window.location.reload());
+    toastStore.setToast("Wylogowano pomyślnie!", "success");
   } catch (error) {
     console.error('Błąd logowania:', error);
-    toast.error('Błąd wylogowania.');
-  }
-  finally {
-    await router.push('/');
+    toastStore.setToast('Błąd wylogowania: ' + error, "error");
   }
 }
 </script>
