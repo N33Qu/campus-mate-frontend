@@ -11,6 +11,12 @@
   "dependencies": {
     "@coreui/icons": "^3.0.1",
     "@coreui/vue": "^5.4.1",
+    "@fullcalendar/daygrid": "^6.1.15",
+    "@fullcalendar/interaction": "^6.1.15",
+    "@fullcalendar/vue3": "^6.1.15",
+    "@schedule-x/calendar": "^2.11.0",
+    "@schedule-x/theme-default": "^2.11.0",
+    "@schedule-x/vue": "^2.10.0",
     "axios": "^1.7.8",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",

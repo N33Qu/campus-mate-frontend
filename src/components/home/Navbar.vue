@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed} from 'vue';
 import { useRoute, RouterLink } from 'vue-router';
 import logo from '@/assets/img/logo.png';
 import 'primeicons/primeicons.css';

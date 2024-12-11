@@ -5,7 +5,7 @@
         <!-- Logo i opis -->
         <div class="mb-6 md:mb-0">
           <div class="flex items-center mb-4">
-            <img src="../assets/img/logo.png" alt="Campus Mate Logo" class="h-10 w-auto" />
+            <img src="../../assets/img/logo.png" alt="Campus Mate Logo" class="h-10 w-auto" />
             <span class="text-white text-2xl font-bold ml-3">Campus Mate</span>
           </div>
           <p class="text-gray-400 text-sm max-w-xs">

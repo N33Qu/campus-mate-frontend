@@ -1,5 +1,5 @@
 <script setup>
-import AuthorListing from "@/components/AuthorListing.vue";
+import AuthorListing from "@/components/static/AuthorListing.vue";
 
 defineProps({
   authors: {

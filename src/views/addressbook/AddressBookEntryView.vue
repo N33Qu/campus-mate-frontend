@@ -1,9 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute, RouterLink, useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import api from '@/axios.js'
-import AddressBookEntry from "@/components/AddressBookEntry.vue";
+import AddressBookEntry from "@/components/addressBook/AddressBookEntry.vue";
 
 const route = useRoute();
 const router = useRouter();

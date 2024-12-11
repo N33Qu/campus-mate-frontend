@@ -1,5 +1,5 @@
 <script setup>
-import FAQQuestion from "@/components/FAQQuestion.vue"
+import FAQQuestion from "@/components/static/FAQQuestion.vue"
 
 const faqData = [
   {

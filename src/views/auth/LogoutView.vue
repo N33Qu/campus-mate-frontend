@@ -1,5 +1,5 @@
 <script setup>
-import {login, logout} from "@/axios.js";
+import {logout} from "@/axios.js";
 import { useRouter } from 'vue-router';
 import {useToast} from "vue-toastification";
 import Box from "@/components/Box.vue";

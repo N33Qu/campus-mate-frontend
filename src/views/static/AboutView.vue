@@ -1,5 +1,5 @@
 <script setup>
-import AuthorListings from "@/components/AuthorListings.vue";
+import AuthorListings from "@/components/static/AuthorListings.vue";
 import SimpleInfoListings from "@/components/SimpleInfoListings.vue";
 import Button from "@/components/Button.vue";
 const authors = [

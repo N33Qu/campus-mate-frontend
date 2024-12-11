@@ -46,7 +46,7 @@ const { handleSubmit, errors, defineField } = useForm({
 // Define form fields with Vee-Validate
 const [postTitle, postTitleProps] = defineField('postTitle');
 const [postContent, postContentProps] = defineField('postContent');
-const [formTeams, formTeamsProps] = defineField('teams');
+const [formTeamsProps] = defineField('teams');
 
 // Loading state
 const isSaving = ref(false);
@@ -60,7 +60,7 @@ const onSubmit = handleSubmit(async (values) => {
       postContent: values.postContent,
       teams: values.teams
     });
-
+    console.log(response.data.message);
     toast.success('Ogłoszenie utworzone pomyślnie');
     await router.push(`/posts`); //TODO: redirect to new post
   } catch (error) {

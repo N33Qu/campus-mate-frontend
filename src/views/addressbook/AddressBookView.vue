@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import api from '@/axios.js';
 import SearchBar from '@/components/SearchBar.vue';
-import AddressBookList from '@/components/AddressBookList.vue';
+import AddressBookList from '@/components/addressBook/AddressBookList.vue';
 import { useToast } from 'vue-toastification'; // Zakładam, że masz toast w projekcie
 
 const toast = useToast();
