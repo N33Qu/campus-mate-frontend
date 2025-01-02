@@ -15,10 +15,11 @@ const props = defineProps({
 });
 const authorImage = computed(() => {
   try {
-    return new URL(`../assets/img/authors/${props.author.image}`, import.meta.url).href;
+
+    return new URL(`/src/assets/img/authors/${props.author.image}`, import.meta.url).href;
   } catch (error) {
     console.error('Image loading error:', error);
-    return new URL('../assets/img/defaultAuthor.svg', import.meta.url).href;
+    return new URL(`/src/assets/img/authors/defaultAuthor.png`, import.meta.url).href;
   }
 });
 </script>

@@ -6,7 +6,7 @@ import { ref } from 'vue';
 import {login} from '@/axios.js';
 import Box from "@/components/Box.vue";
 import {useToastStore} from "@/stores/toastStore.js";
-const toastStore = useToastStore();
+
 
 const validationSchema = yup.object({
   email: yup
@@ -39,13 +39,8 @@ const onSubmit = handleSubmit(async (values) => {
       email: values.email,
       password: values.password,
     });
-    await router.push('/').then(() => location.reload());
-    toastStore.setToast("Zalogowano pomyślnie!", "success");
-
-
   } catch (error) {
     console.error();
-    toastStore.setToast('Błąd logowania: ' + error, "error");
   }
 });
 </script>

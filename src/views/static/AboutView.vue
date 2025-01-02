@@ -5,7 +5,7 @@ import Button from "@/components/Button.vue";
 const authors = [
   {
     name: "Ewelnia Sałata",
-    role: "Programistka",
+    role: "Programista",
     github: "https://github.com/Valentine0604",
     linkedin: "https://www.linkedin.com/in/ewelina-sa%C5%82ata-a2a330244/",
     image: "Ewelina.png"

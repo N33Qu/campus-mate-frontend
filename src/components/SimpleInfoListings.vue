@@ -6,7 +6,7 @@
       type: String,
       default: 'O Naszej Stronie'
     },
-    listings: []
+    listings: [Object],
   })
 </script>
 

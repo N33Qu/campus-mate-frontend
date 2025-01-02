@@ -17,6 +17,7 @@
     "@schedule-x/calendar": "^2.11.0",
     "@schedule-x/theme-default": "^2.11.0",
     "@schedule-x/vue": "^2.10.0",
+    "ag-grid-vue3": "^33.0.2",
     "axios": "^1.7.8",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",

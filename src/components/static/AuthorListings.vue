@@ -3,7 +3,7 @@ import AuthorListing from "@/components/static/AuthorListing.vue";
 
 defineProps({
   authors: {
-    type: []
+    type: [Object],
   }
 })
 </script>

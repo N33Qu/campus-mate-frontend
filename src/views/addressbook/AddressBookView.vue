@@ -36,7 +36,6 @@ const fetchAllEntries = async () => {
   }
 };
 
-// Funkcja do wyszukiwania wpisów
 const searchEntries = async () => {
   isLoading.value = true;
   error.value = null;
@@ -58,7 +57,6 @@ const searchEntries = async () => {
   }
 };
 
-// Pobieranie wszystkich wpisów na początku
 onMounted(fetchAllEntries);
 </script>
 
