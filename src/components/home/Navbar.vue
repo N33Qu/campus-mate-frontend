@@ -69,7 +69,7 @@ onBeforeUnmount(() => {
         <div class="flex items-center flex-grow">
           <RouterLink class="flex items-center mr-4" to="/">
             <img class="h-10 w-auto" :src="logo" alt="Campus Mate" />
-            <span class="hidden md:block text-white text-3xl font-bold ml-2">
+            <span class="hidden md:block text-white text-2xl font-bold ml-2">
               CampusMate
             </span>
           </RouterLink>

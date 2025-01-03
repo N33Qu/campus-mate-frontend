@@ -29,14 +29,14 @@ defineProps({
   <section class="top-0 z-0 p-12 bg-appBg " id="hero">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
       <div class="text-center">
-        <h1 class="text-4xl font-extrabold text-white sm:text-5xl md:text-6xl">
+        <h1 class="text-3xl font-extrabold text-white sm:text-4xl md:text-5xl">
           {{ title }}
         </h1>
-        <p class="my-4 text-2xl text-white">
+        <p class="my-4 text-xl text-white">
           {{ subtitle }}
         </p>
         <div  v-if="isLoggedIn === false">
-          <RouterLink class=" bg-button hover:bg-buttonHover text-white text-xl font-bold py-2 px-4 rounded transition-colors duration-300" to="/login">
+          <RouterLink class=" bg-button hover:bg-buttonHover text-white text-md font-bold py-2 px-4 rounded transition-colors duration-300" to="/login">
             Zaloguj się
             <i class="pi pi-sign-in ml-2"></i>
           </RouterLink>
