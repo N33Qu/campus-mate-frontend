@@ -107,6 +107,11 @@ const router = createRouter({
             component: () => import('@/views/team/TeamsView.vue'),
         },
         {
+            path: '/teams/add',
+            name: 'add-teams',
+            component: () => import('@/views/team/AddTeamsView.vue'),
+        },
+        {
             path: '/teams/:id',
             name: 'team',
             component: () => import('@/views/team/TeamView.vue'),
@@ -115,11 +120,6 @@ const router = createRouter({
             path: '/teams/edit/:id',
             name: 'edit-teams',
             component: () => import('@/views/team/EditTeamsView.vue'),
-        },
-        {
-            path: '/teams/add',
-            name: 'add-teams',
-            component: () => import('@/views/team/AddTeamsView.vue'),
         },
         //Users Routes
         {

@@ -27,7 +27,7 @@ const deletePost = async () => {
     }
   } catch (error) {
     console.error('Error deleting post', error);
-    toast.error('BŁąd usuwania ogłoszenia');
+    toast.error('Wystąpił błąd podczas usuwania ogłoszenia');
   }
 };
 
