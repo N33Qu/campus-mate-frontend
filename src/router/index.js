@@ -121,6 +121,11 @@ const router = createRouter({
             name: 'edit-teams',
             component: () => import('@/views/team/EditTeamsView.vue'),
         },
+        {
+            path: '/teams/add-users',
+            name: 'add-users-to-team',
+            component: () => import('@/views/team/AddUsersToTeamView.vue'),
+        },
         //Users Routes
         {
             path: '/users',

@@ -60,36 +60,18 @@ const addUser = async (userId) => {
   }
 };
 
-// onMounted(async () => {
-//   try {
-//     const [teamResponse, usersResponse, postsResponse, eventsResponse] = await Promise.all([
-//       axios.get(`/api/team/${teamId}`),
-//       axios.get(`/api/team/${teamId}/users`),
-//       axios.get(`/api/team/${teamId}/posts`),
-//       axios.get(`/api/team/${teamId}/events`)
-//     ]);
-//
-//     team.value = teamResponse.data;
-//     users.value = usersResponse.data;
-//     posts.value = postsResponse.data;
-//     events.value = eventsResponse.data;
-//   } catch (error) {
-//     console.error('Error fetching team data', error);
-//     toast.error('Wystąpił problem podczas pobierania danych zespołu');
-//   } finally {
-//     isLoading.value = false;
-//   }
-// });
-
 onMounted(async () => {
   try {
-    const response = await api.get(`/team/${teamId}`);
-    team.value = response.data;
-    const usersResponse = await api.get(`/team/${teamId}/users`);
+    const [teamResponse, usersResponse, postsResponse, eventsResponse] = await Promise.all([
+      axios.get(`/api/team/${teamId}`),
+      axios.get(`/api/team/${teamId}/users`),
+      axios.get(`/api/team/${teamId}/posts`),
+      axios.get(`/api/team/${teamId}/events`)
+    ]);
+
+    team.value = teamResponse.data;
     users.value = usersResponse.data;
-    const postsResponse = await api.get(`/team/${teamId}/posts`);
     posts.value = postsResponse.data;
-    const eventsResponse = await api.get(`/team/${teamId}/events`);
     events.value = eventsResponse.data;
   } catch (error) {
     console.error('Error fetching team data', error);
@@ -97,12 +79,30 @@ onMounted(async () => {
   } finally {
     isLoading.value = false;
   }
-})
+});
+//
+// onMounted(async () => {
+//   try {
+//     const response = await api.get(`/team/${teamId}`);
+//     team.value = response.data;
+//     const usersResponse = await api.get(`/team/${teamId}/users`);
+//     users.value = usersResponse.data;
+//     const postsResponse = await api.get(`/team/${teamId}/posts`);
+//     posts.value = postsResponse.data;
+//     const eventsResponse = await api.get(`/team/${teamId}/events`);
+//     events.value = eventsResponse.data;
+//   } catch (error) {
+//     console.error('Error fetching team data', error);
+//     toast.error('Wystąpił problem podczas pobierania danych zespołu');
+//   } finally {
+//     isLoading.value = false;
+//   }
+// })
 </script>
 
 <template>
   <BackButton :to="`/teams`" text="Powrót do Zespołów" icon="pi pi-arrow-circle-left"/>
-  <AddButton :to="`/users/add`" text="Dodaj użytkowników" icon="pi pi-user-plus"/>
+  <AddButton :to="`/teams/add-users`" text="Dodaj użytkowników" icon="pi pi-user-plus"/>
   <section v-if="!isLoading" class="bg-green-50">
     <div class="container m-auto py-10 px-6">
       <div class="grid grid-cols-1 md:grid-cols-70/30 w-full gap-6">
