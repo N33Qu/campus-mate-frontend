@@ -2,7 +2,7 @@
 import TeamListing from "@/components/team/TeamListing.vue";
 import {reactive, defineProps, onMounted} from "vue";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
-import axios from "axios";
+import api from "@/axios.js";
 
 defineProps({
   limit: Number,
@@ -19,7 +19,7 @@ const state = reactive({
 
 onMounted(async () => {
   try {
-    const response = await axios.get('/api/team');
+    const response = await api.get('/team');
     state.teams = response.data;
   } catch (error) {
     console.error('Error fetching teams', error);

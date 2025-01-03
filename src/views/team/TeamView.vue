@@ -5,7 +5,6 @@ import AddButton from '@/components/TextButton.vue'
 import {ref, onMounted} from "vue";
 import {useRoute, RouterLink, useRouter} from "vue-router";
 import {useToast} from "vue-toastification";
-import axios from "axios";
 import api from '@/axios.js';
 
 const route = useRoute();
@@ -14,15 +13,37 @@ const toast = useToast();
 
 const teamId = route.params.id;
 
-// Use ref instead of reactive for individual properties
 const team = ref({
-  teamId: null,
-  teamName: '',
-  description: '',
-});
-const users = ref([]);
-const posts = ref([]);
-const events = ref([]);
+  teamId: Number,
+  teamName: String,
+  description: String,
+}
+);
+const users = ref([
+  {
+    email: String,
+    firstName: String,
+    lastName: String,
+    role: String
+  }
+]);
+const posts = ref([
+  {
+    postId: Number,
+    postTitle: String,
+    postContent: String,
+    createdAt: String,
+    updatedAt: String
+  }
+]);
+const events = ref([
+  {
+    eventName: String,
+    eventDescription: String,
+    startDate: String,
+    endDate: String
+  }
+]);
 const isLoading = ref(true);
 
 const deleteTeam = async () => {
@@ -41,18 +62,18 @@ const deleteTeam = async () => {
 
 const removeUser = async (userId) => {
   try {
-    await api.delete(`/api/team/${teamId}/removeUser/${userId}`);
+    await api.delete(`/team/${teamId}/removeUser/${userId}`);
     users.value = users.value.filter(user => user.userId !== userId);
     toast.success('Użytkownik usunięty pomyślnie');
   } catch (error) {
-    toast.error('Wystąpił błąd podczas usuwania uźytkownika');
+    toast.error('Wystąpił błąd podczas usuwania użytkownika');
   }
 };
 
 const addUser = async (userId) => {
   try {
-    await axios.post(`/api/team/${teamId}/addUser/${userId}`);
-    const response = await axios.get(`/api/team/${teamId}/users`);
+    await api.post(`/team/${teamId}/addUser/${userId}`);
+    const response = await api.get(`/team/${teamId}/users`);
     users.value = response.data;
     toast.success('Użytkownik został dodany pomyślnie');
   } catch (error) {
@@ -63,13 +84,17 @@ const addUser = async (userId) => {
 onMounted(async () => {
   try {
     const [teamResponse, usersResponse, postsResponse, eventsResponse] = await Promise.all([
-      axios.get(`/api/team/${teamId}`),
-      axios.get(`/api/team/${teamId}/users`),
-      axios.get(`/api/team/${teamId}/posts`),
-      axios.get(`/api/team/${teamId}/events`)
+      api.get(`/team/${teamId}`),
+      api.get(`team/${teamId}/users`),
+      api.get(`team/${teamId}/posts`),
+      api.get(`team/${teamId}/events`)
     ]);
 
     team.value = teamResponse.data;
+    console.log(team.value)
+    console.log(team.value.teamName)
+    console.log(team.value.description)
+
     users.value = usersResponse.data;
     posts.value = postsResponse.data;
     events.value = eventsResponse.data;
@@ -80,24 +105,6 @@ onMounted(async () => {
     isLoading.value = false;
   }
 });
-//
-// onMounted(async () => {
-//   try {
-//     const response = await api.get(`/team/${teamId}`);
-//     team.value = response.data;
-//     const usersResponse = await api.get(`/team/${teamId}/users`);
-//     users.value = usersResponse.data;
-//     const postsResponse = await api.get(`/team/${teamId}/posts`);
-//     posts.value = postsResponse.data;
-//     const eventsResponse = await api.get(`/team/${teamId}/events`);
-//     events.value = eventsResponse.data;
-//   } catch (error) {
-//     console.error('Error fetching team data', error);
-//     toast.error('Wystąpił problem podczas pobierania danych zespołu');
-//   } finally {
-//     isLoading.value = false;
-//   }
-// })
 </script>
 
 <template>
@@ -108,14 +115,14 @@ onMounted(async () => {
       <div class="grid grid-cols-1 md:grid-cols-70/30 w-full gap-6">
         <main>
           <div class="bg-white p-6 rounded-lg shadow-md text-center md:text-left">
-            <h1 class="text-3xl font-bold mb-4">{{ team.value.teamName }}</h1>
-            <p>{{ team.value.description }}</p>
+            <h1 class="text-3xl font-bold mb-4">{{ team.teamName }}</h1>
+            <p>{{ team.description }}</p>
           </div>
 
           <div class="bg-white p-6 rounded-lg shadow-md mt-6">
             <h3 class="text-xl font-bold mb-4">Team Members</h3>
-            <ul v-if="users.value.length" class="space-y-2">
-              <li v-for="user in users.value" :key="user.userId" class="flex justify-between items-center">
+            <ul v-if="users.length" class="space-y-2">
+              <li v-for="user in users" :key="user.userId" class="flex justify-between items-center">
                 <span>{{ user.firstName }} {{ user.lastName }}</span>
                 <button @click="removeUser(user.userId)"
                         class="text-red-500 hover:text-red-700">
@@ -128,8 +135,8 @@ onMounted(async () => {
 
           <div class="bg-white p-6 rounded-lg shadow-md mt-6">
             <h3 class="text-xl font-bold mb-4">Team Posts</h3>
-            <div v-if="posts.value.length" class="space-y-4">
-              <div v-for="post in posts.value" :key="post.postId"
+            <div v-if="posts.length" class="space-y-4">
+              <div v-for="post in posts" :key="post.postId"
                    class="p-4 border rounded">
                 {{ post.content }}
               </div>
@@ -141,8 +148,8 @@ onMounted(async () => {
         <aside>
           <div class="bg-white p-6 rounded-lg shadow-md">
             <h3 class="text-xl font-bold mb-4">Team Events</h3>
-            <div v-if="events.value.length" class="space-y-2">
-              <div v-for="event in events.value" :key="event.eventId"
+            <div v-if="events.length" class="space-y-2">
+              <div v-for="event in events" :key="event.eventId"
                    class="p-2 bg-gray-50 rounded">
                 {{ event.name }}
               </div>
@@ -153,7 +160,7 @@ onMounted(async () => {
           <div class="bg-white p-6 rounded-lg shadow-md mt-6">
             <h3 class="text-xl font-bold mb-6">Manage Team</h3>
             <RouterLink
-                :to="`/teams/edit/${team.value.teamId}`"
+                :to="`/teams/edit/${team.teamId}`"
                 class="bg-green-500 hover:bg-green-600 text-white text-center font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline block">
               Edit Team
             </RouterLink>
