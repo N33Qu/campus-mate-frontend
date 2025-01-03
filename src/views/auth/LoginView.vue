@@ -17,6 +17,7 @@ const validationSchema = yup.object({
       .string()
       .required('Hasło jest wymagane')
       .min(6, 'Hasło musi mieć co najmniej 6 znaków')
+      .matches('^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};\':"\\|,.<>\\/?])[A-Za-z\\d!@#$%^&*()_+\\-=\\[\\]{};\':"\\|,.<>\\/?]{6,}$', 'Hasło musi zawierać co najmniej jedną dużą literę, małą literę, cyfrę i znak specjalny')
 });
 
 

@@ -60,11 +60,11 @@ onMounted(async () => {
           <RiseLoader color='element'/>
         </div>
         <div v-else-if="state.isEmpty === true" class="text-center text-gray-500 py-6">
-          <i class="pi pi-info-circle text-3xl"></i>
-          <h3>Nie znaleziono postów</h3>
+          <i class="pi pi-info-circle text-xl"></i>
+          <h4>Nie znaleziono postów</h4>
         </div>
         <div v-else-if="state.isAuthorized === false" class="text-center py-6">
-          <a class="text-gray-500 text-xl" href="/login">Zaloguj się zby zobaczyć ogłoszenia</a>
+          <a class="text-gray-500 text-sm " href="/login">Zaloguj się zby zobaczyć ogłoszenia</a>
         </div>
         <!--Post listing-->
         <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -80,7 +80,7 @@ onMounted(async () => {
     <section v-if="showButton" class="m-auto max-w-lg my-10 px-6">
       <RouterLink
           to="/posts"
-          class="block bg-black text-white text-center py-4 px-6 rounded-xl hover:bg-gray-700"
+          class="block bg-stone-950 text-white text-center py-4 px-6 rounded-lg hover:bg-stone-900"
       >Zobacz Wszystkie Ogłoszenia
       </RouterLink>
     </section>

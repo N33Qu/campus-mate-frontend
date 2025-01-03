@@ -6,7 +6,14 @@ export default {
   mode: 'jit',
   content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   theme: {
+
     extend: {
+      fontSize: {
+        sm: 'calc(var(--scale) * 0.75rem)',
+        base: 'calc(var(--scale) * 0.875rem)',
+        lg: 'calc(var(--scale) * 1rem)',
+        // itd.
+      },
       screens: {
           'sm': '860px',
           'md': '1024px',
@@ -31,9 +38,7 @@ export default {
       fontFamily:{
         sans: ['Roboto', 'sans-serif']
       },
-      gridTemplateColumns: {
-        '70/30': '70% 28%',
-      },
+
     },
   },
   variants: {
