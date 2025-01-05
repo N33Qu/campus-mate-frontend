@@ -1,5 +1,5 @@
 import { ref, computed, onMounted } from 'vue'
-import api from '@/axios.js'
+import api from '@/config/axiosConfig.js'
 import { useAuthStore } from '@/stores/authStore'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'

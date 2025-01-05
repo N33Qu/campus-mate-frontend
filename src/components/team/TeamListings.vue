@@ -2,7 +2,7 @@
 import TeamListing from "@/components/team/TeamListing.vue";
 import {reactive, defineProps, onMounted} from "vue";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
-import api from "@/axios.js";
+import api from "@/config/axiosConfig.js";
 
 defineProps({
   limit: Number,

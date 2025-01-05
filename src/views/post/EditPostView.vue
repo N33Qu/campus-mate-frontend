@@ -6,7 +6,7 @@ import { useForm } from 'vee-validate';
 import * as yup from 'yup';
 import BackButton from '@/components/TextButton.vue';
 import RiseLoader from 'vue-spinner/src/RiseLoader.vue';
-import api from '@/axios.js';
+import api from '@/config/axiosConfig.js';
 
 const route = useRoute();
 const router = useRouter();

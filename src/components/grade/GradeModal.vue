@@ -53,7 +53,7 @@
             User ID
           </label>
           <textarea
-              v-model="formData.id"
+              v-model="formData.userId"
               id="id"
               rows="3"
               class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"

@@ -3,7 +3,7 @@ import {RouterLink} from 'vue-router';
 import PostListing from './PostListing.vue';
 import {ref, defineProps, onMounted} from 'vue';
 import RiseLoader from 'vue-spinner/src/RiseLoader.vue';
-import api from '@/axios.js';
+import api from '@/config/axiosConfig.js';
 
 defineProps({
   limit: {

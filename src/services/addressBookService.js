@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
-import api from '@/axios.js';
+import api from '@/config/axiosConfig.js';
 
 // Shared state and utilities
 const createLoadingState = () => ({

@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import api from '@/axios.js';
+import api from '@/config/axiosConfig.js';
 import router from '@/router';
 import { useAuthStore } from '@/stores/authStore';
 import { useToastStore } from '@/stores/toastStore';
@@ -123,21 +123,11 @@ export function useAuth() {
         }
     };
 
-    const checkAuthStatus = async () => {
-        try {
-            const response = await api.get("/auth/status");
-            return response.data.isAuthenticated;
-        } catch (err) {
-            console.error("Error checking auth status:", err);
-            return false;
-        }
-    };
 
     return {
         isLoading,
         error,
         login,
-        logout,
-        checkAuthStatus
+        logout
     };
 }

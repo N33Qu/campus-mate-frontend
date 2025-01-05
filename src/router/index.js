@@ -58,16 +58,16 @@ const router = createRouter({
             name: 'grades',
             component: () => import('@/views/grade/GradesView.vue'),
         },
-        {
-            path: '/grades/edit/:id',
-            name: 'edit-grade',
-            component: () => import('@/views/grade/EditGradeView.vue'),
-        },
-        {
-            path: '/grades/add',
-            name: 'add-grade',
-            component: () => import('@/views/grade/AddGradeView.vue'),
-        },
+        // {
+        //     path: '/grades/edit/:id',
+        //     name: 'edit-grade',
+        //     component: () => import('@/views/grade/EditGradeView.vue'),
+        // },
+        // {
+        //     path: '/grades/add',
+        //     name: 'add-grade',
+        //     component: () => import('@/views/grade/AddGradeView.vue'),
+        // },
         {
             path: '/grades/:id',
             name: 'grade',
@@ -178,7 +178,7 @@ const router = createRouter({
         {
             path: '/:catchAll(.*)',
             name: 'not-found',
-            component: () => import('@/views/NotFoundView.vue'),
+            component: () => import('@/views/static/NotFoundView.vue'),
         },
 
     ]
