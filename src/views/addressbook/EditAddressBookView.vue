@@ -1,47 +1,14 @@
-<!-- AddressBook.vue (Główny komponent) -->
 <script setup>
-import { ref, watch } from 'vue';
-import api from '@/axios.js';
 import SearchBar from './components/SearchBar.vue';
 import AddressBookList from './components/AddressBookList.vue';
+import {useAddressBookSearch} from "@/services/addressBookService.js";
 
-// Stan wyszukiwania
-const searchQuery = ref('');
-const entries = ref([]);
-const isLoading = ref(false);
-const error = ref(null);
-
-// Funkcja do pobierania wpisów z backendu
-const fetchEntries = async () => {
-  // Jeśli zapytanie jest puste, nie wysyłaj requestu
-  if (!searchQuery.value.trim()) {
-    entries.value = [];
-    return;
-  }
-
-  isLoading.value = true;
-  error.value = null;
-  try {
-    const response = await api.get('/address-book/search', {
-      params: { query: searchQuery.value }
-    });
-
-    entries.value = response.data;
-  } catch (err) {
-    error.value = 'Nie udało się załadować książki adresowej';
-    console.error(err);
-    entries.value = [];
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-// Obserwator zmiany zapytania z debounce
-watch(searchQuery, () => {
-  // Użyj debounce, aby zmniejszyć liczbę zapytań
-  const timeoutId = setTimeout(fetchEntries, 500);
-  return () => clearTimeout(timeoutId);
-});
+const {
+  searchQuery,
+  entries,
+  isLoading,
+  error
+} = useAddressBookSearch();
 </script>
 
 <template>

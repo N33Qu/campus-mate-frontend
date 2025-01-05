@@ -1,49 +1,18 @@
+<!-- LoginView.vue -->
 <script setup>
-import router from '@/router';
-import { useForm } from 'vee-validate';
-import * as yup from 'yup';
-import { ref } from 'vue';
-import {login} from '@/axios.js';
 import Box from "@/components/Box.vue";
-import {useToastStore} from "@/stores/toastStore.js";
+import { useLoginForm } from '@/services/authService.js';
 
-
-const validationSchema = yup.object({
-  email: yup
-      .string()
-      .required('Email jest wymagany')
-      .email('Nieprawidłowy format email'),
-  password: yup
-      .string()
-      .required('Hasło jest wymagane')
-      .min(6, 'Hasło musi mieć co najmniej 6 znaków')
-      .matches('^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};\':"\\|,.<>\\/?])[A-Za-z\\d!@#$%^&*()_+\\-=\\[\\]{};\':"\\|,.<>\\/?]{6,}$', 'Hasło musi zawierać co najmniej jedną dużą literę, małą literę, cyfrę i znak specjalny')
-});
-
-
-const { handleSubmit, errors, defineField } = useForm({
-  validationSchema: validationSchema
-});
-
-const [email, emailProps] = defineField('email');
-const [password, passwordProps] = defineField('password');
-
-const showPassword = ref(false);
-
-const togglePasswordVisibility = () => {
-  showPassword.value = !showPassword.value;
-};
-
-const onSubmit = handleSubmit(async (values) => {
-  try {
-    await login({
-      email: values.email,
-      password: values.password,
-    });
-  } catch (error) {
-    console.error();
-  }
-});
+const {
+  email,
+  emailProps,
+  password,
+  passwordProps,
+  showPassword,
+  errors,
+  togglePasswordVisibility,
+  onSubmit
+} = useLoginForm();
 </script>
 
 <template>
@@ -92,9 +61,7 @@ const onSubmit = handleSubmit(async (values) => {
               aria-label="Pokaż/ukryj hasło"
           >
             <i
-                :class="showPassword
-                ? 'pi pi-eye-slash'
-                : 'pi pi-eye'"
+                :class="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"
                 class="text-xl"
             ></i>
           </button>

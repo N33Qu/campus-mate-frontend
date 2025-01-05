@@ -1,83 +1,16 @@
 <script setup>
-import {ref, computed, onMounted} from 'vue'
 import FullCalendar from '@fullcalendar/vue3'
-import dayGridPlugin from '@fullcalendar/daygrid'
-import interactionPlugin from '@fullcalendar/interaction'
-import api from '@/axios.js'
-import {useAuthStore} from '@/stores/authStore'
+import { useCalendar } from '@/services/calendarService.js'
 
-// State
-const authStore = useAuthStore()
-const calendar = ref(null)
-const selectedEvent = ref(null)
-const isEventModalOpen = ref(false)
-const isLoading = ref(false)
-const error = ref(null)
-
-// Fetch Calendar
-const fetchCalendar = async () => {
-  isLoading.value = true
-  error.value = null
-  try {
-    const response = await api.get(`/calendars/user/${authStore.userId}`)
-    console.log("respose data: " + response.data)
-    calendar.value = response.data
-    console.log(calendar.value)
-  } catch (err) {
-    error.value = 'Failed to fetch calendar'
-    console.error('Error fetching calendar:', err)
-  } finally {
-    isLoading.value = false
-  }
-}
-
-// Calendar Events Fetcher
-const fetchEvents = async () => {
-  if (!calendar.value) return []
-
-  try {
-    const response = await api.get(`/events/${calendar.value.id}`)
-    return response.data.map(event => ({
-      id: event.id,
-      title: event.eventName,
-      start: event.startDate,
-      end: event.endDate,
-      description: event.description
-    }))
-  } catch (err) {
-    error.value = 'Failed to fetch events'
-    console.error('Error fetching events:', err)
-    return []
-  }
-}
-
-// Calendar Configuration
-const calendarOptions = computed(() => ({
-  plugins: [dayGridPlugin, interactionPlugin],
-  initialView: 'dayGridMonth',
-  eventClick: handleEventClick,
-  events: fetchEvents
-}))
-
-// Event Handling
-const handleEventClick = (clickInfo) => {
-  selectedEvent.value = {
-    title: clickInfo.event.title,
-    description: clickInfo.event.extendedProps.description || 'No description',
-    start: clickInfo.event.startStr,
-    end: clickInfo.event.endStr
-  }
-  isEventModalOpen.value = true
-}
-
-// Close Event Modal
-const closeEventModal = () => {
-  isEventModalOpen.value = false
-  selectedEvent.value = null
-}
-
-// Fetch calendar on component mount
-onMounted(fetchCalendar)
+const {
+  calendar,
+  selectedEvent,
+  isEventModalOpen,
+  isLoading,
+  error,
+  calendarOptions,
+  closeEventModal
+} = useCalendar()
 </script>
 
 <template>

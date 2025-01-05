@@ -1,4 +1,3 @@
-<!-- components/AddressBookEntry.vue -->
 <script setup>
 defineProps({
   entry: {

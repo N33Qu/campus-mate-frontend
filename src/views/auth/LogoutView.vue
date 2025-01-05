@@ -1,25 +1,17 @@
 <script setup>
-import {logout} from "@/axios.js";
-import { useRouter } from 'vue-router';
-import {useToast} from "vue-toastification";
 import Box from "@/components/Box.vue";
 import Button from "@/components/Button.vue";
-import {useToastStore} from "@/stores/toastStore.js";
-const toastStore = useToastStore();
+import { useAuth } from '@/services/authService.js';
 
-const router = useRouter();
-const toast = useToast();
+const { logout, isLoading, error } = useAuth();
 
 const handleLogout = async () => {
   try {
     await logout();
-    await router.push('/').then(() => window.location.reload());
-    toastStore.setToast("Wylogowano pomyślnie!", "success");
   } catch (error) {
-    console.error('Błąd logowania:', error);
-    toastStore.setToast('Błąd wylogowania: ' + error, "error");
+    console.error('Logout error:', error);
   }
-}
+};
 </script>
 
 <template>

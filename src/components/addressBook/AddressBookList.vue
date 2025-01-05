@@ -1,4 +1,3 @@
-<!-- components/AddressBookList.vue -->
 <script setup>
 import AddressBookEntry from './AddressBookEntry.vue';
 
