@@ -1,7 +1,7 @@
 <script setup>
 import AuthorListings from "@/components/static/AuthorListings.vue";
-import SimpleInfoListings from "@/components/SimpleInfoListings.vue";
-import Button from "@/components/Button.vue";
+import SimpleInfoListings from "@/components/ui/SimpleInfoListings.vue";
+import Button from "@/components/ui/Button.vue";
 const authors = [
   {
     name: "Ewelnia Sałata",

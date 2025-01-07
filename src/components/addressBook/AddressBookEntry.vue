@@ -5,10 +5,15 @@ defineProps({
     required: true
   }
 });
+
+const emit = defineEmits(['delete', 'edit', 'view']);
 </script>
 
 <template>
-  <div class="p-4 hover:bg-stone-100 transition-colors">
+  <div
+      class="p-4 hover:bg-stone-100 transition-colors cursor-pointer"
+      @click="emit('view', entry)"
+  >
     <div class="flex justify-between items-center">
       <div>
         <h3 class="text-lg font-semibold text-stone-700">
@@ -17,25 +22,27 @@ defineProps({
         <div class="text-stone-600 space-y-1">
           <p>
             <span class="font-medium">Email:</span>
-            <a
-                :href="`mailto:${entry.email}`"
-                class="text-stone-500 hover:text-stone-800 transition-colors"
-            >
-              {{ entry.email }}
-            </a>
+            {{ entry.email }}
           </p>
           <p>
             <span class="font-medium">Telefon:</span>
             {{ entry.phoneNumber }}
           </p>
-          <p v-if="entry.classNumber">
-            <span class="font-medium">Numer klasy:</span>
-            {{ entry.classNumber }}
-          </p>
-          <p v-if="entry.notes" class="italic text-stone-500">
-            {{ entry.notes }}
-          </p>
         </div>
+      </div>
+      <div class="flex gap-2">
+        <button
+            @click.stop="emit('edit', entry)"
+            class="p-2 text-blue-600 hover:text-blue-800 transition-colors"
+        >
+          Edytuj
+        </button>
+        <button
+            @click.stop="emit('delete', entry.entryId)"
+            class="p-2 text-red-600 hover:text-red-800 transition-colors"
+        >
+          Usuń
+        </button>
       </div>
     </div>
   </div>

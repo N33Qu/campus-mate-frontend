@@ -1,4 +1,4 @@
-import router from '@/router';
+import router from '@/router/router.js';
 import { useAuthStore } from '@/stores/authStore';
 
 export const setupAuthInterceptor = (api) => {

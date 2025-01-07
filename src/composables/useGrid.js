@@ -3,14 +3,13 @@ import { computed } from 'vue';
 export function useGrid(grades) {
     const columnDefs = [
         {
-            headerName: 'Subject',
+            headerName: 'Przedmiot',
             field: 'subjectName',
             sortable: true,
             filter: true,
-            editable: true
         },
         {
-            headerName: 'Grade',
+            headerName: 'Ocena',
             field: 'grade',
             sortable: true,
             filter: 'agNumberColumnFilter',
@@ -27,12 +26,12 @@ export function useGrid(grades) {
             }
         },
         {
-            headerName: 'Comment',
+            headerName: 'Komentarz',
             field: 'comment',
-            editable: true
+
         },
         {
-            headerName: 'Date',
+            headerName: 'Data',
             field: 'dateOfReceipt',
             sortable: true,
             valueFormatter: (params) => {
@@ -40,13 +39,13 @@ export function useGrid(grades) {
             }
         },
         {
-            headerName: 'Actions',
+            headerName: '',
             field: 'Actions',
             cellRenderer: () => {
                 return `
           <div class="flex justify-center space-x-2">
-            <button class="edit-btn text-blue-500 hover:text-blue-700">Edit</button>
-            <button class="delete-btn text-red-500 hover:text-red-700">Delete</button>
+            <button class="edit-btn text-blue-500 hover:text-blue-700">Edytuj</button>
+            <button class="delete-btn text-red-500 hover:text-red-700">Usuń</button>
           </div>
         `;
             },
@@ -63,9 +62,12 @@ export function useGrid(grades) {
             if (clickedElement.classList.contains('edit-btn')) {
                 emit('edit-grade', params.data);
             } else if (clickedElement.classList.contains('delete-btn')) {
-                if (confirm('Are you sure you want to delete this grade?'))
+                if (confirm('Czy na pewno chcesz usunąć ocene?'))
                 emit('delete-grade', params.data.gradeId);
             }
+        }
+        else {
+            emit('row-click', params.data);
         }
     };
 

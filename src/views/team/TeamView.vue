@@ -1,7 +1,7 @@
 <script setup>
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
-import BackButton from '@/components/TextButton.vue';
-import AddButton from '@/components/TextButton.vue'
+import BackButton from '@/components/ui/TextButton.vue';
+import AddButton from '@/components/ui/TextButton.vue'
 import {ref, onMounted} from "vue";
 import {useRoute, RouterLink, useRouter} from "vue-router";
 import {useToast} from "vue-toastification";

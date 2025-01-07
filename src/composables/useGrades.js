@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 import { fetchGrades, addGrade, updateGrade, deleteGrade } from '@/services/gradesService';
 
@@ -10,21 +10,33 @@ export function useGrades() {
     const currentGrade = ref(null);
     const modalMode = ref('add');
     const gridApi = ref(null);
+    const selectedGrade = ref(null);
+
+    // Watch for changes in the grades array and update row count
+    watch(grades, () => {
+        updateRowCount();
+    });
 
     const updateRowCount = () => {
         if (gridApi.value) {
             rowCount.value = gridApi.value.getDisplayedRowCount();
+        } else {
+            rowCount.value = grades.value.length;
         }
     };
-
 
     const fetchGradesData = async () => {
         try {
             grades.value = await fetchGrades();
+            updateRowCount();
         } catch (error) {
             if (error.response?.status !== 401) {
-                toast.error('Failed to fetch grades');
-                console.error('Error fetching grades:', error);
+                if (error.response?.status === 404) {
+                    console.error('Grades not found');
+                } else {
+                    toast.error('Błąd pobierania ocen');
+                    console.error('Error fetching grades:', error);
+                }
             }
         }
     };
@@ -32,6 +44,15 @@ export function useGrades() {
     const onGridReady = (params) => {
         gridApi.value = params.api;
         updateRowCount();
+    };
+
+    const handleRowClick = (grade) => {
+        console.log(grade);
+        selectedGrade.value = grade;
+    };
+
+    const closeDetailsView = () => {
+        selectedGrade.value = null;
     };
 
     const openAddGradeModal = () => {
@@ -59,15 +80,15 @@ export function useGrades() {
         try {
             if (modalMode.value === 'add') {
                 await addGrade(gradeData);
-                toast.success('Grade added successfully');
+                toast.success('Ocena dodana pomyślnie');
             } else {
                 await updateGrade(gradeData);
-                toast.success('Grade updated successfully');
+                toast.success('Ocena zaktualizowana pomyślnie');
             }
             await fetchGradesData();
             closeModal();
         } catch (error) {
-            toast.error(modalMode.value === 'add' ? 'Failed to add grade' : 'Failed to update grade');
+            toast.error(modalMode.value === 'add' ? 'Błąd dodawania oceny' : 'Błąd aktualizacji oceny');
         }
     };
 
@@ -75,9 +96,9 @@ export function useGrades() {
         try {
             await deleteGrade(gradeId);
             await fetchGradesData();
-            toast.success('Grade deleted successfully');
+            toast.success('Ocena usunięta pomyślnie');
         } catch (error) {
-            toast.error('Failed to delete grade');
+            toast.error('Błąd usuwania oceny');
         }
     };
 
@@ -87,12 +108,15 @@ export function useGrades() {
         modalOpen,
         currentGrade,
         modalMode,
+        selectedGrade,
         onGridReady,
         fetchGradesData,
         openAddGradeModal,
         openEditGradeModal,
         closeModal,
         handleSaveGrade,
-        handleDeleteGrade
+        handleDeleteGrade,
+        handleRowClick,
+        closeDetailsView
     };
 }

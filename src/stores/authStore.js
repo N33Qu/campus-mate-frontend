@@ -37,6 +37,7 @@ export const useAuthStore = defineStore('auth', {
          */
         isTokenValid() {
             const token = Cookies.get('jwt');
+            console.log(token)
             if (!token) return false;
 
             try {
@@ -70,6 +71,7 @@ export const useAuthStore = defineStore('auth', {
          * @returns {string|null} - The user's role, or null if the token is invalid or missing.
          */
         userId() {
+
             if (!this.isTokenValid) return null;
 
             try {

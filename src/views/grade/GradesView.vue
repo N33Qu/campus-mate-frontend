@@ -2,6 +2,7 @@
 import { onMounted } from 'vue';
 import GradesGrid from '@/components/grade/GradesGrid.vue';
 import GradeModal from '@/components/grade/GradeModal.vue';
+import GradeDetailsView from '@/components/grade/GradeDetails.vue';
 import { useGrades } from '@/composables/useGrades';
 
 const {
@@ -10,23 +11,23 @@ const {
   modalOpen,
   currentGrade,
   modalMode,
+  selectedGrade,
   onGridReady,
   fetchGradesData,
   openAddGradeModal,
   openEditGradeModal,
   closeModal,
   handleSaveGrade,
-  handleDeleteGrade
+  handleDeleteGrade,
+  handleRowClick,
+  closeDetailsView
 } = useGrades();
 
 onMounted(fetchGradesData);
 </script>
 
 <template>
-  <div class="grades-container p-6 bg-gray-100 min-h-screen">
-    <div class="max-w-full mx-auto">
-      <h1 class="text-3xl font-bold mb-6 text-gray-800">My Grades</h1>
-
+  <div class="grades-container p-6 bg-appBg min-h-screen">
       <GradesGrid
           :grades="grades"
           :row-count="rowCount"
@@ -35,6 +36,7 @@ onMounted(fetchGradesData);
           @delete-grade="handleDeleteGrade"
           @refresh="fetchGradesData"
           @grid-ready="onGridReady"
+          @row-click="handleRowClick"
       />
 
       <GradeModal
@@ -44,6 +46,18 @@ onMounted(fetchGradesData);
           @close="closeModal"
           @save-grade="handleSaveGrade"
       />
+
+      <Teleport to="body">
+        <div
+            v-if="selectedGrade"
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+            @click.self="closeDetailsView"
+        >
+          <GradeDetailsView
+              :grade="selectedGrade"
+              @close="closeDetailsView"
+          />
+        </div>
+      </Teleport>
     </div>
-  </div>
 </template>

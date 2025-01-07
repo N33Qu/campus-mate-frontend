@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import { useForm } from 'vee-validate';
 import * as yup from 'yup';
-import BackButton from '@/components/TextButton.vue';
+import BackButton from '@/components/ui/TextButton.vue';
 import RiseLoader from 'vue-spinner/src/RiseLoader.vue';
 import api from '@/config/axiosConfig.js';
 

@@ -13,17 +13,7 @@ const router = createRouter({
         {
             path: '/addressbook',
             name: 'addressbook',
-            component: () => import('@/views/addressbook/AddressBookView.vue'),
-        },
-        {
-            path: '/addressbook/entry/:id',
-            name: 'addressbook-entry',
-            component: () => import('@/views/addressbook/AddressBookEntryView.vue'),
-        },
-        {
-            path: '/addressbook/edit/:id',
-            name: 'edit-addressbook',
-            component: () => import('@/views/addressbook/EditAddressBookView.vue'),
+            component: () => import('@/views/addressBook/AddressBookView.vue'),
         },
         //Calendar Routes
         {
@@ -31,47 +21,11 @@ const router = createRouter({
             name: 'calendar',
             component: () => import('@/views/calendar/CalendarView.vue'),
         },
-        {
-            path: '/calendar/edit/:id',
-            name: 'edit-calendar',
-            component: () => import('@/views/calendar/EditCalendarView.vue'),
-        },
-        //Events Routes
-        {
-            path: '/events/:id',
-            name: 'event',
-            component: () => import('@/views/event/EventView.vue'),
-        },
-        {
-            path: '/events/edit/:id',
-            name: 'edit-event',
-            component: () => import('@/views/event/EditEventView.vue'),
-        },
-        {
-            path: '/events/add',
-            name: 'add-event',
-            component: () => import('@/views/event/AddEventView.vue'),
-        },
         //Grade Routes
         {
             path: '/grades',
             name: 'grades',
             component: () => import('@/views/grade/GradesView.vue'),
-        },
-        // {
-        //     path: '/grades/edit/:id',
-        //     name: 'edit-grade',
-        //     component: () => import('@/views/grade/EditGradeView.vue'),
-        // },
-        // {
-        //     path: '/grades/add',
-        //     name: 'add-grade',
-        //     component: () => import('@/views/grade/AddGradeView.vue'),
-        // },
-        {
-            path: '/grades/:id',
-            name: 'grade',
-            component: () => import('@/views/grade/GradeView.vue'),
         },
         //Posts Routes
         {

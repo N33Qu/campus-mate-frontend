@@ -1,4 +1,9 @@
-import { defineStore } from 'pinia';
+import {createPinia, defineStore, getActivePinia, setActivePinia} from 'pinia';
+
+if (!getActivePinia()) {
+    const pinia = createPinia();
+    setActivePinia(pinia);
+}
 
 export const useToastStore = defineStore('toast', {
     state: () => ({

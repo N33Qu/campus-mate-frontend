@@ -1,5 +1,5 @@
 <script setup>
-  import SimpleInfoListing from "@/components/SimpleInfoListing.vue";
+  import SimpleInfoListing from "@/components/ui/SimpleInfoListing.vue";
 
   defineProps({
     listingsTitle: {
