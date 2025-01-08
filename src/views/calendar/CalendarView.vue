@@ -5,8 +5,9 @@ import { useCalendar } from '@/composables/useCalendar'
 import RiseLoader from 'vue-spinner/src/RiseLoader.vue'
 import EventModal from '@/components/calendar/EventModal.vue'
 
-const modalMode = ref('view')
+
 const {
+  modalMode,
   events,
   selectedEvent,
   isEventModalOpen,
@@ -15,6 +16,7 @@ const {
   calendarOptions,
   isLoggedIn,
   closeEventModal,
+  createEvent,
   refreshEvents,
   updateEvent,
   deleteEvent
@@ -41,14 +43,21 @@ const handleCloseModal = () => {
   modalMode.value = 'view'
   closeEventModal()
 }
+
+const handleCreateEvent = async (eventData) => {
+  await createEvent(eventData)
+  modalMode.value = 'view'
+  closeEventModal()
+}
+//TODO: Dodać błędy w toast i reload w innych komponentach
 </script>
 
 <template>
   <section class="bg-appBg min-h-screen">
     <div class="container mx-auto px-4 py-8">
-      <div class="bg-white rounded-lg shadow-lg p-6">
+      <div class="bg-elementLight rounded-lg shadow-lg p-6">
         <div v-if="!isLoggedIn" class="text-center text-gray-500 py-4">
-          Please log in to view your calendar
+          Zaloguj się, aby zobaczyć kalendarz
         </div>
 
         <template v-else>
@@ -56,13 +65,9 @@ const handleCloseModal = () => {
             <RiseLoader color="#8b5cf6" />
           </div>
 
-          <div v-else-if="error" class="text-center text-red-500 py-4">
-            {{ error }}
-          </div>
-
           <div v-else>
-            <h2 class="text-2xl font-bold mb-6 text-gray-800">My Calendar</h2>
-            <FullCalendar :options="calendarOptions" />
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">Mój kalendarz</h2>
+            <FullCalendar :options="calendarOptions"  />
           </div>
 
           <EventModal
@@ -74,6 +79,7 @@ const handleCloseModal = () => {
               @edit="handleEditMode"
               @update="handleUpdateEvent"
               @delete="handleDeleteEvent"
+              @create="handleCreateEvent"
           />
         </template>
       </div>

@@ -1,6 +1,7 @@
 <script setup>
 import ViewEventModal from './ViewEventModal.vue'
 import EditEventModal from './EditEventModal.vue'
+import CreateEventModal from "@/components/calendar/CreateEventModal.vue";
 
 const props = defineProps({
   selectedEvent: {
@@ -13,12 +14,12 @@ const props = defineProps({
   },
   mode: {
     type: String,
-    default: 'view', // 'view' or 'edit'
+    default: 'view',
     validator: value => ['view', 'edit'].includes(value)
   }
 })
 
-const emit = defineEmits(['close', 'update', 'delete'])
+const emit = defineEmits(['close', 'update', 'delete', 'edit', 'create'])
 
 const handleClose = () => {
   emit('close')
@@ -30,6 +31,10 @@ const handleEdit = (updatedEvent) => {
 
 const handleDelete = () => {
   emit('delete', props.selectedEvent.eventId)
+}
+
+const handleCreate = (eventData) => {
+  emit('create', eventData)
 }
 </script>
 
@@ -43,10 +48,15 @@ const handleDelete = () => {
         @delete="handleDelete"
     />
     <EditEventModal
-        v-else
+        v-else-if="mode === 'edit'"
         :event="selectedEvent"
         @close="handleClose"
         @save="handleEdit"
+    />
+    <CreateEventModal
+        v-else
+        @close="handleClose"
+        @save="handleCreate"
     />
   </div>
 </template>

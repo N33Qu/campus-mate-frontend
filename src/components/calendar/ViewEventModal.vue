@@ -11,13 +11,13 @@ const emit = defineEmits(['close', 'edit', 'delete'])
 
 <template>
   <div class="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
-    <h3 class="text-xl font-bold mb-4">{{ event.title }}</h3>
-    <p class="mb-2"><span class="font-semibold">Description:</span> {{ event.description }}</p>
+    <h3 class="text-xl font-bold mb-4">{{ event.eventName }}</h3>
+    <p class="mb-2"><span class="font-semibold">Opis:</span> {{ event.eventDescription }}</p>
     <p class="mb-2">
-      <span class="font-semibold">Start:</span> {{ new Date(event.start).toLocaleString() }}
+      <span class="font-semibold">Rozpoczęcie:</span> {{ new Date(event.startDate).toLocaleString() }}
     </p>
     <p class="mb-4">
-      <span class="font-semibold">End:</span> {{ new Date(event.end).toLocaleString() }}
+      <span class="font-semibold">Zakończenie:</span> {{ new Date(event.endDate).toLocaleString() }}
     </p>
     <div class="flex gap-2">
       <button

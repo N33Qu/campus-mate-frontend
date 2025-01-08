@@ -12,6 +12,7 @@
     "@ag-grid-community/core": "^32.3.3",
     "@coreui/icons": "^3.0.1",
     "@coreui/vue": "^5.4.1",
+    "@fullcalendar/core": "^6.1.15",
     "@fullcalendar/daygrid": "^6.1.15",
     "@fullcalendar/interaction": "^6.1.15",
     "@fullcalendar/vue3": "^6.1.15",
