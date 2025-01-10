@@ -1,10 +1,10 @@
 <script setup>
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 import BackButton from '@/components/ui/TextButton.vue';
-import AddButton from '@/components/ui/TextButton.vue'
-import {ref, onMounted} from "vue";
-import {useRoute, RouterLink, useRouter} from "vue-router";
-import {useToast} from "vue-toastification";
+import AddButton from '@/components/ui/TextButton.vue';
+import { ref, onMounted } from "vue";
+import { useRoute, RouterLink, useRouter } from "vue-router";
+import { useToast } from "vue-toastification";
 import api from '@/config/axiosConfig.js';
 
 const route = useRoute();
@@ -13,169 +13,148 @@ const toast = useToast();
 
 const teamId = route.params.id;
 
-const team = ref({
-  teamId: Number,
-  teamName: String,
-  description: String,
-}
-);
-const users = ref([
-  {
-    email: String,
-    firstName: String,
-    lastName: String,
-    role: String
-  }
-]);
-const posts = ref([
-  {
-    postId: Number,
-    postTitle: String,
-    postContent: String,
-    createdAt: String,
-    updatedAt: String
-  }
-]);
-const events = ref([
-  {
-    eventName: String,
-    eventDescription: String,
-    startDate: String,
-    endDate: String
-  }
-]);
-const isLoading = ref(true);
+const state = ref({
+  team: {
+    teamName: '',
+    description: '',
+    teamId: ''
+  },
+  users: [],
+  posts: [],
+  isLoading: true,
+});
 
 const deleteTeam = async () => {
+  if (!confirm('Czy na pewno chcesz usunąć ten zespół?')) return;
+  
   try {
-    const confirm = window.confirm('Czy na pewno chcesz usunąć ten zespół?');
-    if (confirm) {
-      await api.delete(`/team/${teamId}`);
-      toast.success('Zespół został usunięty');
-      await router.push('/teams');
-    }
+    await api.delete(`/team/${teamId}`);
+    toast.success('Zespół usunięty pomyślnie');
+    await router.push('/teams');
   } catch (error) {
-    console.error('Error deleting post', error);
-    toast.error('Wystąpił błąd podczas usuwania zespołu')
+    console.error('Error deleting team:', error);
+    toast.error('Błąd usuwania zespołu');
   }
 };
 
 const removeUser = async (userId) => {
+  if (!confirm('Czy na pewno chcesz usunąć tego użytkownika z zespołu?')) return;
+
   try {
-    await api.delete(`/team/${teamId}/removeUser/${userId}`);
-    users.value = users.value.filter(user => user.userId !== userId);
-    toast.success('Użytkownik usunięty pomyślnie');
+    state.value.isLoading = true; 
+    
+    await api.delete(`/team/${teamId}/users/${userId}`); 
+
+    const usersResponse = await api.get(`/teams/${teamId}/users`);
+    state.value.users = usersResponse.data;
+    
+    toast.success('Użytkownik został usunięty z zespołu');
   } catch (error) {
-    toast.error('Wystąpił błąd podczas usuwania użytkownika');
+    console.error('Error removing user:', error);
+    toast.error('Nie udało się usunąć użytkownika z zespołu');
+  } finally {
+    state.value.isLoading = false;
   }
 };
 
-const addUser = async (userId) => {
+const fetchTeamData = async () => {
   try {
-    await api.post(`/team/${teamId}/addUser/${userId}`);
-    const response = await api.get(`/team/${teamId}/users`);
-    users.value = response.data;
-    toast.success('Użytkownik został dodany pomyślnie');
-  } catch (error) {
-    toast.error('Wystąpił błąd podczas dodawania użytkownika');
-  }
-};
-
-onMounted(async () => {
-  try {
-    const [teamResponse, usersResponse, postsResponse, eventsResponse] = await Promise.all([
+    const [teamResponse, usersResponse, postsResponse] = await Promise.all([
       api.get(`/team/${teamId}`),
-      api.get(`team/${teamId}/users`),
-      api.get(`team/${teamId}/posts`),
-      api.get(`team/${teamId}/events`)
+      api.get(`/team/${teamId}/users`),
+      api.get(`/team/${teamId}/posts`)
     ]);
 
-    team.value = teamResponse.data;
-    console.log(team.value)
-    console.log(team.value.teamName)
-    console.log(team.value.description)
-
-    users.value = usersResponse.data;
-    posts.value = postsResponse.data;
-    events.value = eventsResponse.data;
+    state.value.team = teamResponse.data;
+    state.value.users = usersResponse.data;
+    state.value.posts = postsResponse.data;
   } catch (error) {
-    console.error('Error fetching team data', error);
-    toast.error('Wystąpił problem podczas pobierania danych zespołu');
+    console.error('Error fetching team data:', error);
+    toast.error('Błąd pobierania danych zespołu');
+    router.push('/teams');
   } finally {
-    isLoading.value = false;
+    state.value.isLoading = false;
   }
-});
+};
+
+onMounted(fetchTeamData);
 </script>
 
 <template>
-  <BackButton :to="`/teams`" text="Powrót do Zespołów" icon="pi pi-arrow-circle-left"/>
-  <AddButton :to="`/teams/add-users`" text="Dodaj użytkowników" icon="pi pi-user-plus"/>
-  <section v-if="!isLoading" class="bg-green-50">
-    <div class="container m-auto py-10 px-6">
-      <div class="grid grid-cols-1 md:grid-cols-70/30 w-full gap-6">
-        <main>
-          <div class="bg-white p-6 rounded-lg shadow-md text-center md:text-left">
-            <h1 class="text-3xl font-bold mb-4">{{ team.teamName }}</h1>
-            <p>{{ team.description }}</p>
+  <div class="container mx-auto px-6">
+    <div class="flex gap-4 mb-6">
+      <BackButton :to="`/teams`" text="Powrót do Zespołów" icon="pi pi-arrow-circle-left" />
+      <AddButton :to="`/teams/add-users`" text="Dodaj użytkowników" icon="pi pi-user-plus" />
+    </div>
+
+    <div v-if="state.isLoading" class="text-center text-gray-500 py-6">
+      <PulseLoader />
+    </div>
+
+    <section v-else class="bg-green-50 p-6 rounded-lg">
+      <div class="grid grid-cols-1 md:grid-cols-[70%_30%] gap-6">
+        <!-- Left Column - Team Info and Posts -->
+        <div class="space-y-6">
+          <div>
+            <h1 class="text-3xl font-bold mb-3">{{ state.team.teamName || 'Brak nazwy' }}</h1>
+            <p class="text-gray-600 mb-6">{{ state.team.description || 'Brak opisu' }}</p>
           </div>
 
-          <div class="bg-white p-6 rounded-lg shadow-md mt-6">
-            <h3 class="text-xl font-bold mb-4">Team Members</h3>
-            <ul v-if="users.length" class="space-y-2">
-              <li v-for="user in users" :key="user.userId" class="flex justify-between items-center">
-                <span>{{ user.firstName }} {{ user.lastName }}</span>
-                <button @click="removeUser(user.userId)"
-                        class="text-red-500 hover:text-red-700">
-                  Remove
-                </button>
-              </li>
-            </ul>
-            <p v-else>No members yet</p>
-          </div>
-
-          <div class="bg-white p-6 rounded-lg shadow-md mt-6">
-            <h3 class="text-xl font-bold mb-4">Team Posts</h3>
-            <div v-if="posts.length" class="space-y-4">
-              <div v-for="post in posts" :key="post.postId"
-                   class="p-4 border rounded">
+          <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-bold mb-4">Posty zespołu</h2>
+            <div v-if="state.posts.length" class="space-y-4">
+              <div v-for="post in state.posts" 
+                   :key="post.postId"
+                   class="p-4 border rounded hover:bg-gray-50">
                 {{ post.content }}
               </div>
             </div>
-            <p v-else>No posts yet</p>
+            <p v-else class="text-gray-500">Brak postów</p>
           </div>
-        </main>
+        </div>
 
-        <aside>
+        <!-- Right Column - Users and Management -->
+        <div class="space-y-6">
+          <!-- Users List -->
           <div class="bg-white p-6 rounded-lg shadow-md">
-            <h3 class="text-xl font-bold mb-4">Team Events</h3>
-            <div v-if="events.length" class="space-y-2">
-              <div v-for="event in events" :key="event.eventId"
-                   class="p-2 bg-gray-50 rounded">
-                {{ event.name }}
-              </div>
+            <h2 class="text-xl font-bold mb-4">Członkowie zespołu</h2>
+            <div class="max-h-60 overflow-y-auto pr-2">
+              <ul v-if="state.users.length" class="space-y-2">
+                <li v-for="user in state.users" 
+                    :key="user.userId" 
+                    class="flex justify-between items-center p-2 hover:bg-gray-50 rounded border">
+                  <span>{{ user.firstName }} {{ user.lastName }}</span>
+                  <button 
+                    @click="removeUser(user.userId)"
+                    class="text-red-500 hover:text-red-700 px-3 py-1 rounded"
+                    :disabled="state.isLoading"
+                  >
+                    {{ state.isLoading ? 'Usuwanie...' : 'Usuń' }}
+                  </button>
+                </li>
+              </ul>
+              <p v-else class="text-gray-500">Brak członków zespołu</p>
             </div>
-            <p v-else>No events scheduled</p>
           </div>
 
-          <div class="bg-white p-6 rounded-lg shadow-md mt-6">
-            <h3 class="text-xl font-bold mb-6">Manage Team</h3>
-            <RouterLink
-                :to="`/teams/edit/${team.teamId}`"
-                class="bg-green-500 hover:bg-green-600 text-white text-center font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline block">
-              Edit Team
-            </RouterLink>
-            <button
+          <!-- Team Management -->
+          <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-bold mb-6">Zarządzanie zespołem</h2>
+            <div class="space-y-4">
+              <RouterLink
+                :to="`/teams/edit/${state.team.teamId}`"
+                class="bg-green-500 hover:bg-green-600 text-white text-center font-bold py-2 px-4 rounded-full block transition-colors duration-200">
+                Edytuj zespół
+              </RouterLink>
+              <button
                 @click="deleteTeam"
-                class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block">
-              Delete Team
-            </button>
+                class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full w-full transition-colors duration-200">
+                Usuń zespół
+              </button>
+            </div>
           </div>
-        </aside>
+        </div>
       </div>
-    </div>
-  </section>
-
-  <div v-else class="text-center text-gray-500 py-6">
-    <PulseLoader/>
+    </section>
   </div>
 </template>

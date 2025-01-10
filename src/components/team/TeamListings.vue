@@ -3,6 +3,7 @@ import TeamListing from "@/components/team/TeamListing.vue";
 import {reactive, defineProps, onMounted} from "vue";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 import api from "@/config/axiosConfig.js";
+import AddButton from "@/components/ui/TextButton.vue";
 
 defineProps({
   limit: Number,
@@ -32,7 +33,8 @@ onMounted(async () => {
 <template>
   <section class="bg-blue-50 px-4 py-10">
     <div class="container-xl lg:container m-auto">
-      <h2 class="text-3xl font-bold text-green-500 mb-6 text-center">Browse Teams</h2>
+      <h2 class="text-3xl font-bold text-green-500 mb-6 text-center">Przeglądaj zespoły</h2>
+      <AddButton :to="`/teams/add`" text="Stwórz nowy zespół" icon="pi pi-user-plus" />
       <div v-if="state.isLoading" class="text-center text-gray-500 py-6">
         <PulseLoader/>
       </div>
