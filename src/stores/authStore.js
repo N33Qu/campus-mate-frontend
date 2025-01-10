@@ -37,7 +37,6 @@ export const useAuthStore = defineStore('auth', {
          */
         isTokenValid() {
             const token = Cookies.get('jwt');
-            console.log(token)
             if (!token) return false;
 
             try {

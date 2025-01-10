@@ -1,7 +1,7 @@
 <script setup>
 import Box from "@/components/ui/Box.vue";
 import Button from "@/components/ui/Button.vue";
-import { useAuth } from '@/composables/useAuth';
+import { useAuth } from '@/composables/auth/useAuth.js';
 
 const { logout, isLoading, error } = useAuth();
 

@@ -1,14 +1,12 @@
 <script setup>
 import FullCalendar from '@fullcalendar/vue3'
 import { ref } from 'vue'
-import { useCalendar } from '@/composables/useCalendar'
+import { useCalendar } from '@/composables/calendar/useCalendar.js'
 import RiseLoader from 'vue-spinner/src/RiseLoader.vue'
 import EventModal from '@/components/calendar/EventModal.vue'
 
-
 const {
   modalMode,
-  events,
   selectedEvent,
   isEventModalOpen,
   isLoading,
@@ -30,26 +28,29 @@ const handleUpdateEvent = async (updatedEvent) => {
   await updateEvent(updatedEvent)
   modalMode.value = 'view'
   closeEventModal()
+  await refreshEvents()
 }
 
 const handleDeleteEvent = async (eventId) => {
   if (confirm('Are you sure you want to delete this event?')) {
-    await deleteEvent(eventId)
+   await deleteEvent(eventId)
     closeEventModal()
+    await refreshEvents()
   }
 }
 
 const handleCloseModal = () => {
   modalMode.value = 'view'
   closeEventModal()
+
 }
 
 const handleCreateEvent = async (eventData) => {
-  await createEvent(eventData)
-  modalMode.value = 'view'
-  closeEventModal()
+    await createEvent(eventData)
+    modalMode.value = 'view'
+    closeEventModal()
+    await refreshEvents()
 }
-//TODO: Dodać błędy w toast i reload w innych komponentach
 </script>
 
 <template>
@@ -57,9 +58,8 @@ const handleCreateEvent = async (eventData) => {
     <div class="container mx-auto px-4 py-8">
       <div class="bg-elementLight rounded-lg shadow-lg p-6">
         <div v-if="!isLoggedIn" class="text-center text-gray-500 py-4">
-          Zaloguj się, aby zobaczyć kalendarz
+          <a href="/login"> Zaloguj się </a>, aby zobaczyć kalendarz
         </div>
-
         <template v-else>
           <div v-if="isLoading" class="flex justify-center py-8">
             <RiseLoader color="#8b5cf6" />

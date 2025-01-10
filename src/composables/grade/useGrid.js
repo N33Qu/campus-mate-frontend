@@ -16,7 +16,6 @@ export function useGrid(grades) {
             cellRenderer: (params) => {
                 const grade = params.value;
                 let className = 'px-2 py-1 rounded font-semibold';
-
                 if (grade >= 5) className += ' bg-green-200 text-green-800';
                 else if (grade >= 4) className += ' bg-yellow-200 text-yellow-800';
                 else if (grade >= 3) className += ' bg-orange-200 text-orange-800';
@@ -44,8 +43,8 @@ export function useGrid(grades) {
             cellRenderer: () => {
                 return `
           <div class="flex justify-center space-x-2">
-            <button class="edit-btn text-blue-500 hover:text-blue-700">Edytuj</button>
-            <button class="delete-btn text-red-500 hover:text-red-700">Usuń</button>
+            <button class="edit-btn text-editButton hover:text-editButtonHover">Edytuj</button>
+            <button class="delete-btn text-deleteButton hover:text-deleteButtonHover">Usuń</button>
           </div>
         `;
             },

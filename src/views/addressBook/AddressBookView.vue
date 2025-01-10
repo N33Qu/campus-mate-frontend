@@ -3,7 +3,7 @@ import { onMounted, watch } from 'vue';
 import SearchBar from '@/components/ui/SearchBar.vue';
 import AddressBookList from '@/components/addressBook/AddressBookList.vue';
 import EditEntryModal from '@/components/addressBook/EditEntryModal.vue';
-import { useAddressBook } from '@/composables/useAddressBook';
+import { useAddressBook } from '@/composables/addressBook/useAddressBook.js';
 import RiseLoader from "vue-spinner/src/RiseLoader.vue";
 import ViewEntryModal from "@/components/addressBook/ViewEntryModal.vue";
 
@@ -33,7 +33,7 @@ watch(searchQuery, () => {
 
 <template>
   <div class="min-h-screen bg-appBg p-6">
-    <div class="max-w-4xl mx-auto bg-stone-50 rounded-lg shadow-lg">
+    <div class="max-w-4xl mx-auto bg-elementLight rounded-lg shadow-lg">
       <h1 class="text-3xl font-bold text-center py-6 text-headerText">
         Książka adresowa
       </h1>
@@ -47,10 +47,6 @@ watch(searchQuery, () => {
 
       <div v-if="isLoading" class="text-center py-6">
         <RiseLoader color="#8b5cf6" />
-      </div>
-
-      <div v-else-if="error" class="text-red-500 text-center py-6">
-        {{ error }}
       </div>
 
       <AddressBookList

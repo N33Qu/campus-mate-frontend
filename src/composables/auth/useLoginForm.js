@@ -1,4 +1,4 @@
-import {useAuth} from "@/composables/useAuth.js";
+import {useAuth} from "@/composables/auth/useAuth.js";
 import {useForm} from "vee-validate";
 import {ref} from "vue";
 import {authValidationSchema} from "@/validation/authSchema.js";

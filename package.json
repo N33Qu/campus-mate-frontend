@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ag-grid-community/core": "^32.3.3",
+    "@ag-grid-community/locale": "^33.0.3",
     "@coreui/icons": "^3.0.1",
     "@coreui/vue": "^5.4.1",
     "@fullcalendar/core": "^6.1.15",
@@ -19,6 +20,7 @@
     "@schedule-x/calendar": "^2.11.0",
     "@schedule-x/theme-default": "^2.11.0",
     "@schedule-x/vue": "^2.10.0",
+    "ag-grid-community": "^33.0.3",
     "ag-grid-vue3": "^32.3.3",
     "axios": "^1.7.8",
     "js-cookie": "^3.0.5",

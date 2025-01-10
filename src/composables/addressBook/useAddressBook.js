@@ -1,9 +1,8 @@
-import { ref } from 'vue';
-import { useToast } from 'vue-toastification';
-import { addressBookService } from '@/services/addressBookService';
+import {ref, watchSyncEffect} from 'vue';
+import { addressBookService } from '@/services/addressBookService.js';
+import {useShowNotification} from "@/composables/useShowNotification.js";
 
 export function useAddressBook() {
-    const toast = useToast();
     const entries = ref([]);
     const isLoading = ref(false);
     const error = ref(null);
@@ -11,6 +10,7 @@ export function useAddressBook() {
     const selectedEntry = ref(null);
     const isEditModalOpen = ref(false);
     const isViewModalOpen = ref(false);
+    const {showNotification} = useShowNotification()
 
     const fetchEntries = async () => {
         isLoading.value = true;
@@ -21,9 +21,11 @@ export function useAddressBook() {
         } catch (err) {
             if (err.response.status === 404) {
                 error.value = 'Brak wpisów w książce adresowej';
+                showNotification(error.value, 'error');
             } else {
                 error.value = 'Błąd pobierania wpisów';
                 console.error('Error fetching entries:', err);
+                showNotification(error.value, 'error');
             }
         } finally {
             isLoading.value = false;
@@ -43,7 +45,7 @@ export function useAddressBook() {
             entries.value = await addressBookService.searchEntries(searchQuery.value);
         } catch (err) {
             error.value = err.message;
-            toast.error('Brak wpisów w książce adresowej');
+            showNotification(error.value, 'error');
         } finally {
             isLoading.value = false;
         }
@@ -52,10 +54,14 @@ export function useAddressBook() {
     const deleteEntry = async (entryId) => {
         try {
             await addressBookService.deleteEntry(entryId);
-            toast.success('Wpis został usunięty');
             await fetchEntries();
+            showNotification('Wpis został usunięty')
+            setInterval(2000)
+            location.reload()
+
         } catch (err) {
-            toast.error('Nie udało się usunąć wpisu');
+            error.value = 'Błąd usuwania wpisu';
+            showNotification(error.value, 'error');
         }
     };
 
@@ -67,12 +73,13 @@ export function useAddressBook() {
     const updateEntry = async (updatedEntry) => {
         try {
             await addressBookService.updateEntry(updatedEntry.entryId, updatedEntry);
-            toast.success('Wpis został zaktualizowany');
             isEditModalOpen.value = false;
             selectedEntry.value = null;
             await fetchEntries();
+            showNotification('Wpis został zaktualizowany');
         } catch (err) {
-            toast.error('Nie udało się zaktualizować wpisu');
+            error.value = 'Błąd aktualizacji wpisu';
+            showNotification(error.value, 'error');
         }
     };
 
@@ -80,6 +87,7 @@ export function useAddressBook() {
         selectedEntry.value = entry;
         isViewModalOpen.value = true;
     };
+
 
     return {
         entries,

@@ -21,7 +21,7 @@ const getGradeClass = (grade) => {
     <div class="p-6">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-xl font-bold">
-          Grade Details for {{ grade.subjectName }}
+          Szczegóły oceny z: {{ grade.subjectName }}
         </h2>
         <button
             @click="$emit('close')"

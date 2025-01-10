@@ -38,8 +38,8 @@ export async function addGrade(gradeData){
 
 export async function updateGrade(gradeData){
     try {
+        console.log(gradeData)
         const response = await api.patch(`/grade/${gradeData.gradeId}`, gradeData);
-
         return {
             ...gradeData,
             dateOfReceipt: new Date(response.data.dateOfReceipt)

@@ -11,7 +11,6 @@ export const calendarService = {
                 eventDescription: eventData.eventDescription,
                 teamId: eventData.teamId
             })
-            location.reload()
             return response.data
         } catch (error) {
             console.error('Error creating event:', error)
@@ -22,7 +21,6 @@ export const calendarService = {
     async getEvents(userId) {
         try {
             const response = await api.get(`/user/events/${userId}`)
-            console.log(response.data)
             return response.data.map(event => ({
                 id: event.eventId,
                 title: event.eventName,
@@ -47,7 +45,6 @@ export const calendarService = {
                 endDate: new Date(eventData.endDate).toISOString(),
                 eventDescription: eventData.eventDescription
             })
-            location.reload()
             return response.data
         } catch (error) {
             console.error('Error updating event:', error)
@@ -58,7 +55,6 @@ export const calendarService = {
     async deleteEvent(eventId) {
         try {
             const response = await api.delete(`/event/${eventId}`)
-            location.reload()
             return response.data
         } catch (error) {
             console.error('Error deleting event:', error)

@@ -1,7 +1,7 @@
 <!-- LoginView.vue -->
 <script setup>
 import Box from "@/components/ui/Box.vue";
-import { useLoginForm } from '@/composables/useLoginForm.js';
+import { useLoginForm } from '@/composables/auth/useLoginForm.js';
 
 const {
   email,

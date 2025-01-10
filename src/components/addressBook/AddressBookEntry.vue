@@ -11,7 +11,7 @@ const emit = defineEmits(['delete', 'edit', 'view']);
 
 <template>
   <div
-      class="p-4 hover:bg-stone-100 transition-colors cursor-pointer"
+      class="p-4 hover:bg-elementHover transition-colors cursor-pointer rounded-lg"
       @click="emit('view', entry)"
   >
     <div class="flex justify-between items-center">
@@ -32,14 +32,16 @@ const emit = defineEmits(['delete', 'edit', 'view']);
       </div>
       <div class="flex gap-2">
         <button
+            type="button"
             @click.stop="emit('edit', entry)"
-            class="p-2 text-blue-600 hover:text-blue-800 transition-colors"
+            class="p-2 text-white bg-editButton hover:bg-editButtonHover transition-colors rounded"
         >
           Edytuj
         </button>
         <button
+            type="button"
             @click.stop="emit('delete', entry.entryId)"
-            class="p-2 text-red-600 hover:text-red-800 transition-colors"
+            class="p-2 text-white bg-deleteButton hover:bg-deleteButtonHover transition-colors rounded"
         >
           Usuń
         </button>

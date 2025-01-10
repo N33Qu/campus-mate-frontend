@@ -15,8 +15,12 @@ export const addressBookSchema = yup.object({
 
     phoneNumber: yup
         .string()
+        .transform((value) => (!value ? null : value))
         .nullable()
-        .max(12, 'Numer telefonu może mieć maksymalnie 12 znaków'),
+        .test('phone-format', 'Nieprawidłowy format numeru telefonu', (value) => {
+            if (!value) return true; // Return true if empty or null
+            return /^[0-9+\s-]{9,12}$/.test(value) && value.length <= 12;
+        }),
 
     classNumber: yup
         .string()

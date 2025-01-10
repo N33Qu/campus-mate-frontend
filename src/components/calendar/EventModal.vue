@@ -15,7 +15,7 @@ const props = defineProps({
   mode: {
     type: String,
     default: 'view',
-    validator: value => ['view', 'edit'].includes(value)
+    validator: value => ['view', 'edit', 'create'].includes(value)
   }
 })
 

@@ -1,8 +1,8 @@
 import { ref } from 'vue';
-import { useAuthStore } from '@/stores/authStore';
-import { useToastStore } from '@/stores/toastStore';
+import { useAuthStore } from '@/stores/authStore.js';
+import { useToastStore } from '@/stores/toastStore.js';
 import { useToast } from 'vue-toastification';
-import { authService } from '@/services/authService';
+import { authService } from '@/services/authService.js';
 import router from '@/router/router.js';
 
 export function useAuth() {

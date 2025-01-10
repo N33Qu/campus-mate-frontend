@@ -1,9 +1,8 @@
 import { ref, watch } from 'vue';
-import { useToast } from 'vue-toastification';
-import { fetchGrades, addGrade, updateGrade, deleteGrade } from '@/services/gradesService';
+import { fetchGrades, addGrade, updateGrade, deleteGrade } from '@/services/gradesService.js';
+import { useShowNotification } from "@/composables/useShowNotification.js";
 
 export function useGrades() {
-    const toast = useToast();
     const grades = ref([]);
     const rowCount = ref(0);
     const modalOpen = ref(false);
@@ -11,8 +10,9 @@ export function useGrades() {
     const modalMode = ref('add');
     const gridApi = ref(null);
     const selectedGrade = ref(null);
+    const message = ref(null);
+    const { showNotification } = useShowNotification()  // Destructure the function
 
-    // Watch for changes in the grades array and update row count
     watch(grades, () => {
         updateRowCount();
     });
@@ -33,8 +33,9 @@ export function useGrades() {
             if (error.response?.status !== 401) {
                 if (error.response?.status === 404) {
                     console.error('Grades not found');
+                    showNotification('Brak ocen');
                 } else {
-                    toast.error('Błąd pobierania ocen');
+                    showNotification('Błąd pobierania ocen', 'error');
                     console.error('Error fetching grades:', error);
                 }
             }
@@ -47,7 +48,6 @@ export function useGrades() {
     };
 
     const handleRowClick = (grade) => {
-        console.log(grade);
         selectedGrade.value = grade;
     };
 
@@ -65,11 +65,16 @@ export function useGrades() {
         modalOpen.value = true;
     };
 
-    const openEditGradeModal = (grade) => {
-        currentGrade.value = { ...grade };
-        modalMode.value = 'edit';
-        modalOpen.value = true;
-    };
+    const openEditGradeModal = async (grade) => {
+        await fetchGradesData();
+        const currentGradeData = grades.value.find(g => g.gradeId === grade.gradeId);
+        console.log(currentGradeData)
+        if (currentGradeData) {
+            currentGrade.value = { ...currentGradeData };
+            modalMode.value = 'edit';
+            modalOpen.value = true;
+        }
+    }
 
     const closeModal = () => {
         modalOpen.value = false;
@@ -80,15 +85,19 @@ export function useGrades() {
         try {
             if (modalMode.value === 'add') {
                 await addGrade(gradeData);
-                toast.success('Ocena dodana pomyślnie');
+                showNotification('Ocena dodana pomyślnie');
             } else {
                 await updateGrade(gradeData);
-                toast.success('Ocena zaktualizowana pomyślnie');
+                showNotification('Ocena zaktualizowana pomyślnie');
             }
             await fetchGradesData();
             closeModal();
+            updateRowCount()
         } catch (error) {
-            toast.error(modalMode.value === 'add' ? 'Błąd dodawania oceny' : 'Błąd aktualizacji oceny');
+            const errorMessage = modalMode.value === 'add'
+                ? 'Błąd dodawania oceny'
+                : 'Błąd aktualizacji oceny';
+            showNotification(errorMessage, 'error');
         }
     };
 
@@ -96,9 +105,10 @@ export function useGrades() {
         try {
             await deleteGrade(gradeId);
             await fetchGradesData();
-            toast.success('Ocena usunięta pomyślnie');
+            updateRowCount()
+            showNotification('Ocena usunięta pomyślnie');
         } catch (error) {
-            toast.error('Błąd usuwania oceny');
+            showNotification('Błąd usuwania oceny', 'error');
         }
     };
 

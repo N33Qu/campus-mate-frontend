@@ -1,10 +1,12 @@
 <script setup>
 import { AgGridVue } from "ag-grid-vue3";
-import { useGrid, defaultColDef } from '@/composables/useGrid';
+import { useGrid, defaultColDef } from '@/composables/grade/useGrid.js';
 import GradesHeader from './GradesHeader.vue';
 import "ag-grid-community/styles/ag-grid.css"
 import "ag-grid-community/styles/ag-theme-alpine.css"
+
 import { computed } from "vue";
+import { AG_GRID_LOCALE_PL } from '@ag-grid-community/locale';
 
 const props = defineProps({
   grades: {
@@ -59,6 +61,7 @@ const averageGrade = computed(() => {
           :animateRows="true"
           :overlayNoRowsTemplate="`Nie znaleziono ocen.`"
           :overlayLoadingTemplate="`Ładowanie...`"
+          :localeText="AG_GRID_LOCALE_PL"
           @cell-clicked="handleCellClicked"
           @grid-ready="onGridReady"
 

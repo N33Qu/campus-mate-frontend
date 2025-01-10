@@ -1,9 +1,9 @@
 <script setup>
-import { onMounted } from 'vue';
+import {onMounted, watch} from 'vue';
 import GradesGrid from '@/components/grade/GradesGrid.vue';
 import GradeModal from '@/components/grade/GradeModal.vue';
 import GradeDetailsView from '@/components/grade/GradeDetails.vue';
-import { useGrades } from '@/composables/useGrades';
+import { useGrades } from '@/composables/grade/useGrades.js';
 
 const {
   grades,
@@ -20,7 +20,8 @@ const {
   handleSaveGrade,
   handleDeleteGrade,
   handleRowClick,
-  closeDetailsView
+  closeDetailsView,
+
 } = useGrades();
 
 onMounted(fetchGradesData);

@@ -1,21 +1,22 @@
 import { computed, onMounted, ref } from 'vue'
-import { useAuthStore } from '@/stores/authStore'
+import { useAuthStore } from '@/stores/authStore.js'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import { calendarService } from '@/services/calendarService'
+import { calendarService } from '@/services/calendarService.js'
 import pl from "@fullcalendar/core/locales/pl";
+import {useShowNotification} from "@/composables/useShowNotification.js";
 
 export function useCalendar() {
     const authStore = useAuthStore()
     const isLoggedIn = computed(() => authStore.isTokenValid)
     const userId = computed(() => authStore.userId)
-
     const events = ref([])
     const selectedEvent = ref(null)
     const isEventModalOpen = ref(false)
     const isLoading = ref(false)
     const error = ref(null)
     const modalMode = ref('view')
+    const {showNotification} = useShowNotification()
 
     const calendarOptions = computed(() => ({
         plugins: [dayGridPlugin, interactionPlugin],
@@ -26,7 +27,7 @@ export function useCalendar() {
         editable: true,
         selectable: true,
         eventColor: '#888580',
-        locale: 'pl',
+        locale: pl,
         select: handleDateSelect,
         eventDrop: handleEventDrop,
         eventResize: handleEventResize
@@ -39,11 +40,11 @@ export function useCalendar() {
         try {
             await calendarService.createEvent(eventData)
             await fetchEvents()
-            showNotification('Event created successfully')
+            showNotification('Wydarzenie utworzone pomyślnie')
         } catch (err) {
-            error.value = 'Failed to create event'
+            error.value = 'Błąd tworzenia wydarzenia'
             console.error('Error creating event:', err)
-            showNotification('Failed to create event', 'error')
+            showNotification(error.value, 'error')
         } finally {
             isLoading.value = false
         }
@@ -51,18 +52,19 @@ export function useCalendar() {
 
     const fetchEvents = async () => {
         if (!userId.value) {
-            error.value = 'User not authenticated'
+            error.value = 'Użytkownik nie jest zalogowany'
+            console.error('User is not logged in')
+            showNotification(error.value, 'error')
             return
         }
-
         isLoading.value = true
         error.value = null
-
         try {
             events.value = await calendarService.getEvents(userId.value)
         } catch (err) {
-            error.value = 'Failed to fetch events'
+            error.value = 'Błąd pobierania wydarzeń'
             console.error('Error fetching events:', err)
+            showNotification(error.value, 'error')
         } finally {
             isLoading.value = false
         }
@@ -81,9 +83,9 @@ export function useCalendar() {
         selectedEvent.value = {
             eventId: clickInfo.event.extendedProps.eventId,
             eventName: clickInfo.event.title,
-            eventDescription: clickInfo.event.extendedProps.description || 'No description',
+            eventDescription: clickInfo.event.extendedProps.description || 'Brak opisu',
             startDate: clickInfo.event.start,
-            endDate: clickInfo.event.end
+            endDate: clickInfo.event.end,
         }
         isEventModalOpen.value = true
     }
@@ -91,7 +93,6 @@ export function useCalendar() {
     const updateEvent = async (updatedEvent) => {
         isLoading.value = true
         error.value = null
-        console.log(updatedEvent)
         try {
             await calendarService.updateEvent(updatedEvent.eventId, updatedEvent)
 
@@ -99,11 +100,11 @@ export function useCalendar() {
                 event.eventId === updatedEvent.eventId ? updatedEvent : event
             )
 
-            showNotification('Event updated successfully')
+            showNotification('Wydarzenie zaktualizowane pomyślnie')
         } catch (err) {
-            error.value = 'Failed to update event'
+            error.value = 'Błąd aktualizacji wydarzenia'
             console.error('Error updating event:', err)
-            showNotification('Failed to update event', 'error')
+            showNotification(error.value, 'error')
         } finally {
             isLoading.value = false
         }
@@ -118,11 +119,11 @@ export function useCalendar() {
 
             events.value = events.value.filter(event => event.eventId !== eventId)
 
-            showNotification('Event deleted successfully')
+            showNotification('Wydarzenie usunięte pomyślnie')
         } catch (err) {
-            error.value = 'Failed to delete event'
+            error.value = 'Błąd usuwania wydarzenia'
             console.error('Error deleting event:', err)
-            showNotification('Failed to delete event', 'error')
+            showNotification(error.value, 'error')
         } finally {
             isLoading.value = false
         }
@@ -157,9 +158,6 @@ export function useCalendar() {
         selectedEvent.value = null
     }
 
-    const showNotification = (message, type = 'success') => {
-        console.log(`${type}: ${message}`)
-    }
 
     onMounted(fetchEvents)
 

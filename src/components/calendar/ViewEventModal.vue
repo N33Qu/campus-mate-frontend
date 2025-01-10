@@ -22,19 +22,19 @@ const emit = defineEmits(['close', 'edit', 'delete'])
     <div class="flex gap-2">
       <button
           @click="$emit('edit')"
-          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+          class="bg-editButton text-white px-4 py-2 rounded hover:bg-editButtonHover transition-colors"
       >
         Edit
       </button>
       <button
           @click="$emit('delete')"
-          class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
+          class="bg-deleteButton text-white px-4 py-2 rounded hover:bg-deleteButtonHover transition-colors"
       >
         Delete
       </button>
       <button
           @click="$emit('close')"
-          class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors"
+          class="bg-cancelButton text-white px-4 py-2 rounded hover:bg-cancelButtonHover transition-colors"
       >
         Close
       </button>

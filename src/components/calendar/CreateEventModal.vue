@@ -1,34 +1,37 @@
 <script setup>
-import {eventSchema} from '@/validation/eventSchema'
-import {useEventForm} from '@/composables/useEventForm'
+import { eventSchema } from '@/validation/eventSchema';
+import { useEventForm } from '@/composables/calendar/useEventForm.js';
 
-const emit = defineEmits(['close', 'save'])
+const emit = defineEmits(['close', 'save']);
 
 const {
-  formData,
+  title,
+  titleProps,
+  description,
+  descriptionProps,
+  start,
+  startProps,
+  end,
+  endProps,
+  teamId,
+  teamIdProps,
   errors,
   isSubmitting,
-  isValid,
-  validateForm
-} = useEventForm(eventSchema)
+  onSubmit
+} = useEventForm(eventSchema);
 
 const handleSubmit = async () => {
-  isSubmitting.value = true
-  try {
-    const validData = await validateForm()
-    if (validData) {
-      emit('save', {
-        eventName: validData.title,
-        eventDescription: validData.description,
-        startDate: validData.start,
-        endDate: validData.end,
-        teamId: validData.teamId
-      })
-    }
-  } finally {
-    isSubmitting.value = false
+  const result = await onSubmit();
+  if (result) {
+    emit('save', {
+      eventName: result.title,
+      eventDescription: result.description,
+      startDate: result.start,
+      endDate: result.end,
+      teamId: result.teamId
+    });
   }
-}
+};
 </script>
 
 <template>
@@ -38,68 +41,79 @@ const handleSubmit = async () => {
       <div>
         <label class="block text-sm font-medium text-gray-700">Tytuł</label>
         <input
-            v-model="formData.title"
+            v-model="title"
+            v-bind="titleProps"
             type="text"
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-            required
+            :class="{ 'border-red-500': errors.title }"
         />
         <span v-if="errors.title" class="text-sm text-red-500">{{ errors.title }}</span>
-        <span class="text-sm text-gray-500">{{ formData.title.length }}/50</span>
+        <span class="text-sm text-gray-500">{{ title?.length || 0 }}/50</span>
       </div>
+
       <div>
         <label class="block text-sm font-medium text-gray-700">Opis</label>
         <textarea
-            v-model="formData.description"
+            v-model="description"
+            v-bind="descriptionProps"
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+            :class="{ 'border-red-500': errors.description }"
             rows="3"
         ></textarea>
         <span v-if="errors.description" class="text-sm text-red-500">{{ errors.description }}</span>
-        <span class="text-sm text-gray-500">{{ formData.description.length }}/200</span>
+        <span class="text-sm text-gray-500">{{ description?.length || 0 }}/200</span>
       </div>
+
       <div>
         <label class="block text-sm font-medium text-gray-700">Rozpoczęcie</label>
         <input
-            v-model="formData.start"
+            v-model="start"
+            v-bind="startProps"
             type="datetime-local"
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-            required
+            :class="{ 'border-red-500': errors.start }"
         />
         <span v-if="errors.start" class="text-sm text-red-500">{{ errors.start }}</span>
       </div>
+
       <div>
         <label class="block text-sm font-medium text-gray-700">Zakończenie</label>
         <input
-            v-model="formData.end"
+            v-model="end"
+            v-bind="endProps"
             type="datetime-local"
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-            required
+            :class="{ 'border-red-500': errors.end }"
         />
         <span v-if="errors.end" class="text-sm text-red-500">{{ errors.end }}</span>
       </div>
+
       <div>
         <label class="block text-sm font-medium text-gray-700">Id zespołu</label>
         <input
-            v-model="formData.teamId"
+            v-model="teamId"
+            v-bind="teamIdProps"
             type="number"
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-            required
+            :class="{ 'border-red-500': errors.teamId }"
         />
         <span v-if="errors.teamId" class="text-sm text-red-500">{{ errors.teamId }}</span>
       </div>
+
       <div class="flex gap-2">
         <button
             type="submit"
-            class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-            :disabled="!isValid || isSubmitting"
+            class="bg-saveButton text-white px-4 py-2 rounded hover:bg-saveButtonHover transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+            :disabled="isSubmitting"
         >
-          Create
+          {{ isSubmitting ? 'Tworzenie...' : 'Stwórz' }}
         </button>
         <button
             type="button"
             @click="$emit('close')"
-            class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors"
+            class="bg-cancelButton text-white px-4 py-2 rounded hover:bg-cancelButtonHover transition-colors"
         >
-          Cancel
+          Anuluj
         </button>
       </div>
     </form>
