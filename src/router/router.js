@@ -38,16 +38,6 @@ const router = createRouter({
             name: 'post',
             component: () => import('@/views/post/PostView.vue'),
         },
-        {
-            path: '/posts/add',
-            name: 'add-post',
-            component: () => import('@/views/post/AddPostView.vue'),
-        },
-        {
-            path: '/posts/edit/:id',
-            name: 'edit-post',
-            component: () => import('@/views/post/EditPostView.vue'),
-        },
         //Schedule Routes
         {
             path: '/schedule',
@@ -89,17 +79,7 @@ const router = createRouter({
         {
             path: '/users/:id',
             name: 'user',
-            component: () => import('@/views/user/UserView.vue'),
-        },
-        {
-            path: '/users/edit/:id',
-            name: 'edit-user',
-            component: () => import('@/views/user/EditUserView.vue'),
-        },
-        {
-            path: '/users/add',
-            name: 'add-user',
-            component: () => import('@/views/user/AddUserView.vue'),
+            component: () => import('@/views/user/UserProfileView.vue'),
         },
         //Auth Routes
         {

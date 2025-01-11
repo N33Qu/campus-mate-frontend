@@ -1,11 +1,10 @@
 <script setup>
-
 import PostListings from "@/components/post/PostListings.vue";
-import {RouterLink} from "vue-router";
-import AddButton from "@/components/ui/TextButton.vue";
+import PostModal from "@/components/post/PostModal.vue";
+
+
 </script>
 
 <template>
-  <AddButton :to="`/posts/add`" :text="`Dodaj Ogłoszenie`"/>
-  <PostListings/>
+    <PostListings :show-manage-button="true"/>
 </template>

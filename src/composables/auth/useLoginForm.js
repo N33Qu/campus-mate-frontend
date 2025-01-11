@@ -8,7 +8,7 @@ export function useLoginForm() {
     const showPassword = ref(false);
 
     const { handleSubmit, errors, defineField } = useForm({
-        validationSchema: authValidationSchema
+        validationSchema: authValidationSchema,
     });
 
     const [email, emailProps] = defineField('email');

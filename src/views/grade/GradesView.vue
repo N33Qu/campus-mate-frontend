@@ -28,7 +28,7 @@ onMounted(fetchGradesData);
 </script>
 
 <template>
-  <div class="grades-container p-6 bg-appBg min-h-screen">
+  <div class="grades-container p-6">
       <GradesGrid
           :grades="grades"
           :row-count="rowCount"

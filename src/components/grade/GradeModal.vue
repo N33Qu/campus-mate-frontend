@@ -18,9 +18,7 @@ const props = defineProps({
   }
 })
 
-
 const emit = defineEmits(['close', 'save-grade'])
-
 
 const {
   subjectName,
@@ -33,15 +31,17 @@ const {
   userIdProps,
   errors,
   isSubmitting,
-  onSubmit
+  onSubmit,
+  students,
+  isLoadingStudents,
+  studentError
 } = useGradeForm(gradeSchema, props)
-
 
 const handleSubmit = async () => {
   try {
     const result = await onSubmit();
     console.log("Result", result)
-      emit('save-grade', result);
+    emit('save-grade', result);
   } catch (error) {
     console.error('Form submission error:', error);
   }
@@ -110,16 +110,27 @@ const handleSubmit = async () => {
 
         <div v-if="mode === 'add'">
           <label class="block text-gray-700 font-bold mb-2" for="userId">
-            User ID
+            Uczeń
           </label>
-          <input
+          <div v-if="studentError" class="text-sm text-red-500 mb-2">
+            {{ studentError }}
+          </div>
+          <select
+              v-if="!isLoadingStudents"
               v-model="userId"
               v-bind="userIdProps"
               id="userId"
-              type="number"
               class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               :class="{ 'border-red-500': errors.userId }"
-          />
+          >
+            <option value="">---</option>
+            <option v-for="student in students" :key="student.id" :value="student.id">
+              {{ student.firstName }} {{ student.lastName }}
+            </option>
+          </select>
+          <div v-else class="flex items-center justify-center p-4">
+            <span class="text-gray-500">Ładowanie uczniów...</span>
+          </div>
           <span v-if="errors.userId" class="text-sm text-red-500">{{ errors.userId }}</span>
         </div>
 

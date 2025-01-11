@@ -33,7 +33,7 @@ export function useGrades() {
             if (error.response?.status !== 401) {
                 if (error.response?.status === 404) {
                     console.error('Grades not found');
-                    showNotification('Brak ocen');
+                    showNotification('Brak ocen', 'info');
                 } else {
                     showNotification('Błąd pobierania ocen', 'error');
                     console.error('Error fetching grades:', error);

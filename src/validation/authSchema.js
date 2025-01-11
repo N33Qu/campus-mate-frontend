@@ -8,9 +8,9 @@ export const authValidationSchema = yup.object({
     password: yup
         .string()
         .required('Hasło jest wymagane')
-        .min(6, 'Hasło musi mieć co najmniej 6 znaków')
-        .matches(
-            '^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};\':"\\|,.<>\\/?])[A-Za-z\\d!@#$%^&*()_+\\-=\\[\\]{};\':"\\|,.<>\\/?]{6,}$',
-            'Hasło musi zawierać co najmniej jedną dużą literę, małą literę, cyfrę i znak specjalny'
-        )
+        .min(8, 'Hasło musi mieć co najmniej 8 znaków')
+        .matches(/[0-9]/, 'Hasło musi zawierać co najmniej jedną cyfrę')
+        .matches(/[A-Z]/, 'Hasło musi zawierać co najmniej jednego wielkiej litery')
+        .matches(/[a-z]/, 'Hasło musi zawierać co najmniej jedneą małą literę')
+        .matches(/[^A-Za-z0-9]/, 'Hasło musi zawierać co najmniej jeden znak specjalny'),
 });

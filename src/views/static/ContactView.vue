@@ -43,7 +43,7 @@ const openEmailClient = () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-appBg py-12 px-4 sm:px-6 lg:px-8">
+  <div class="py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-xl mx-auto bg-elementLight rounded-lg shadow-lg p-8">
       <h1 class="text-3xl font-bold mb-8 text-center text-headerText">
         Skontaktuj się

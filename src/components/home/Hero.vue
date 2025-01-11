@@ -26,7 +26,7 @@ defineProps({
 </script>
 
 <template>
-  <section class="top-0 z-0 p-12 bg-appBg " id="hero">
+  <section class="top-0 z-0 p-12" id="hero">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
       <div class="text-center">
         <h1 class="text-3xl font-extrabold text-white sm:text-4xl md:text-5xl">
@@ -39,6 +39,12 @@ defineProps({
           <RouterLink class=" bg-button hover:bg-buttonHover text-white text-md font-bold py-2 px-4 rounded transition-colors duration-300" to="/login">
             Zaloguj się
             <i class="pi pi-sign-in ml-2"></i>
+          </RouterLink>
+        </div>
+        <div v-else>
+          <RouterLink class=" bg-button hover:bg-buttonHover text-white text-md font-bold py-2 px-4 rounded transition-colors duration-300" to="/dashboard">
+            Wyloguj się
+            <i class="pi pi-sign-out ml-2"></i>
           </RouterLink>
         </div>
       </div>

@@ -2,13 +2,16 @@
 import RiseLoader from 'vue-spinner/src/RiseLoader.vue';
 import BackButton from '@/components/ui/TextButton.vue';
 import { ref, onMounted } from 'vue';
-import { useRoute, RouterLink, useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
-import api from '@/config/axiosConfig.js';
+import { usePost } from '@/composables/post/usePost';
+import PostModal from "@/components/post/PostModal.vue";
 
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
+const showConfirmDelete = ref(false);
+const showEditModal = ref(false);
 
 const postId = route.params.id;
 
@@ -17,32 +20,38 @@ const state = ref({
   isLoading: true,
 });
 
-const deletePost = async () => {
+const { deletePost, fetchPost } = usePost();
+const handleDelete = async () => {
   try {
-    const confirm = window.confirm('Czy na pewno chcesz usunąć ogłoszenie?');
-    if (confirm) {
-      await api.delete(`/post/${postId}`);
-      toast.success('Ogłoszenie usunięte pomyślnie');
+    if (await deletePost(postId)) {
       await router.push('/posts');
     }
+    showConfirmDelete.value = false;
   } catch (error) {
     console.error('Error deleting post', error);
     toast.error('Wystąpił błąd podczas usuwania ogłoszenia');
   }
 };
 
-onMounted(async () => {
+const fetchPostData = async () => {
   try {
-    const response = await api.get(`/post/${postId}`);
-    state.value.post = response.data;
+    state.value.post = await fetchPost(postId);
   } catch (error) {
     console.error('Error fetching post', error);
   } finally {
     state.value.isLoading = false;
   }
-});
-</script>
+};
 
+onMounted(() => {
+  fetchPostData();
+});
+
+const handlePostSaved = async () => {
+  showEditModal.value = false;
+  await fetchPostData();
+};
+</script>
 
 <template>
   <BackButton :to="`/posts`" text="Powrót do Ogłoszeń" icon="pi pi-arrow-circle-left"/>
@@ -73,18 +82,22 @@ onMounted(async () => {
             <!-- Manage -->
             <div class="bg-white p-6 rounded-lg shadow-md mt-6">
               <h3 class="text-xl font-bold mb-6">Zarządzaj</h3>
-              <RouterLink
-                  :to="`/posts/edit/${state.post.postId}`"
-                  class="bg-green-500 hover:bg-green-600 text-white text-center font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block"
-              >
-                Edytuj
-              </RouterLink>
-              <button
-                  @click="deletePost"
-                  class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block"
-              >
-                Usuń
-              </button>
+              <div class="flex flex-col gap-4">
+                <button
+                    @click="showEditModal = true"
+                    class="flex items-center justify-center gap-2 bg-editButton hover:bg-editButtonHover text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline"
+                >
+                  <i class="pi pi-pencil"></i>
+                  Edytuj
+                </button>
+                <button
+                    @click="showConfirmDelete = true"
+                    class="flex items-center justify-center gap-2 bg-deleteButton hover:bg-deleteButtonHover text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline"
+                >
+                  <i class="pi pi-trash"></i>
+                  Usuń
+                </button>
+              </div>
             </div>
           </aside>
         </div>
@@ -95,5 +108,33 @@ onMounted(async () => {
     </div>
   </div>
 
+  <!-- Delete Confirmation Modal -->
+  <div v-if="showConfirmDelete" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg max-w-sm w-full m-4">
+      <h3 class="text-lg font-medium mb-4">Potwierdź usunięcie</h3>
+      <p class="mb-6">Czy na pewno chcesz usunąć to ogłoszenie?</p>
+      <div class="flex justify-end gap-4">
+        <button
+            @click="showConfirmDelete = false"
+            class="px-4 py-2 text-sm text-gray-700 bg-cancelButton border border-gray-300 rounded-md hover:bg-cancelButtonHover"
+        >
+          Anuluj
+        </button>
+        <button
+            @click="handleDelete"
+            class="px-4 py-2 text-sm text-white bg-deleteButton rounded-md hover:bg-deleteButtonHover"
+        >
+          Usuń
+        </button>
+      </div>
+    </div>
+  </div>
 
+  <!-- Post Modal -->
+  <PostModal
+      :is-open="showEditModal"
+      :post-id="postId"
+      @close="showEditModal = false"
+      @saved="handlePostSaved"
+  />
 </template>

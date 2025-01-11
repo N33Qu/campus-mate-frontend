@@ -27,7 +27,7 @@ const siteInfo = [
   },
   {
     title: "Historia Strony",
-    description: "Stworzona w 2024 r w ramach pracy inzynierskiej na Politechnice Lubelskiej."
+    description: "Stworzona w 2024 - 2025 r w ramach pracy inzynierskiej na Politechnice Lubelskiej."
   }
 ]
 
@@ -35,7 +35,7 @@ const siteTitle = "O Naszej Stronie";
 </script>
 
 <template>
-  <div class="min-h-screen bg-appBg text-black py-12 px-4 sm:px-6 lg:px-8">
+  <div class="text-black py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto bg-elementLight rounded-lg shadow-lg overflow-hidden">
       <!-- Site Information Section -->
       <SimpleInfoListings :listings-title="siteTitle" :listings="siteInfo"/>

@@ -36,15 +36,23 @@ export const gradeSchema = yup.object().shape({
         .transform((value) => (value === '' ? null : value))
         .max(200, 'Komentarz nie może przekraczać 200 znaków'),
     userId: yup
-        .number()
+        .mixed()
         .when('$mode', {
             is: 'add',
             then: (schema) => schema
-                .required('ID użytkownika jest wymagane')
-                .typeError('ID użytkownika musi być liczbą')
-                .positive('ID użytkownika musi być dodatnie'),
+                .required('Wybierz ucznia')
+                .transform((value) => {
+                    if (value === '') return undefined;
+                    const num = Number(value);
+                    return isNaN(num) ? undefined : num;
+                })
+                .test('is-valid-id', 'Wybierz ucznia', value => value !== undefined && value > 0),
             otherwise: (schema) => schema
                 .nullable()
-                .transform((value) => (value === '' ? null : value))
+                .transform((value) => {
+                    if (value === '') return null;
+                    const num = Number(value);
+                    return isNaN(num) ? null : num;
+                })
         })
 });

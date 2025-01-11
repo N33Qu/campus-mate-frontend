@@ -1,7 +1,7 @@
 import { useForm } from 'vee-validate';
 import { ref } from 'vue';
 
-export function useEventForm(schema, { mode, currentEvent }) {
+export function useCalendarForm(schema, { mode, currentEvent }) {
     const isSubmitting = ref(false);
 
     const getInitialValues = () => {

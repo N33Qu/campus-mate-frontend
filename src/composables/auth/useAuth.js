@@ -43,7 +43,7 @@ export function useAuth() {
             toastStore.setToast("Wylogowano pomyślnie!", "success");
         } catch (err) {
             error.value = 'Błąd wylogowania';
-            toastStore.setToast('Błąd wylogowania: ' + err, "error");
+            toastStore.setToast('Błąd wylogowania ', "error");
             throw err;
         } finally {
             isLoading.value = false;

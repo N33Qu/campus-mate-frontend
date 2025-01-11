@@ -1,8 +1,12 @@
-import { useForm } from "vee-validate";
-import {ref, watch} from "vue";
+import {useForm} from "vee-validate";
+import {onMounted, ref, watch} from "vue";
+import {userService} from '@/services/userService.js';
 
 export function useGradeForm(schema, props) {
     const isSubmitting = ref(false);
+    const students = ref([]);
+    const isLoadingStudents = ref(false);
+    const studentError = ref('');
 
     const defaultValues = {
         subjectName: '',
@@ -15,13 +19,33 @@ export function useGradeForm(schema, props) {
         subjectName: props.currentGrade.subjectName,
         grade: props.currentGrade.grade,
         comment: props.currentGrade.comment,
+        userId: props.currentGrade.userId
     } : defaultValues;
 
-    const { handleSubmit, errors, defineField, resetForm} = useForm({
+    const { handleSubmit, errors, defineField, resetForm } = useForm({
         validationSchema: schema,
         initialValues,
         validationContext: {
             mode: props.mode
+        }
+    });
+
+    const fetchStudents = async () => {
+        try {
+            isLoadingStudents.value = true;
+            studentError.value = '';
+            students.value = await userService.getAllStudents();
+        } catch (error) {
+            console.error('Error fetching students:', error);
+            studentError.value = 'Nie udało się pobrać listy uczniów';
+        } finally {
+            isLoadingStudents.value = false;
+        }
+    };
+
+    onMounted(() => {
+        if (props.mode === 'add') {
+            fetchStudents();
         }
     });
 
@@ -41,9 +65,6 @@ export function useGradeForm(schema, props) {
             });
         }
     });
-
-
-
 
     const [subjectName, subjectNameProps] = defineField('subjectName');
     const [grade, gradeProps] = defineField('grade');
@@ -74,6 +95,10 @@ export function useGradeForm(schema, props) {
         userIdProps,
         errors,
         isSubmitting,
-        onSubmit
+        onSubmit,
+        students,
+        isLoadingStudents,
+        studentError,
+        fetchStudents
     };
 }

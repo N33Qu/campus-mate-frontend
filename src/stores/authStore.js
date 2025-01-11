@@ -24,10 +24,9 @@ export const useAuthStore = defineStore('auth', {
         },
 
         logout() {
-            Cookies.remove('jwt');
-            this.isLoggedIn = false;
-            this.role = null;
-            this.id = null;
+            this.isLoggedIn = this.isTokenValid;
+            this.role = this.userRole;
+            this.id = this.userId;
         },
     },
     getters: {

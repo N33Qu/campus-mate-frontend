@@ -1,11 +1,11 @@
 <script setup>
-import {RouterLink} from 'vue-router';
+import {onMounted, ref} from 'vue';
 import PostListing from './PostListing.vue';
-import {ref, defineProps, onMounted} from 'vue';
+import PostModal from './PostModal.vue';
 import RiseLoader from 'vue-spinner/src/RiseLoader.vue';
-import api from '@/config/axiosConfig.js';
+import {usePost} from '@/composables/post/usePost';
 
-defineProps({
+const props = defineProps({
   limit: {
     type: Number,
     default: 12,
@@ -14,75 +14,97 @@ defineProps({
     type: Boolean,
     default: false,
   },
+  showManageButton: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-const state = ref({
-  posts: [],
-  isLoading: true,
-  isAuthorized: false,
-  isEmpty: false
-});
+const {posts, isLoading, isAuthorized, isEmpty, fetchPosts} = usePost();
+const showPostModal = ref(false);
+const selectedPostId = ref(null);
 
-onMounted(async () => {
-  try {
-    const response = await api.get('/post');
+const openEditModal = (postId) => {
+  selectedPostId.value = postId;
+  showPostModal.value = true;
+};
 
-      state.value.posts = response.data;
-      state.value.isAuthorized = true
+const handlePostSaved = async () => {
+  await fetchPosts();
+};
 
+const handleAddPost = () => {
+  selectedPostId.value = null;
+  showPostModal.value = true;
+};
 
-  } catch (error) {
-    if( error.status === 401) {
-      state.value.isAuthorized = false
-    }
-    else if (error.status === 404) {
-      state.value.isEmpty = true
-      state.value.isAuthorized = true
-    }
-    else{
-      console.error('Error fetching posts', error);
-    }
-  } finally {
-    state.value.isLoading = false;
-  }
+const handlePostDeleted = async () => {
+  await fetchPosts();
+};
+
+onMounted(() => {
+  fetchPosts();
 });
 </script>
 
 <template>
-  <section class="bg-appBg py-12 h-screen">
+  <section class="py-12">
     <section class="bg-elementLight px-4 py-10">
       <div class="container-xl lg:container m-auto">
-        <h2 class="text-3xl font-bold text-headerText mb-6 text-center">
-          Przeglądaj Ogłoszenia
-        </h2>
-        <!-- Show loading spinner while loading is true -->
-        <div v-if="state.isLoading" class="text-center text-gray-500 py-6">
-          <RiseLoader color='element'/>
-        </div>
-        <div v-else-if="state.isEmpty === true" class="text-center text-gray-500 py-6">
-          <i class="pi pi-info-circle text-xl"></i>
-          <h4>Nie znaleziono postów</h4>
-        </div>
-        <div v-else-if="state.isAuthorized === false" class="text-center py-6">
-          <a class="text-gray-500 text-sm " href="/login">Zaloguj się zby zobaczyć ogłoszenia</a>
-        </div>
-        <!--Post listing-->
-        <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <PostListing
-              v-for="post in state.posts.slice(0, limit || state.posts.length)"
-              :key="post.id"
-              :post="post"
-          />
+        <div class="flex flex-row items-center justify-center md:justify-between">
+          <h2 class="text-3xl font-bold text-headerText mb-6 flex-1 text-center">
+            Przeglądaj Ogłoszenia
+          </h2>
+          <button v-if="showManageButton" @click="handleAddPost" class="ml-auto">
+            <i class="pi pi-plus text-xl mb-6 text-left"></i>
+          </button>
         </div>
       </div>
+        <!-- Loading State -->
+        <div v-if="isLoading" class="text-center text-gray-500 py-6">
+          <RiseLoader color="element"/>
+        </div>
+
+        <!-- Empty State -->
+        <div v-else-if="isEmpty" class="text-center text-gray-500 py-6">
+          <i class="pi pi-info-circle text-xl"></i>
+          <h4>Nie znaleziono ogłoszeń</h4>
+        </div>
+
+        <!-- Unauthorized State -->
+        <div v-else-if="!isAuthorized" class="text-center py-6">
+          <a class="text-gray-500 text-sm" href="/login">
+            Zaloguj się aby zobaczyć ogłoszenia
+          </a>
+        </div>
+        <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <PostListing
+              v-for="post in posts.slice(0, limit || posts.length)"
+              :key="post.postId"
+              :post="post"
+              :show-manage-button="showManageButton"
+              @edit="openEditModal"
+              @deleted="handlePostDeleted"
+          />
+        </div>
     </section>
 
+    <!-- "See All" button -->
     <section v-if="showButton" class="m-auto max-w-lg my-10 px-6">
       <RouterLink
           to="/posts"
           class="block bg-stone-950 text-white text-center py-4 px-6 rounded-lg hover:bg-stone-900"
-      >Zobacz Wszystkie Ogłoszenia
+      >
+        Zobacz Wszystkie Ogłoszenia
       </RouterLink>
     </section>
+
+    <!-- Post Modal -->
+    <PostModal
+        :is-open="showPostModal"
+        :post-id="selectedPostId"
+        @close="showPostModal = false"
+        @saved="handlePostSaved"
+    />
   </section>
 </template>

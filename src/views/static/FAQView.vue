@@ -40,7 +40,7 @@ const faqData = [
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#6a5d54] py-12 px-4 sm:px-6 lg:px-8">
+  <div class=" py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto bg-[#f4f2ef] rounded-lg shadow-lg p-8">
       <h1 class="text-4xl font-bold mb-10 text-center" style="color: #4e4945;">
         Frequently Asked Questions
@@ -57,12 +57,12 @@ const faqData = [
 
       <div class="mt-10 text-center">
         <p class="text-lg text-gray-700">
-          Wciąż masz pytania
+          Wciąż masz pytania.
           <a
               href="/contact"
-              class="text-[#888580] hover:text-[#3a3832] font-semibold"
+              class="text-textLink hover:text-textLinkHover font-semibold"
           >
-            Napisz do nas
+             Napisz do nas
           </a>
         </p>
       </div>

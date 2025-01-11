@@ -21,7 +21,7 @@ export function useAddressBook() {
         } catch (err) {
             if (err.response.status === 404) {
                 error.value = 'Brak wpisów w książce adresowej';
-                showNotification(error.value, 'error');
+                showNotification(error.value, 'info');
             } else {
                 error.value = 'Błąd pobierania wpisów';
                 console.error('Error fetching entries:', err);

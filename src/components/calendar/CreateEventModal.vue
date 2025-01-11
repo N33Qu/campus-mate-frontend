@@ -1,6 +1,6 @@
 <script setup>
 import { eventSchema } from '@/validation/eventSchema';
-import { useEventForm } from '@/composables/calendar/useEventForm.js';
+import { useCalendarForm } from '@/composables/calendar/useCalendarForm.js';
 
 const props = defineProps({
   isOpen: {
@@ -32,7 +32,7 @@ const {
   errors,
   isSubmitting,
   onSubmit
-} = useEventForm(eventSchema, {
+} = useCalendarForm(eventSchema, {
   mode: 'add',
   currentEvent: props.initialDates
 });
