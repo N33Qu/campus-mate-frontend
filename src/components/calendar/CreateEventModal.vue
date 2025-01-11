@@ -2,6 +2,20 @@
 import { eventSchema } from '@/validation/eventSchema';
 import { useEventForm } from '@/composables/calendar/useEventForm.js';
 
+const props = defineProps({
+  isOpen: {
+    type: Boolean,
+    required: true
+  },
+  initialDates: {
+    type: Object,
+    default: () => ({
+      startDate: new Date(),
+      endDate: new Date(Date.now() + 3600000)
+    })
+  }
+});
+
 const emit = defineEmits(['close', 'save']);
 
 const {
@@ -18,18 +32,22 @@ const {
   errors,
   isSubmitting,
   onSubmit
-} = useEventForm(eventSchema);
+} = useEventForm(eventSchema, {
+  mode: 'add',
+  currentEvent: props.initialDates
+});
 
 const handleSubmit = async () => {
   const result = await onSubmit();
   if (result) {
-    emit('save', {
+    const eventData = {
       eventName: result.title,
-      eventDescription: result.description,
+      eventDescription: result.description || '',
       startDate: result.start,
       endDate: result.end,
       teamId: result.teamId
-    });
+    };
+    emit('save', eventData);
   }
 };
 </script>
@@ -37,6 +55,7 @@ const handleSubmit = async () => {
 <template>
   <div class="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
     <h3 class="text-xl font-bold mb-4">Dodaj nowe wydarzenie</h3>
+
     <form @submit.prevent="handleSubmit" class="space-y-4">
       <div>
         <label class="block text-sm font-medium text-gray-700">Tytuł</label>
@@ -47,8 +66,8 @@ const handleSubmit = async () => {
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
             :class="{ 'border-red-500': errors.title }"
         />
-        <span v-if="errors.title" class="text-sm text-red-500">{{ errors.title }}</span>
         <span class="text-sm text-gray-500">{{ title?.length || 0 }}/50</span>
+        <span v-if="errors.title" class="text-sm text-red-500">{{ errors.title }}</span>
       </div>
 
       <div>
@@ -60,8 +79,8 @@ const handleSubmit = async () => {
             :class="{ 'border-red-500': errors.description }"
             rows="3"
         ></textarea>
-        <span v-if="errors.description" class="text-sm text-red-500">{{ errors.description }}</span>
         <span class="text-sm text-gray-500">{{ description?.length || 0 }}/200</span>
+        <span v-if="errors.description" class="text-sm text-red-500">{{ errors.description }}</span>
       </div>
 
       <div>

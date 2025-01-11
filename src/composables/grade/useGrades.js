@@ -66,18 +66,30 @@ export function useGrades() {
     };
 
     const openEditGradeModal = async (grade) => {
-        await fetchGradesData();
-        const currentGradeData = grades.value.find(g => g.gradeId === grade.gradeId);
-        console.log(currentGradeData)
-        if (currentGradeData) {
-            currentGrade.value = { ...currentGradeData };
+        try {
+            await fetchGradesData();
+            const currentGradeData = grades.value.find(g => g.gradeId === grade.gradeId);
+
+            if (!currentGradeData) {
+                showNotification('Nie znaleziono oceny do edycji', 'error');
+                return;
+            }
+
+            currentGrade.value = {
+                ...currentGradeData,
+                grade: currentGradeData.grade
+            };
             modalMode.value = 'edit';
             modalOpen.value = true;
+        } catch (error) {
+            showNotification('Błąd podczas ładowania oceny', 'error');
+            console.error('Error loading grade for edit:', error);
         }
-    }
+    };
 
     const closeModal = () => {
         modalOpen.value = false;
+        modalMode.value = 'add';
         currentGrade.value = null;
     };
 

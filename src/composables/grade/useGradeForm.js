@@ -1,5 +1,5 @@
 import { useForm } from "vee-validate";
-import { ref } from "vue";
+import {ref, watch} from "vue";
 
 export function useGradeForm(schema, props) {
     const isSubmitting = ref(false);
@@ -17,13 +17,33 @@ export function useGradeForm(schema, props) {
         comment: props.currentGrade.comment,
     } : defaultValues;
 
-    const { handleSubmit, errors, defineField } = useForm({
+    const { handleSubmit, errors, defineField, resetForm} = useForm({
         validationSchema: schema,
         initialValues,
         validationContext: {
             mode: props.mode
         }
     });
+
+    watch(props, () => {
+        if (props.mode === 'edit' && props.currentGrade) {
+            resetForm({
+                values: {
+                    subjectName: props.currentGrade.subjectName,
+                    grade: props.currentGrade.grade,
+                    comment: props.currentGrade.comment,
+                    userId: props.currentGrade.userId
+                }
+            });
+        } else {
+            resetForm({
+                values: defaultValues
+            });
+        }
+    });
+
+
+
 
     const [subjectName, subjectNameProps] = defineField('subjectName');
     const [grade, gradeProps] = defineField('grade');

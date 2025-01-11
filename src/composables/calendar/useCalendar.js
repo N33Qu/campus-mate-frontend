@@ -87,6 +87,7 @@ export function useCalendar() {
             startDate: clickInfo.event.start,
             endDate: clickInfo.event.end,
         }
+        console.log('Selected event:', selectedEvent.value);
         isEventModalOpen.value = true
     }
 
@@ -115,6 +116,7 @@ export function useCalendar() {
         error.value = null
 
         try {
+            console.log('Deleting event with ID:', events);
             await calendarService.deleteEvent(eventId)
 
             events.value = events.value.filter(event => event.eventId !== eventId)
@@ -147,7 +149,7 @@ export function useCalendar() {
             eventName: resizeInfo.event.title,
             eventDescription: resizeInfo.event.extendedProps.description,
             startDate: resizeInfo.event.start,
-            endDate: resizeInfo.event.end
+            endDate: resizeInfo.event.end,
         }
 
         await updateEvent(updatedEvent)

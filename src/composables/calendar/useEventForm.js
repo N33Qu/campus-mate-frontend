@@ -1,21 +1,36 @@
-import { useForm } from "vee-validate";
-import { ref } from "vue";
+import { useForm } from 'vee-validate';
+import { ref } from 'vue';
 
-export function useEventForm(schema, initialEvent = null) {
+export function useEventForm(schema, { mode, currentEvent }) {
     const isSubmitting = ref(false);
 
-    const defaultValues = {
-        title: '',
-        description: '',
-        start: new Date().toISOString().slice(0, 16),
-        end: new Date().toISOString().slice(0, 16),
-        teamId: ''
+    const getInitialValues = () => {
+        if (mode === 'edit' && currentEvent) {
+            return {
+                title: currentEvent.eventName || '',
+                description: currentEvent.eventDescription || '',
+                start: new Date(currentEvent.startDate).toISOString().slice(0, 16),
+                end: new Date(currentEvent.endDate).toISOString().slice(0, 16),
+            };
+        }
+
+        return {
+            title: '',
+            description: '',
+            start: new Date().toISOString().slice(0, 16),
+            end: new Date(Date.now() + 3600000).toISOString().slice(0, 16),
+        };
     };
 
-
-    const { handleSubmit, errors, defineField } = useForm({
+    const {
+        errors,
+        defineField,
+        values,
+        validate,
+        resetForm
+    } = useForm({
         validationSchema: schema,
-        initialValues: initialEvent || defaultValues
+        initialValues: getInitialValues()
     });
 
     const [title, titleProps] = defineField('title');
@@ -24,19 +39,35 @@ export function useEventForm(schema, initialEvent = null) {
     const [end, endProps] = defineField('end');
     const [teamId, teamIdProps] = defineField('teamId');
 
-    const onSubmit = handleSubmit(async (values) => {
+    const onSubmit = async () => {
         isSubmitting.value = true;
+
         try {
-            return {
-                ...values,
-                start: new Date(values.start),
-                end: new Date(values.end),
-                teamId: Number(values.teamId)
+            const validationResult = await validate();
+            console.log('Validation result:', validationResult);
+
+            if (!validationResult.valid) {
+                console.log('Validation failed:', errors.value);
+                return null;
+            }
+
+            const formValues = {
+                title: values.title,
+                description: values.description || '',
+                start: values.start,
+                end: values.end,
+                teamId: values.teamId ? parseInt(values.teamId) : undefined
             };
+
+            console.log('Form values before return:', formValues);
+            return formValues;
+        } catch (error) {
+            console.error('Validation error:', error);
+            return null;
         } finally {
             isSubmitting.value = false;
         }
-    });
+    };
 
     return {
         title,
@@ -51,6 +82,8 @@ export function useEventForm(schema, initialEvent = null) {
         teamIdProps,
         errors,
         isSubmitting,
-        onSubmit
+        onSubmit,
+        values,
+        resetForm
     };
 }

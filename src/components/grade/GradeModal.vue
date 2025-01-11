@@ -22,12 +22,6 @@ const props = defineProps({
 const emit = defineEmits(['close', 'save-grade'])
 
 
-const initialData = {
-  subjectName: props.currentGrade?.subjectName || '',
-  grade: props.currentGrade?.grade || '',
-  comment: props.currentGrade?.comment || ''
-}
-
 const {
   subjectName,
   subjectNameProps,

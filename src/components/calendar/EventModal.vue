@@ -1,7 +1,7 @@
 <script setup>
 import ViewEventModal from './ViewEventModal.vue'
 import EditEventModal from './EditEventModal.vue'
-import CreateEventModal from "@/components/calendar/CreateEventModal.vue";
+import CreateEventModal from './CreateEventModal.vue'
 
 const props = defineProps({
   selectedEvent: {
@@ -25,16 +25,18 @@ const handleClose = () => {
   emit('close')
 }
 
-const handleEdit = (updatedEvent) => {
-  emit('update', updatedEvent)
+const handleSave = (eventData) => {
+  if (props.mode === 'edit') {
+    emit('update', eventData)
+  } else if (props.mode === 'create') {
+    emit('create', eventData)
+  }
+  handleClose()
 }
 
-const handleDelete = () => {
-  emit('delete', props.selectedEvent.eventId)
-}
-
-const handleCreate = (eventData) => {
-  emit('create', eventData)
+const handleDelete = (eventId) => {
+  emit('delete', eventId)
+  handleClose()
 }
 </script>
 
@@ -49,14 +51,17 @@ const handleCreate = (eventData) => {
     />
     <EditEventModal
         v-else-if="mode === 'edit'"
-        :event="selectedEvent"
+        :is-open="isOpen"
+        :current-event="selectedEvent"
         @close="handleClose"
-        @save="handleEdit"
+        @save="handleSave"
     />
     <CreateEventModal
         v-else
+        :is-open="isOpen"
+        :initial-dates="selectedEvent"
         @close="handleClose"
-        @save="handleCreate"
+        @save="handleSave"
     />
   </div>
 </template>

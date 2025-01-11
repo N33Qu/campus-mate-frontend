@@ -24,19 +24,19 @@ const emit = defineEmits(['close', 'edit', 'delete'])
           @click="$emit('edit')"
           class="bg-editButton text-white px-4 py-2 rounded hover:bg-editButtonHover transition-colors"
       >
-        Edit
+        Edytuj
       </button>
       <button
           @click="$emit('delete')"
           class="bg-deleteButton text-white px-4 py-2 rounded hover:bg-deleteButtonHover transition-colors"
       >
-        Delete
+       Usuń
       </button>
       <button
           @click="$emit('close')"
           class="bg-cancelButton text-white px-4 py-2 rounded hover:bg-cancelButtonHover transition-colors"
       >
-        Close
+        Zamknij
       </button>
     </div>
   </div>

@@ -1,7 +1,7 @@
 <script setup>
 import FullCalendar from '@fullcalendar/vue3'
-import { ref } from 'vue'
-import { useCalendar } from '@/composables/calendar/useCalendar.js'
+import {ref} from 'vue'
+import {useCalendar} from '@/composables/calendar/useCalendar.js'
 import RiseLoader from 'vue-spinner/src/RiseLoader.vue'
 import EventModal from '@/components/calendar/EventModal.vue'
 
@@ -27,29 +27,25 @@ const handleEditMode = () => {
 const handleUpdateEvent = async (updatedEvent) => {
   await updateEvent(updatedEvent)
   modalMode.value = 'view'
+  await refreshEvents()
+}
+
+const handleDeleteEvent = async () => {
+  await deleteEvent(selectedEvent.value.eventId)
+  modalMode.value = 'view'
   closeEventModal()
   await refreshEvents()
 }
 
-const handleDeleteEvent = async (eventId) => {
-  if (confirm('Are you sure you want to delete this event?')) {
-   await deleteEvent(eventId)
-    closeEventModal()
-    await refreshEvents()
-  }
+const handleCreateEvent = async (eventData) => {
+  await createEvent(eventData)
+  modalMode.value = 'view'
+  await refreshEvents()
 }
 
 const handleCloseModal = () => {
   modalMode.value = 'view'
   closeEventModal()
-
-}
-
-const handleCreateEvent = async (eventData) => {
-    await createEvent(eventData)
-    modalMode.value = 'view'
-    closeEventModal()
-    await refreshEvents()
 }
 </script>
 
@@ -62,12 +58,12 @@ const handleCreateEvent = async (eventData) => {
         </div>
         <template v-else>
           <div v-if="isLoading" class="flex justify-center py-8">
-            <RiseLoader color="#8b5cf6" />
+            <RiseLoader color="#8b5cf6"/>
           </div>
 
           <div v-else>
             <h2 class="text-2xl font-bold mb-6 text-gray-800">Mój kalendarz</h2>
-            <FullCalendar :options="calendarOptions"  />
+            <FullCalendar :options="calendarOptions"/>
           </div>
 
           <EventModal
