@@ -61,8 +61,8 @@ const router = createRouter({
             component: () => import('@/views/team/TeamsView.vue'),
         },
         {
-            path: '/teams/add',
-            name: 'add-teams',
+            path: '/teams/create-team',
+            name: 'create-team',
             component: () => import('@/views/team/AddTeamsView.vue'),
         },
         {
@@ -78,7 +78,7 @@ const router = createRouter({
         {
             path: '/teams/add-users',
             name: 'add-users-to-team',
-            component: () => import('@/views/team/AddUsersToTeamView.vue'),
+            component: () => import('@/components/team/AddUsersToTeamView.vue'),
         },
         //Users Routes
         {

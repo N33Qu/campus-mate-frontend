@@ -7,11 +7,18 @@ import { useRoute, RouterLink, useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 import api from '@/config/axiosConfig.js';
 
+
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
 
 const teamId = route.params.id;
+const showAddUsersModal = ref(false);
+
+const handleUsersAdded = () => {
+  fetchTeamData();
+};
+
 
 const state = ref({
   team: {
@@ -43,15 +50,20 @@ const removeUser = async (userId) => {
   try {
     state.value.isLoading = true; 
     
-    await api.delete(`/team/${teamId}/users/${userId}`); 
+    await api.delete(`/team/${teamId}/removeUser/${userId}`); 
 
     const usersResponse = await api.get(`/teams/${teamId}/users`);
     state.value.users = usersResponse.data;
     
     toast.success('Użytkownik został usunięty z zespołu');
   } catch (error) {
-    console.error('Error removing user:', error);
-    toast.error('Nie udało się usunąć użytkownika z zespołu');
+    if(error.response.status === 400) {
+      toast.error('Nie mozna usunąć twórcy zespołu');
+    }
+    else{
+      console.error('Error removing user:', error);
+      toast.error('Nie udało się usunąć użytkownika z zespołu');
+    }
   } finally {
     state.value.isLoading = false;
   }
@@ -84,7 +96,13 @@ onMounted(fetchTeamData);
   <div class="container mx-auto px-6">
     <div class="flex gap-4 mb-6">
       <BackButton :to="`/teams`" text="Powrót do Zespołów" icon="pi pi-arrow-circle-left" />
-      <AddButton :to="`/teams/add-users`" text="Dodaj użytkowników" icon="pi pi-user-plus" />
+      <TeamAddUsersModal
+          :teamId="teamId"
+          :isOpen="showAddUsersModal"
+          @close="showAddUsersModal = false"
+          @usersAdded="handleUsersAdded"
+        />
+      <AddButton @click="showAddUsersModal = true" text="Dodaj użytkowników" icon="pi pi-user-plus" />
     </div>
 
     <div v-if="state.isLoading" class="text-center text-gray-500 py-6">
