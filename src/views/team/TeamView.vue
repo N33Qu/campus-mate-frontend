@@ -7,18 +7,12 @@ import { useRoute, RouterLink, useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 import api from '@/config/axiosConfig.js';
 
-
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
 
 const teamId = route.params.id;
 const showAddUsersModal = ref(false);
-
-const handleUsersAdded = () => {
-  fetchTeamData();
-};
-
 
 const state = ref({
   team: {
@@ -30,6 +24,10 @@ const state = ref({
   posts: [],
   isLoading: true,
 });
+
+const handleUsersAdded = async () => {
+  await fetchTeamData();
+};
 
 const deleteTeam = async () => {
   if (!confirm('Czy na pewno chcesz usunąć ten zespół?')) return;
@@ -48,19 +46,16 @@ const removeUser = async (userId) => {
   if (!confirm('Czy na pewno chcesz usunąć tego użytkownika z zespołu?')) return;
 
   try {
-    state.value.isLoading = true; 
+    state.value.isLoading = true;
     
-    await api.delete(`/team/${teamId}/removeUser/${userId}`); 
-
-    const usersResponse = await api.get(`/teams/${teamId}/users`);
-    state.value.users = usersResponse.data;
+    await api.delete(`/team/${teamId}/removeUser/${userId}`);
+    await fetchTeamData(); // Odświeżamy wszystkie dane po usunięciu użytkownika
     
     toast.success('Użytkownik został usunięty z zespołu');
   } catch (error) {
-    if(error.response.status === 400) {
-      toast.error('Nie mozna usunąć twórcy zespołu');
-    }
-    else{
+    if (error.response?.status === 400) {
+      toast.error('Nie można usunąć twórcy zespołu');
+    } else {
       console.error('Error removing user:', error);
       toast.error('Nie udało się usunąć użytkownika z zespołu');
     }
@@ -71,19 +66,26 @@ const removeUser = async (userId) => {
 
 const fetchTeamData = async () => {
   try {
+    state.value.isLoading = true;
+    
     const [teamResponse, usersResponse, postsResponse] = await Promise.all([
       api.get(`/team/${teamId}`),
-      api.get(`/team/${teamId}/users`),
+      api.get(`/team/${teamId}/users`), // Upewnij się, że ten endpoint zwraca poprawne dane
       api.get(`/team/${teamId}/posts`)
     ]);
 
     state.value.team = teamResponse.data;
-    state.value.users = usersResponse.data;
-    state.value.posts = postsResponse.data;
+    state.value.users = Array.isArray(usersResponse.data) ? usersResponse.data : [];
+    state.value.posts = Array.isArray(postsResponse.data) ? postsResponse.data : [];
+
+    // Debugowanie
+    console.log('Fetched users:', state.value.users);
   } catch (error) {
     console.error('Error fetching team data:', error);
     toast.error('Błąd pobierania danych zespołu');
-    router.push('/teams');
+    if (!state.value.team.teamId) {
+      router.push('/teams');
+    }
   } finally {
     state.value.isLoading = false;
   }
@@ -97,11 +99,12 @@ onMounted(fetchTeamData);
     <div class="flex gap-4 mb-6">
       <BackButton :to="`/teams`" text="Powrót do Zespołów" icon="pi pi-arrow-circle-left" />
       <TeamAddUsersModal
-          :teamId="teamId"
-          :isOpen="showAddUsersModal"
-          @close="showAddUsersModal = false"
-          @usersAdded="handleUsersAdded"
-        />
+        v-if="showAddUsersModal"
+        :teamId="teamId"
+        :isOpen="showAddUsersModal"
+        @close="showAddUsersModal = false"
+        @usersAdded="handleUsersAdded"
+      />
       <AddButton @click="showAddUsersModal = true" text="Dodaj użytkowników" icon="pi pi-user-plus" />
     </div>
 
@@ -135,18 +138,19 @@ onMounted(fetchTeamData);
         <div class="space-y-6">
           <!-- Users List -->
           <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-xl font-bold mb-4">Członkowie zespołu</h2>
+            <h2 class="text-xl font-bold mb-4">Członkowie zespołu ({{ state.users.length }})</h2>
             <div class="max-h-60 overflow-y-auto pr-2">
-              <ul v-if="state.users.length" class="space-y-2">
+              <ul v-if="state.users.length > 0" class="space-y-2">
                 <li v-for="user in state.users" 
-                    :key="user.userId" 
+                    :key="user.id || user.userId" 
                     class="flex justify-between items-center p-2 hover:bg-gray-50 rounded border">
                   <span>{{ user.firstName }} {{ user.lastName }}</span>
                   <button 
-                    @click="removeUser(user.userId)"
+                    @click="removeUser(user.id || user.userId)"
                     class="text-red-500 hover:text-red-700 px-3 py-1 rounded"
                     :disabled="state.isLoading"
                   >
+                    <i class="pi pi-trash mr-1"></i>
                     {{ state.isLoading ? 'Usuwanie...' : 'Usuń' }}
                   </button>
                 </li>

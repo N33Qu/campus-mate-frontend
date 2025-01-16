@@ -25,3 +25,4 @@ onMounted(() => {
   <HomeCards/>
   <PostListings :limit="3" :showButton="true"/>
 </template>
+

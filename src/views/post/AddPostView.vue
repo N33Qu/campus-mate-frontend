@@ -10,11 +10,9 @@ import api from '@/config/axiosConfig.js';
 const router = useRouter();
 const toast = useToast();
 
-// Teams multiselect
 const teams = ref([]);
 const selectedTeams = ref([]);
 
-// Fetch teams on component mount
 onMounted(async () => {
   try {
     const response = await api.get('/teams');
@@ -25,7 +23,6 @@ onMounted(async () => {
   }
 });
 
-// Validation schema
 const validationSchema = yup.object({
   postTitle: yup.string()
       .required('Tytuł jest wymagany')
@@ -38,20 +35,17 @@ const validationSchema = yup.object({
       .min(1, 'Wybierz przynajmniej jeden zespół')
 });
 
-// Use Vee-Validate
 const { handleSubmit, errors, defineField } = useForm({
   validationSchema
 });
 
-// Define form fields with Vee-Validate
 const [postTitle, postTitleProps] = defineField('postTitle');
 const [postContent, postContentProps] = defineField('postContent');
 const [formTeamsProps] = defineField('teams');
 
-// Loading state
 const isSaving = ref(false);
 
-// Handle form submission
+
 const onSubmit = handleSubmit(async (values) => {
   isSaving.value = true;
   try {
@@ -164,3 +158,4 @@ const onSubmit = handleSubmit(async (values) => {
     </div>
   </div>
 </template>
+
