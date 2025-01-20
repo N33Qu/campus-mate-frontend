@@ -15,18 +15,21 @@ export const useAuthStore = defineStore('auth', {
         isLoggedIn: false,
         role: null,
         id: null,
+        isFirstPasswordChanged: false
     }),
     actions: {
         login() {
             this.isLoggedIn = this.isTokenValid;
             this.role = this.userRole;
             this.id = this.userId;
+            this.isFirstPasswordChanged = this.getIsFirstPasswordChanged
         },
 
         logout() {
             this.isLoggedIn = this.isTokenValid;
             this.role = this.userRole;
             this.id = this.userId;
+            this.isFirstPasswordChanged = this.getIsFirstPasswordChanged
         },
     },
     getters: {
@@ -79,6 +82,17 @@ export const useAuthStore = defineStore('auth', {
             } catch (error) {
                 console.error('Error retrieving user ID from JWT:', error);
                 return null;
+            }
+        },
+
+        getIsFirstPasswordChanged() {
+            try {
+                const token = Cookies.get('jwt');
+                const decodedToken = jwtDecode(token);
+                return decodedToken.isFirstPasswordChanged  || false;
+            } catch (error) {
+                console.error('Error retrieving isFirstPasswordChanged from JWT:', error);
+                return false;
             }
         },
     },

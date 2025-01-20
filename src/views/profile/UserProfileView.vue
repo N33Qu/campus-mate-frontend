@@ -1,21 +1,24 @@
 <script setup>
 import {ref, onMounted, computed} from 'vue';
 import {useUserProfile} from '@/composables/user/useUserProfile.js';
-import EditProfileModal from '@/components/user/EditProfileModal.vue';
-import ChangePasswordModal from '@/components/user/ChangePasswordModal.vue';
+import EditProfileModal from '@/components/profile/EditProfileModal.vue';
+import ChangePasswordModal from '@/components/profile/ChangePasswordModal.vue';
 import {useRoute} from 'vue-router';
 import {useAuthStore} from "@/stores/authStore.js";
 import {useToastStore} from "@/stores/toastStore.js";
 import router from "@/router/router.js";
 import {authService} from "@/services/authService.js";
+import {useToast} from "vue-toastification";
 
 const route = useRoute();
 const authStore = useAuthStore();
 const toastStore = useToastStore();
+const toast = useToast();
 
 const userId = route.params.id;
 const showEditModal = ref(false);
 const showPasswordModal = ref(false);
+const isFirstPasswordChanged = computed(() => authStore.getIsFirstPasswordChanged);
 
 const {
   profile,
@@ -58,6 +61,10 @@ const initialValues = computed(() => ({
 }))
 
 onMounted(() => {
+  if (!isFirstPasswordChanged.value) {
+    showPasswordModal.value = true;
+    toast.info('Musisz zmienić swoje hasło po pierwszym logowaniu.');
+  }
   fetchProfile();
 });
 </script>
@@ -100,6 +107,15 @@ onMounted(() => {
             {{ profile.lastName }}
           </div>
         </div>
+
+        <div v-show= "profile.group">
+          <label class="block text-sm font-medium text-gray-700">Grupa</label>
+          <div
+              class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm text-gray-600">
+            {{ profile.group }}
+          </div>
+        </div>
+
 
         <!-- Action Buttons -->
         <div class="flex space-x-4">

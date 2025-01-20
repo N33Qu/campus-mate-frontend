@@ -1,5 +1,10 @@
-import {createRouter, createWebHistory} from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "@/views/HomeView.vue";
+import { homeTypeGuard } from "@/guards/homeTypeGuard.js";
+import { useAuthStore } from "@/stores/authStore.js";
+
+// Trasy publiczne
+const publicRoutes = ['login', 'about', 'contact', 'faq', 'not-found', 'home'];
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,80 +13,76 @@ const router = createRouter({
             path: '/',
             name: 'home',
             component: HomeView,
+            meta: { requiresAuth: false },
+            beforeEnter: homeTypeGuard,
         },
-        //AddressBook Routes
+        // AddressBook Routes
         {
             path: '/addressbook',
             name: 'addressbook',
             component: () => import('@/views/addressBook/AddressBookView.vue'),
         },
-        //Calendar Routes
+        // Calendar Routes
         {
             path: '/calendar',
             name: 'calendar',
             component: () => import('@/views/calendar/CalendarView.vue'),
+            meta: { roles: ['ROLE_STUDENT', 'ROLE_LECTURER'] },
         },
-        //Grade Routes
+        // Grade Routes
         {
             path: '/grades',
             name: 'grades',
             component: () => import('@/views/grade/GradesView.vue'),
+            meta: { roles: ['ROLE_STUDENT', 'ROLE_LECTURER'] },
         },
-        //Posts Routes
+        // Posts Routes
         {
             path: '/posts',
             name: 'posts',
             component: () => import('@/views/post/PostsView.vue'),
+            meta: { roles: ['ROLE_STUDENT', 'ROLE_LECTURER'] },
         },
         {
             path: '/posts/:id',
             name: 'post',
             component: () => import('@/views/post/PostView.vue'),
+            meta: { roles: ['ROLE_STUDENT', 'ROLE_LECTURER'] },
         },
-        //Schedule Routes
+        // Schedule Routes
         {
             path: '/schedule',
             name: 'schedule',
             component: () => import('@/views/schedule/ScheduleView.vue'),
+            meta: {  roles: ['ROLE_STUDENT', 'ROLE_LECTURER'] },
         },
-        //Teams Routes
+        // Teams Routes
         {
             path: '/teams',
             name: 'teams',
             component: () => import('@/views/team/TeamsView.vue'),
-        },
-        {
-            path: '/teams/create-team',
-            name: 'create-team',
-            component: () => import('@/views/team/AddTeamsView.vue'),
+            meta: { roles: ['ROLE_STUDENT', 'ROLE_LECTURER'] },
         },
         {
             path: '/teams/:id',
             name: 'team',
             component: () => import('@/views/team/TeamView.vue'),
+            meta: { roles: ['ROLE_STUDENT', 'ROLE_LECTURER'] },
         },
+        // Users Routes
+        // {
+        //     path: '/users',
+        //     name: 'users',
+        //     component: () => import('@/views/user/UsersView.vue'),
+        //     meta: { roles: ['ROLE_ADMIN'] },
+        // },
+        // User Profile Route
         {
-            path: '/teams/edit/:id',
-            name: 'edit-teams',
-            component: () => import('@/views/team/EditTeamsView.vue'),
+            path: '/profile/:id',
+            name: 'profile',
+            component: () => import('@/views/profile/UserProfileView.vue'),
         },
-        {
-            path: '/teams/add-users',
-            name: 'add-users-to-team',
-            component: () => import('@/components/team/AddUsersToTeamView.vue'),
-        },
-        //Users Routes
-        {
-            path: '/users',
-            name: 'users',
-            component: () => import('@/views/user/UsersView.vue'),
-        },
-        {
-            path: '/users/:id',
-            name: 'user',
-            component: () => import('@/views/user/UserProfileView.vue'),
-        },
-        //Auth Routes
+        // Auth Routes
         {
             path: '/login',
             name: 'login',
@@ -92,7 +93,14 @@ const router = createRouter({
             name: 'logout',
             component: () => import('@/views/auth/LogoutView.vue'),
         },
-        //Static: About, Contact, FAQ
+        // Admin Panel Routes
+        {
+            path: '/adminPanel',
+            name: 'adminPanel',
+            component: () => import('@/views/user/UsersManagementView.vue'),
+            meta: { roles: ['ROLE_ADMIN'] },
+        },
+        // Static: About, Contact, FAQ
         {
             path: '/about',
             name: 'about',
@@ -108,15 +116,44 @@ const router = createRouter({
             name: 'faq',
             component: () => import('@/views/static/FAQView.vue'),
         },
-        //404
+        // 404
         {
             path: '/:catchAll(.*)',
             name: 'not-found',
             component: () => import('@/views/static/NotFoundView.vue'),
         },
-
     ]
+});
 
+
+router.beforeEach(async (to) => {
+    const authStore = useAuthStore();
+
+
+    if (publicRoutes.includes(to.name)) {
+        if (to.name === 'login' && authStore.isTokenValid) {
+            return { name: 'home' };
+        }
+        return true;
+    }
+
+
+    if (!authStore.isTokenValid) {
+        return {
+            name: 'login',
+            query: { redirect: to.fullPath }
+        };
+    }
+
+
+    if (to.meta.roles) {
+        const userRole = authStore.userRole;
+        if (!to.meta.roles.includes(userRole)) {
+            return { name: 'home' };
+        }
+    }
+
+    return true;
 });
 
 export default router;

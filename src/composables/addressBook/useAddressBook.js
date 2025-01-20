@@ -1,6 +1,7 @@
 import {ref, watchSyncEffect} from 'vue';
 import { addressBookService } from '@/services/addressBookService.js';
 import {useShowNotification} from "@/composables/useShowNotification.js";
+import { useAddressBookPermissions } from '@/composables/addressBook/useAddressBookPermissions.js';
 
 export function useAddressBook() {
     const entries = ref([]);
@@ -11,6 +12,7 @@ export function useAddressBook() {
     const isEditModalOpen = ref(false);
     const isViewModalOpen = ref(false);
     const {showNotification} = useShowNotification()
+    const { canEditEntry, canDeleteEntry } = useAddressBookPermissions();
 
     const fetchEntries = async () => {
         isLoading.value = true;
@@ -52,20 +54,28 @@ export function useAddressBook() {
     };
 
     const deleteEntry = async (entryId) => {
+        if (!canDeleteEntry()) {
+            showNotification('Brak uprawnień do usunięcia wpisu', 'error');
+            return;
+        }
+
         try {
             await addressBookService.deleteEntry(entryId);
             await fetchEntries();
             showNotification('Wpis został usunięty')
             setInterval(2000)
             location.reload()
-
         } catch (err) {
-            error.value = 'Błąd usuwania wpisu';
+            error.value = 'Błąd usuwania wpisu';
             showNotification(error.value, 'error');
         }
     };
 
     const editEntry = (entry) => {
+        if (!canEditEntry(entry.userId)) {
+            showNotification('Brak uprawnień do edycji wpisu', 'error');
+            return;
+        }
         selectedEntry.value = entry;
         isEditModalOpen.value = true;
     };

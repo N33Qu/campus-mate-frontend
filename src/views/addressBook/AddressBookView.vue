@@ -6,6 +6,10 @@ import EditEntryModal from '@/components/addressBook/EditEntryModal.vue';
 import { useAddressBook } from '@/composables/addressBook/useAddressBook.js';
 import RiseLoader from "vue-spinner/src/RiseLoader.vue";
 import ViewEntryModal from "@/components/addressBook/ViewEntryModal.vue";
+import {useAddressBookPermissions} from "@/composables/addressBook/useAddressBookPermissions.js";
+import {useRouter} from "vue-router"
+
+const router = useRouter();
 
 const {
   entries,
@@ -23,6 +27,13 @@ const {
   viewEntry,
 } = useAddressBook();
 
+const { canViewEntries } = useAddressBookPermissions();
+
+
+if (!canViewEntries()) {
+  router.push('/');
+  console.error('Brak uprawnień do wyświetlania książki adresowej');
+}
 onMounted(fetchEntries);
 
 watch(searchQuery, () => {

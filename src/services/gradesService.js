@@ -4,6 +4,9 @@ import api from '@/config/axiosConfig.js'
 export async function fetchGrades(){
     try {
         const response = await api.get("/grade");
+        if (!response) {
+            return [];
+        }
         return response.data.map((gradeDto) => ({
             gradeId: gradeDto.gradeId,
             subjectName: gradeDto.subjectName,

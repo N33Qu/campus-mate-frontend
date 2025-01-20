@@ -1,6 +1,7 @@
 <script setup>
 import { gradeSchema } from '@/validation/gradeSchema'
 import { useGradeForm } from '@/composables/grade/useGradeForm.js'
+import {watch} from "vue";
 
 const props = defineProps({
   isOpen: {
@@ -123,8 +124,8 @@ const handleSubmit = async () => {
               class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               :class="{ 'border-red-500': errors.userId }"
           >
-            <option value="">---</option>
-            <option v-for="student in students" :key="student.id" :value="student.id">
+            <option value=""></option>
+            <option v-for="student in students" :key="student.userId" :value="student.userId">
               {{ student.firstName }} {{ student.lastName }}
             </option>
           </select>

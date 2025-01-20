@@ -1,16 +1,21 @@
 import { ref, computed } from 'vue';
 import { useForm } from 'vee-validate';
 import * as yup from 'yup';
-import { useTeam } from '@/composables/team/useTeam';
+import { useTeams } from '@/composables/team/useTeams.js';
 import { usePost } from '@/composables/post/usePost';
+import {useAuthStore} from "@/stores/authStore.js";
+import {teamService} from "@/services/teamService.js";
 
 export const usePostForm = (props, emit) => {
-    const { teams, fetchTeams } = useTeam();
+    const { teams, fetchTeams, fetchUserTeams } = useTeams();
     const { post, fetchPost, createPost, updatePost } = usePost();
 
     const isEditing = computed(() => !!props.postId);
     const modalTitle = computed(() => isEditing.value ? 'Edytuj Ogłoszenie' : 'Dodaj Ogłoszenie');
     const isSaving = ref(false);
+    const authStore = useAuthStore()
+    const userRole = computed(() => authStore.userRole);
+    const userId = computed(() => authStore.userId);
 
     const initialValues = computed(() => ({
         postTitle: '',
@@ -51,7 +56,8 @@ export const usePostForm = (props, emit) => {
 
     const loadData = async () => {
         if (!isEditing.value) {
-            await fetchTeams();
+            if (userRole.value === 'ROLE_LECTURER') await fetchUserTeams(userId.value);
+            else await fetchTeams();
         } else if (props.postId) {
             const postData = await fetchPost(props.postId);
             if (postData) {
@@ -74,6 +80,7 @@ export const usePostForm = (props, emit) => {
                 };
                 await updatePost(props.postId, updateData);
             } else {
+                console.log('Selected teams:', values);
                 await createPost({
                     postTitle: values.postTitle,
                     postContent: values.postContent,

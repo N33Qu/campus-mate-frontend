@@ -2,15 +2,19 @@ import api from '@/config/axiosConfig';
 
 export const userService = {
     async getUserPosts(userId) {
-        return api.get(`user/${userId}/posts`);
+        return await api.get(`user/${userId}/posts`);
     },
 
-    async getProfile(userId) {
+    async getUserTeams(userId) {
+        return await api.get(`user/${userId}/teams`);
+    },
+
+    async getUser(userId) {
         const response = await api.get(`/user/${userId}`);
         return response.data;
     },
 
-    async updateProfile(userId, userData) {
+    async updateUser(userId, userData) {
         const response = await api.patch(`/user/${userId}`, userData);
         return response.data;
     },
@@ -20,8 +24,26 @@ export const userService = {
         return response.data;
     },
 
-    async getAllStudents() {
-        const response = await api.get('/user/role/ROLE_STUDENT');
+    async getAllUsersByRole(role) {
+        const response = await api.get(`/user/role/${role}`);
         return response.data;
-    }
+    },
+
+    async deleteUser(userId) {
+        const response = await api.delete(`/user/${userId}`)
+        return response.data;
+    },
+
+    async getAllUsers() {
+        const response = await api.get('/user');
+        return response.data;
+    },
+
+    async createUser(userData) {
+        const response = await api.post('/auth/register', userData);
+        return response.data;
+    },
+
+
+    //TODO: poprawić response.error
 }

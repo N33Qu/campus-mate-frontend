@@ -4,6 +4,7 @@ import PostListing from './PostListing.vue';
 import PostModal from './PostModal.vue';
 import RiseLoader from 'vue-spinner/src/RiseLoader.vue';
 import {usePost} from '@/composables/post/usePost';
+import {usePermissions} from "@/composables/usePermissions.js";
 
 const props = defineProps({
   limit: {
@@ -21,6 +22,7 @@ const props = defineProps({
 });
 
 const {posts, isLoading, isAuthorized, isEmpty, fetchPosts} = usePost();
+const { canCreate } = usePermissions();
 const showPostModal = ref(false);
 const selectedPostId = ref(null);
 
@@ -55,7 +57,11 @@ onMounted(() => {
           <h2 class="text-3xl font-bold text-headerText mb-6 flex-1 text-center">
             Przeglądaj Ogłoszenia
           </h2>
-          <button v-if="showManageButton" @click="handleAddPost" class="ml-auto">
+          <button
+              v-if="showManageButton && canCreate()"
+              @click="handleAddPost"
+              class="ml-auto"
+          >
             <i class="pi pi-plus text-xl mb-6 text-left"></i>
           </button>
         </div>

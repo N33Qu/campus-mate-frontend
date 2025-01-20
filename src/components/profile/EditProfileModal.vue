@@ -1,6 +1,6 @@
 <script setup>
 import { Form, Field, ErrorMessage } from 'vee-validate';
-import { profileSchema } from '@/validation/profileSchema';
+import { profileSchema } from '@/validation/profileSchema.js';
 
 
 const props = defineProps({

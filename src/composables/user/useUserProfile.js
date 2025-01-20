@@ -14,11 +14,13 @@ export function useUserProfile(userId) {
         try {
             isLoading.value = true;
             error.value = null;
-            const data = await userService.getProfile(userId);
+            const data = await userService.getUser(userId);
+            console.log(data)
             Object.assign(profile, {
                 firstName: data.firstName,
                 lastName: data.lastName,
-                email: data.email
+                email: data.email,
+                group: data.group
             });
         } catch (err) {
             error.value = 'Błąd pobierania profilu';
@@ -32,7 +34,7 @@ export function useUserProfile(userId) {
         try {
             isLoading.value = true;
             error.value = null;
-            await userService.updateProfile(userId, profileData);
+            await userService.updateUser(userId, profileData);
             Object.assign(profile, profileData);
             return true;
         } catch (err) {

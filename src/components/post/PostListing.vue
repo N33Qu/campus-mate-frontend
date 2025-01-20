@@ -2,6 +2,7 @@
 import { RouterLink } from 'vue-router';
 import { defineProps, ref, computed } from 'vue';
 import { usePost } from '@/composables/post/usePost';
+import {usePermissions} from "@/composables/usePermissions.js";
 
 const props = defineProps({
   post: {
@@ -16,6 +17,7 @@ const props = defineProps({
 
 const emit = defineEmits(['edit']);
 
+const { canEdit, canDelete} = usePermissions();
 const { deletePost } = usePost();
 const showFullDescription = ref(false);
 const showConfirmDelete = ref(false);
@@ -87,8 +89,9 @@ const handleDelete = async () => {
           Czytaj Więcej
         </RouterLink>
 
-        <div v-if="props.showManageButton" class="flex gap-2">
+        <div v-if="props.showManageButton && (canEdit() || canDelete())" class="flex gap-2">
           <button
+              v-if="canEdit()"
               @click="handleEdit"
               class="text-green-600 hover:text-green-700 p-2"
               title="Edytuj"
@@ -97,6 +100,7 @@ const handleDelete = async () => {
           </button>
 
           <button
+              v-if="canDelete()"
               @click="showConfirmDelete = true"
               class="text-red-600 hover:text-red-700 p-2"
               title="Usuń"

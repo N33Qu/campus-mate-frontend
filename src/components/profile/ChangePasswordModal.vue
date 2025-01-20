@@ -1,6 +1,6 @@
 <script setup>
 import { Form, Field, ErrorMessage } from 'vee-validate';
-import { passwordSchema } from '@/validation/passwordSchema';
+import { passwordSchema } from '@/validation/passwordSchema.js';
 
 const props = defineProps({
   modelValue: Boolean,

@@ -1,6 +1,6 @@
 import { computed } from 'vue';
 
-export function useGrid(grades) {
+export function useGrid(grades, canManageGrades) {
     const columnDefs = [
         {
             headerName: 'Przedmiot',
@@ -27,7 +27,6 @@ export function useGrid(grades) {
         {
             headerName: 'Komentarz',
             field: 'comment',
-
         },
         {
             headerName: 'Data',
@@ -37,32 +36,32 @@ export function useGrid(grades) {
                 return new Date(params.value).toLocaleDateString();
             }
         },
-        {
+        ...(canManageGrades ? [{
             headerName: '',
             field: 'Actions',
             cellRenderer: () => {
                 return `
-          <div class="flex justify-center space-x-2">
-            <button class="edit-btn text-editButton hover:text-editButtonHover">Edytuj</button>
-            <button class="delete-btn text-deleteButton hover:text-deleteButtonHover">Usuń</button>
-          </div>
-        `;
+                    <div class="flex justify-center space-x-2">
+                        <button class="edit-btn text-editButton hover:text-editButtonHover">Edytuj</button>
+                        <button class="delete-btn text-deleteButton hover:text-deleteButtonHover">Usuń</button>
+                    </div>
+                `;
             },
             cellClass: 'flex justify-center items-center',
             width: 150,
             sortable: false,
             filter: false
-        }
+        }] : [])
     ];
 
     const onCellClicked = (params, emit) => {
-        if (params.column.getColId() === 'Actions') {
+        if (canManageGrades && params.column.getColId() === 'Actions') {
             const clickedElement = params.event.target;
             if (clickedElement.classList.contains('edit-btn')) {
                 emit('edit-grade', params.data);
             } else if (clickedElement.classList.contains('delete-btn')) {
                 if (confirm('Czy na pewno chcesz usunąć ocene?'))
-                emit('delete-grade', params.data.gradeId);
+                    emit('delete-grade', params.data.gradeId);
             }
         }
         else {
@@ -74,7 +73,6 @@ export function useGrid(grades) {
         columnDefs,
         onCellClicked
     };
-
 }
 
 export const defaultColDef = {

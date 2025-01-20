@@ -5,6 +5,7 @@ import interactionPlugin from '@fullcalendar/interaction'
 import { calendarService } from '@/services/calendarService.js'
 import pl from "@fullcalendar/core/locales/pl";
 import {useShowNotification} from "@/composables/useShowNotification.js";
+import { usePermissions } from './useEventPermissions'
 
 export function useCalendar() {
     const authStore = useAuthStore()
@@ -17,6 +18,7 @@ export function useCalendar() {
     const error = ref(null)
     const modalMode = ref('view')
     const {showNotification} = useShowNotification()
+    const { canEdit, canView, validateEdit, validateView } = usePermissions()
 
     const calendarOptions = computed(() => ({
         plugins: [dayGridPlugin, interactionPlugin],
@@ -24,25 +26,26 @@ export function useCalendar() {
         eventClick: handleEventClick,
         events: events.value,
         height: 'auto',
-        editable: true,
-        selectable: true,
+        editable: canEdit.value,
+        selectable: canEdit.value,
         eventColor: '#888580',
         locale: pl,
-        select: handleDateSelect,
-        eventDrop: handleEventDrop,
-        eventResize: handleEventResize
+        select: canEdit.value ? handleDateSelect : null,
+        eventDrop: canEdit.value ? handleEventDrop : null,
+        eventResize: canEdit.value ? handleEventResize : null
     }))
 
     const createEvent = async (eventData) => {
-        isLoading.value = true
-        error.value = null
-
         try {
+            validateEdit()
+            isLoading.value = true
+            error.value = null
+
             await calendarService.createEvent(eventData)
             await fetchEvents()
             showNotification('Wydarzenie utworzone pomyślnie')
         } catch (err) {
-            error.value = 'Błąd tworzenia wydarzenia'
+            error.value = err.message || 'Błąd tworzenia wydarzenia'
             console.error('Error creating event:', err)
             showNotification(error.value, 'error')
         } finally {
@@ -80,30 +83,34 @@ export function useCalendar() {
     }
 
     const handleEventClick = (clickInfo) => {
-        selectedEvent.value = {
-            eventId: clickInfo.event.extendedProps.eventId,
-            eventName: clickInfo.event.title,
-            eventDescription: clickInfo.event.extendedProps.description || 'Brak opisu',
-            startDate: clickInfo.event.start,
-            endDate: clickInfo.event.end,
+        try {
+            validateView()
+            selectedEvent.value = {
+                eventId: clickInfo.event.extendedProps.eventId,
+                eventName: clickInfo.event.title,
+                eventDescription: clickInfo.event.extendedProps.description || 'Brak opisu',
+                startDate: clickInfo.event.start,
+                endDate: clickInfo.event.end,
+            }
+            isEventModalOpen.value = true
+        } catch (err) {
+            showNotification(err.message, 'error')
         }
-        console.log('Selected event:', selectedEvent.value);
-        isEventModalOpen.value = true
     }
 
     const updateEvent = async (updatedEvent) => {
-        isLoading.value = true
-        error.value = null
         try {
-            await calendarService.updateEvent(updatedEvent.eventId, updatedEvent)
+            validateEdit()
+            isLoading.value = true
+            error.value = null
 
+            await calendarService.updateEvent(updatedEvent.eventId, updatedEvent)
             events.value = events.value.map(event =>
                 event.eventId === updatedEvent.eventId ? updatedEvent : event
             )
-
             showNotification('Wydarzenie zaktualizowane pomyślnie')
         } catch (err) {
-            error.value = 'Błąd aktualizacji wydarzenia'
+            error.value = err.message || 'Błąd aktualizacji wydarzenia'
             console.error('Error updating event:', err)
             showNotification(error.value, 'error')
         } finally {
@@ -112,18 +119,16 @@ export function useCalendar() {
     }
 
     const deleteEvent = async (eventId) => {
-        isLoading.value = true
-        error.value = null
-
         try {
-            console.log('Deleting event with ID:', events);
+            validateEdit()
+            isLoading.value = true
+            error.value = null
+
             await calendarService.deleteEvent(eventId)
-
             events.value = events.value.filter(event => event.eventId !== eventId)
-
             showNotification('Wydarzenie usunięte pomyślnie')
         } catch (err) {
-            error.value = 'Błąd usuwania wydarzenia'
+            error.value = err.message || 'Błąd usuwania wydarzenia'
             console.error('Error deleting event:', err)
             showNotification(error.value, 'error')
         } finally {

@@ -16,6 +16,10 @@ const props = defineProps({
     type: String,
     default: 'view',
     validator: value => ['view', 'edit', 'create'].includes(value)
+  },
+  canEdit: {
+    type: Boolean,
+    required: true
   }
 })
 
@@ -34,10 +38,10 @@ const handleSave = (eventData) => {
   handleClose()
 }
 
-const handleDelete = (eventId) => {
-  emit('delete', eventId)
-  handleClose()
+const handleDelete = () => {
+  emit('delete')
 }
+
 </script>
 
 <template>
@@ -45,19 +49,20 @@ const handleDelete = (eventId) => {
     <ViewEventModal
         v-if="mode === 'view'"
         :event="selectedEvent"
+        :can-edit="canEdit"
         @close="handleClose"
         @edit="$emit('edit')"
         @delete="handleDelete"
     />
     <EditEventModal
-        v-else-if="mode === 'edit'"
+        v-else-if="mode === 'edit' && canEdit"
         :is-open="isOpen"
         :current-event="selectedEvent"
         @close="handleClose"
         @save="handleSave"
     />
     <CreateEventModal
-        v-else
+        v-else-if="mode === 'create' && canEdit"
         :is-open="isOpen"
         :initial-dates="selectedEvent"
         @close="handleClose"

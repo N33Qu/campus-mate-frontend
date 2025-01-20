@@ -29,6 +29,8 @@ export default {
         button: "#4e4945",
         changePasswordButton: "#3947b8",
         changePasswordButtonHover: "#2a3585",
+        addButton: "#1649ae",
+        addButtonHover: "#08368c",
         editButton: "#0bae0b",
         editButtonHover: "#39a100",
         saveButton: "#9e8168",

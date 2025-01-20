@@ -7,6 +7,10 @@ const props = defineProps({
   averageGrade: {
     type: [String, Number],
     required: true
+  },
+  canManageGrades: {
+    type: Boolean,
+    required: true
   }
 });
 
@@ -40,6 +44,7 @@ const emit = defineEmits(['add-grade', 'refresh']);
     </div>
     <div class="flex items-center justify-between gap-4">
       <button
+          v-if="canManageGrades"
           @click="emit('add-grade')"
           class="bg-button hover:bg-buttonHover text-white text-xs font-bold py-2 px-4 rounded transition duration-300"
       >

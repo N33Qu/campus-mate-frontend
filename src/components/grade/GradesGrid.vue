@@ -1,6 +1,7 @@
 <script setup>
 import { AgGridVue } from "ag-grid-vue3";
 import { useGrid, defaultColDef } from '@/composables/grade/useGrid.js';
+import { usePermissions } from '@/composables/usePermissions.js';
 import GradesHeader from './GradesHeader.vue';
 import "ag-grid-community/styles/ag-grid.css"
 import "ag-grid-community/styles/ag-theme-alpine.css"
@@ -21,7 +22,9 @@ const props = defineProps({
 
 const emit = defineEmits(['edit-grade', 'delete-grade', 'add-grade', 'grid-ready', 'row-click', 'refresh']);
 
-const {columnDefs, onCellClicked} = useGrid(props.grades);
+const { canManage } = usePermissions();
+
+const {columnDefs, onCellClicked} = useGrid(props.grades, canManage());
 
 const onGridReady = (params) => {
   emit('grid-ready', params);
@@ -44,6 +47,7 @@ const averageGrade = computed(() => {
       <GradesHeader
           :row-count="rowCount"
           :average-grade="averageGrade"
+          :can-manage-grades="canManage()"
           @add-grade="emit('add-grade')"
           @refresh="emit('refresh')"
           class="mb-6"
@@ -64,7 +68,6 @@ const averageGrade = computed(() => {
           :localeText="AG_GRID_LOCALE_PL"
           @cell-clicked="handleCellClicked"
           @grid-ready="onGridReady"
-
       >
       </ag-grid-vue>
     </div>

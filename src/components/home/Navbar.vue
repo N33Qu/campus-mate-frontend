@@ -11,8 +11,6 @@ const isLoggedIn = computed(() => authStore.isTokenValid);
 const userRole = computed(() => authStore.userRole);
 const userId = computed(() => authStore.userId);
 
-
-
 const isActiveLink = (routePath) => {
   const route = useRoute();
   return route.path === routePath;
@@ -23,17 +21,27 @@ const isNavbarVisible = ref(true);
 let lastScrollPosition = 0;
 
 const links = computed(() => [
-  { path: '/', label: 'Strona Główna', icon: 'pi pi-home' },
-  { path: '/posts', label: 'Ogłoszenia', icon: 'pi pi-file' },
-  { path: '/addressbook', label: 'Książka Adresowa', icon: 'pi pi-address-book' },
-  { path: '/calendar', label: 'Kalendarz', icon: 'pi pi-calendar' },
-  { path: '/grades', label: 'Oceny', icon: 'pi pi-chart-line' },
-  { path: '/schedule', label: 'Plan', icon: 'pi pi-server' },
-  { path: '/teams', label: 'Zespoły', icon: 'pi pi-users' },
+  ...(userRole.value !== 'ROLE_ADMIN' && isLoggedIn.value
+      ? [
+        { path: '/', label: 'Strona Główna', icon: 'pi pi-home' },
+        { path: '/calendar', label: 'Kalendarz', icon: 'pi pi-calendar' },
+      ]: []),
   ...(isLoggedIn.value
-      ? [{ path: '/users/' + userId.value, label: 'Profil', icon: 'pi pi-user' },
-          { path: '/logout', label: 'Wyloguj Się', icon: 'pi pi-sign-out' },
-        ]
+      ? [{ path: '/addressbook', label: 'Książka Adresowa', icon: 'pi pi-address-book' },
+      ]: []),
+  ...(userRole.value !== 'ROLE_ADMIN' && isLoggedIn.value
+      ? [{ path: '/grades', label: 'Oceny', icon: 'pi pi-chart-line' },
+        { path: '/posts', label: 'Ogłoszenia', icon: 'pi pi-file' },
+        {path: '/schedule', label: 'Plan', icon: 'pi pi-server' },
+        { path: '/teams', label: 'Zespoły', icon: 'pi pi-users' },
+      ]: []),
+  ...(userRole.value === 'ROLE_ADMIN'
+      ? [{ path: '/adminPanel', label: 'Panel Administratora', icon: 'pi pi-cog' },
+      ]: []),
+  ...(isLoggedIn.value
+      ? [{ path: '/profile/' + userId.value, label: 'Profil', icon: 'pi pi-user' },
+        { path: '/logout', label: 'Wyloguj Się', icon: 'pi pi-sign-out' },
+      ]
       : [{ path: '/login', label: 'Zaloguj Się', icon: 'pi pi-sign-in' }]),
 ]);
 
@@ -64,7 +72,7 @@ onBeforeUnmount(() => {
       :class="isNavbarVisible ? 'translate-y-0' : '-translate-y-full'"
   >
     <div class="mx-auto max-w-9xl px-4 sm:px-6 lg:px-8">
-      <div class="flex h-16 items-center justify-between">
+      <div class="flex h-14 items-center justify-between">
         <!-- Logo -->
         <div class="flex items-center flex-grow">
           <RouterLink class="flex items-center mr-4" to="/">
@@ -75,8 +83,8 @@ onBeforeUnmount(() => {
           </RouterLink>
         </div>
 
-        <!-- Hamburger menu button -->
-        <div class="xl:hidden">
+        <!-- Hamburger menu button - tylko dla zalogowanych -->
+        <div v-if="isLoggedIn" class="xl:hidden">
           <button
               @click="isMenuOpen = !isMenuOpen"
               type="button"
@@ -91,8 +99,8 @@ onBeforeUnmount(() => {
           </button>
         </div>
 
-        <!-- Desktop menu -->
-        <div class="hidden xl:flex lg:space-x-8 xl:space-x-16">
+        <!-- Desktop menu - zawsze widoczne dla niezalogowanych, dla zalogowanych tylko na xl -->
+        <div :class="[isLoggedIn ? 'hidden xl:flex lg:space-x-8 xl:space-x-16' : 'flex lg:space-x-8 xl:space-x-16']">
           <RouterLink
               v-for="link in links"
               :key="link.path"
@@ -103,7 +111,7 @@ onBeforeUnmount(() => {
             ]"
           >
             <div class="flex items-center">
-              <i v-if="link.icon" :class="link.icon" class="mr-2"></i>
+              <i v-if="link.icon" :class="[link.icon, 'mr-2']"></i>
               <span>{{ link.label }}</span>
             </div>
           </RouterLink>
@@ -111,8 +119,8 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <!-- Mobile menu -->
-    <div v-if="isMenuOpen" id="mobile-menu" class="xl:hidden bg-zinc-800 border-t border-zinc-800">
+    <!-- Mobile menu - tylko dla zalogowanych -->
+    <div v-if="isLoggedIn && isMenuOpen" id="mobile-menu" class="xl:hidden bg-zinc-800 border-t border-zinc-800">
       <div class="space-y-1 px-4 py-2">
         <RouterLink
             v-for="link in links"

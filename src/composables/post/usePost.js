@@ -3,6 +3,7 @@ import {useToast} from 'vue-toastification';
 import postService from '@/services/postService';
 import {userService} from "@/services/userService.js";
 import {useAuthStore} from "@/stores/authStore.js";
+import {usePermissions} from "@/composables/usePermissions.js";
 
 export function usePost() {
     const post = ref(null);
@@ -14,9 +15,10 @@ export function usePost() {
     const authStore = useAuthStore()
     const userId = computed(() => authStore.userId)
     const {getUserPosts} = userService
+    const { canView } = usePermissions();
 
     const fetchPosts = async () => {
-        if (!userId.value) {
+        if (!userId.value || !canView()) {
             console.error('User is not logged in')
             return
         }
@@ -39,6 +41,7 @@ export function usePost() {
         isLoading.value = true;
         try {
             const response = await postService.getPost(postId);
+            console.log(response)
             post.value = response.data;
             return response.data;
         } catch (error) {
@@ -51,7 +54,6 @@ export function usePost() {
     };
 
     const createPost = async (postData) => {
-        console.log('Creating post:', postData);
         try {
             const response = await postService.createPost(postData);
             toast.success('Ogłoszenie utworzone pomyślnie');

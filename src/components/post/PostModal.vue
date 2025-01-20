@@ -10,6 +10,10 @@ const props = defineProps({
   postId: {
     type: [String, Number],
     default: null
+  },
+  teamId: {
+    type: String,
+    default: null
   }
 });
 
@@ -36,19 +40,24 @@ const {
 
 watch(() => isEditing.value, async () => {
    if (isEditing.value) {
-     console.log(isEditing.value);
     await loadData();
   }
 })
 
 watch(() => props.isOpen, async (newVal) => {
   if (newVal) {
+    if (props.teamId) {
+      selectedTeams.value.push(props.teamId);
+    }
     isVisible.value = true;
     await loadData();
   } else {
     isVisible.value = false;
   }
 });
+
+
+
 </script>
 
 <template>
@@ -82,7 +91,7 @@ watch(() => props.isOpen, async (newVal) => {
 
           <form @submit.prevent="onSubmit" class="space-y-6">
             <!-- Teams Selection - Only show when creating new post -->
-            <div v-if="!isEditing">
+            <div v-if="!isEditing && !props.teamId">
               <label class="block text-sm font-medium text-gray-700 mb-1">
                 Wybierz zespoły
               </label>
@@ -97,6 +106,7 @@ watch(() => props.isOpen, async (newVal) => {
                       v-for="team in teams"
                       :key="team.teamId"
                       :value="team.teamId"
+                      :selected="team.teamId === props.teamId"
                   >
                     {{ team.teamName }}
                   </option>

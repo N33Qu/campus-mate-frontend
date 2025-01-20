@@ -34,7 +34,7 @@ export function useGradeForm(schema, props) {
         try {
             isLoadingStudents.value = true;
             studentError.value = '';
-            students.value = await userService.getAllStudents();
+            students.value = await userService.getAllUsersByRole('ROLE_STUDENT');
         } catch (error) {
             console.error('Error fetching students:', error);
             studentError.value = 'Nie udało się pobrać listy uczniów';
@@ -43,11 +43,7 @@ export function useGradeForm(schema, props) {
         }
     };
 
-    onMounted(() => {
-        if (props.mode === 'add') {
-            fetchStudents();
-        }
-    });
+
 
     watch(props, () => {
         if (props.mode === 'edit' && props.currentGrade) {
@@ -63,6 +59,7 @@ export function useGradeForm(schema, props) {
             resetForm({
                 values: defaultValues
             });
+            fetchStudents();
         }
     });
 

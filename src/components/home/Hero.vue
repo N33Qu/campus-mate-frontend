@@ -42,7 +42,7 @@ defineProps({
           </RouterLink>
         </div>
         <div v-else>
-          <RouterLink class=" bg-button hover:bg-buttonHover text-white text-md font-bold py-2 px-4 rounded transition-colors duration-300" to="/dashboard">
+          <RouterLink class=" bg-button hover:bg-buttonHover text-white text-md font-bold py-2 px-4 rounded transition-colors duration-300" to="/logout">
             Wyloguj się
             <i class="pi pi-sign-out ml-2"></i>
           </RouterLink>

@@ -1,3 +1,7 @@
+<script setup>
+const year = new Date().getFullYear();
+</script>
+
 <template>
   <footer class="bg-black text-gray-300 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -6,10 +10,10 @@
         <div class="mb-6 md:mb-0">
           <div class="flex items-center mb-4">
             <img src="../../assets/img/logo.png" alt="Campus Mate Logo" class="h-10 w-auto" />
-            <span class="text-white text-2xl font-bold ml-3">Campus Mate</span>
+            <span class="text-white text-2xl font-bold ml-3">CampusMate</span>
           </div>
           <p class="text-gray-400 text-sm max-w-xs">
-            Campusmate pomaga studentom w organizacji ich planów zajęć, ocen, wydarzeń i zespołów.
+            CampusMate pomaga studentom w organizacji ich planów zajęć, ocen, wydarzeń i zespołów.
           </p>
         </div>
 
@@ -54,7 +58,7 @@
 
       <!-- Dolna część stopki -->
       <div class="border-t border-gray-700 mt-6 pt-4 text-center text-sm text-gray-500">
-        © 2024 Campusmate. Wszystkie prawa zastrzeżone.
+        © {{year}} CampusMate. Wszystkie prawa zastrzeżone.
       </div>
     </div>
   </footer>

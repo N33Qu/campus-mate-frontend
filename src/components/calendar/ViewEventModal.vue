@@ -3,6 +3,10 @@ const props = defineProps({
   event: {
     type: Object,
     required: true
+  },
+  canEdit: {
+    type: Boolean,
+    required: true
   }
 })
 
@@ -20,18 +24,20 @@ const emit = defineEmits(['close', 'edit', 'delete'])
       <span class="font-semibold">Zakończenie:</span> {{ new Date(event.endDate).toLocaleString() }}
     </p>
     <div class="flex gap-2">
-      <button
-          @click="$emit('edit')"
-          class="bg-editButton text-white px-4 py-2 rounded hover:bg-editButtonHover transition-colors"
-      >
-        Edytuj
-      </button>
-      <button
-          @click="$emit('delete')"
-          class="bg-deleteButton text-white px-4 py-2 rounded hover:bg-deleteButtonHover transition-colors"
-      >
-       Usuń
-      </button>
+      <template v-if="canEdit">
+        <button
+            @click="$emit('edit')"
+            class="bg-editButton text-white px-4 py-2 rounded hover:bg-editButtonHover transition-colors"
+        >
+          Edytuj
+        </button>
+        <button
+            @click="$emit('delete')"
+            class="bg-deleteButton text-white px-4 py-2 rounded hover:bg-deleteButtonHover transition-colors"
+        >
+          Usuń
+        </button>
+      </template>
       <button
           @click="$emit('close')"
           class="bg-cancelButton text-white px-4 py-2 rounded hover:bg-cancelButtonHover transition-colors"
@@ -41,4 +47,3 @@ const emit = defineEmits(['close', 'edit', 'delete'])
     </div>
   </div>
 </template>
-

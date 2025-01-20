@@ -6,6 +6,8 @@ import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import { usePost } from '@/composables/post/usePost';
 import PostModal from "@/components/post/PostModal.vue";
+import {usePermissions} from "@/composables/usePermissions.js";
+import Button from "@/components/ui/Button.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -21,6 +23,7 @@ const state = ref({
 });
 
 const { deletePost, fetchPost } = usePost();
+const { canEdit, canDelete } = usePermissions();
 const handleDelete = async () => {
   try {
     if (await deletePost(postId)) {
@@ -54,20 +57,24 @@ const handlePostSaved = async () => {
 </script>
 
 <template>
-  <BackButton :to="`/posts`" text="Powrót do Ogłoszeń" icon="pi pi-arrow-circle-left"/>
-  <div class="h-screen bg-element">
-    <section v-if="!state.isLoading" class="bg-element">
-      <div class="container m-auto py-10 px-6">
+  <div class="container mx-auto">
+    <section v-if="!state.isLoading" class="bg-elementLight rounded-lg m-6">
+      <button
+      @click="$router.back()"
+      >
+        <i class="pi pi-arrow-left text-xl text-gray-600 pt-6 pl-6"></i>
+      </button>
+      <div class="container m-auto py-6 px-6">
         <div class="grid grid-cols-1 md:grid-cols-70/30 w-full gap-6">
           <main>
             <div class="bg-white p-6 rounded-lg shadow-md text-center md:text-left">
               <div class="text-gray-500 mb-4">{{ state.post.author }}</div>
               <h1 class="text-3xl font-bold mb-4">{{ state.post.postTitle }}</h1>
               <div class="text-gray-400 text-sm">
-                Stworzony: {{ state.post.createdAt }}
+                Stworzony: {{ new Intl.DateTimeFormat('pl-PL', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(state.post.createdAt)) }}
               </div>
               <div class="text-gray-400 text-sm">
-                Edytowany: {{ state.post.updatedAt }}
+                Edytowany: {{ new Intl.DateTimeFormat('pl-PL', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(state.post.updatedAt)) }}
               </div>
             </div>
 
@@ -80,10 +87,11 @@ const handlePostSaved = async () => {
           <!-- Sidebar -->
           <aside>
             <!-- Manage -->
-            <div class="bg-white p-6 rounded-lg shadow-md mt-6">
+            <div v-show="canDelete() || canEdit()" class="bg-white p-6 rounded-lg shadow-md mt-6">
               <h3 class="text-xl font-bold mb-6">Zarządzaj</h3>
               <div class="flex flex-col gap-4">
                 <button
+                    v-if="canEdit()"
                     @click="showEditModal = true"
                     class="flex items-center justify-center gap-2 bg-editButton hover:bg-editButtonHover text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline"
                 >
@@ -91,6 +99,7 @@ const handlePostSaved = async () => {
                   Edytuj
                 </button>
                 <button
+                    v-if="canDelete()"
                     @click="showConfirmDelete = true"
                     class="flex items-center justify-center gap-2 bg-deleteButton hover:bg-deleteButtonHover text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline"
                 >
