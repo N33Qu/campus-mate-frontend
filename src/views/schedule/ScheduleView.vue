@@ -1,9 +1,9 @@
 <template>
   <div class="schedule-container">
-    <div class="grid lg:grid-cols-5 md:grid-cols-1 gap-6">
-      <!-- Group List Sidebar - Made wider -->
+    <div class="grid lg:grid-cols-4 md:grid-cols-1 gap-4">
+      <!-- Group List Sidebar - Collapsible on mobile -->
       <div class="lg:col-span-1 md:col-span-1">
-        <div class="card h-full">
+        <div class="card">
           <div class="card-header">
             <FileUploader 
               @error="handleError"
@@ -31,14 +31,14 @@
         </div>
       </div>
 
-      <!-- Calendar Section - Made wider -->
-      <div class="lg:col-span-4 md:col-span-1">
+      <!-- Calendar Section -->
+      <div class="lg:col-span-3 md:col-span-1">
         <div class="card">
           <div class="card-header">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
               <h2 class="text-xl font-semibold flex items-center gap-2">
                 <i class="calendar-icon"></i>
-                Schedule Viewer
+                Plan zajęć
                 <span v-if="selectedGroup" class="text-sm text-gray-600">
                   ({{ selectedGroup }})
                 </span>
@@ -59,7 +59,7 @@
             <WeekCalendar 
               :events="filteredEvents"
               :current-week="currentWeek"
-              class="min-w-[1000px]"
+              class="min-w-[800px]"
             />
           </div>
         </div>

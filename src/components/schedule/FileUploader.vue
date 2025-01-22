@@ -1,208 +1,111 @@
 <template>
-  <div class="flex flex-col md:flex-row gap-4">
-    <!-- Group Name Input -->
-    <div class="w-full md:flex-1">
+  <div class="flex flex-col space-y-4 p-6">
+    <div class="flex flex-wrap items-center gap-3">
       <input 
         v-model="groupName" 
         type="text" 
-        class="w-full px-3 py-2 border rounded"
-        placeholder="Wprowadź nazwę grupy"
+        class="flex-1 min-w-[200px] px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700 placeholder-gray-400 bg-white"
+        placeholder="Enter group name"
       />
-    </div>
+      
+      <input 
+        type="file" 
+        ref="fileInput" 
+        accept=".ics" 
+        @change="onFileChange"
+        class="hidden"
+      />
 
-    <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-      <!-- File Selection Button -->
-      <div class="w-full sm:w-auto">
-        <input 
-          type="file" 
-          ref="fileInput" 
-          id="schedule-upload"
-          accept=".ics" 
-          @change="onFileChange"
-          class="hidden"
-        />
-        <button 
-          @click="$refs.fileInput.click()"
-          class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors duration-200"
-        >
-          Wybierz plik ICS
-        </button>
-      </div>
+      <button 
+        @click="$refs.fileInput.click()"
+        class="px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 whitespace-nowrap font-medium min-w-[120px]"
+      >
+        Wybierz plik
+      </button>
 
-      <!-- Upload Button -->
       <button 
         @click="handleUpload"
         :disabled="!canUpload || isUploading"
-        class="w-full sm:w-auto px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-green-300 disabled:cursor-not-allowed transition-colors duration-200 flex items-center justify-center gap-2"
+        class="px-4 py-2.5 rounded-lg font-medium min-w-[100px] whitespace-nowrap transition-colors duration-200"
+        :class="[
+          canUpload && !isUploading
+            ? 'bg-green-500 text-white hover:bg-green-600'
+            : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+        ]"
       >
-        <!-- Loading Spinner -->
-        <svg 
-          v-if="isUploading"
-          class="animate-spin h-5 w-5" 
-          xmlns="http://www.w3.org/2000/svg" 
-          fill="none" 
-          viewBox="0 0 24 24"
-        >
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-        </svg>
-        {{ isUploading ? 'Wgrywanie...' : 'Wgraj plik' }}
+        <span class="flex items-center gap-2">
+          <svg v-if="isUploading" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+          </svg>
+          {{ isUploading ? 'Przesyłanie...' : 'Prześlij' }}
+        </span>
       </button>
     </div>
 
-    <!-- File Name Display -->
-    <div class="text-sm text-gray-600 truncate w-full md:w-auto" v-if="selectedFile">
-      {{ selectedFile.name }}
+    <!-- File name display -->
+    <div v-if="selectedFile" class="text-sm text-gray-600 px-1">
+      Selected file: {{ selectedFile.name }}
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'FileUploader',
-  
-  data() {
-    return {
-      selectedFile: null,
-      groupName: '',
-      isUploading: false,
-      error: '',
-      maxRetries: 10,
-      retryDelay: 1000 // 1 second
-    }
-  },
+<script setup>
+import { ref, computed } from 'vue';
 
-  computed: {
-    canUpload() {
-      return this.selectedFile && this.groupName.trim().length > 0;
-    }
-  },
+const emit = defineEmits(['error', 'upload-success']);
+const fileInput = ref(null);
+const selectedFile = ref(null);
+const groupName = ref('');
+const isUploading = ref(false);
 
-  methods: {
-    onFileChange(event) {
-      const file = event.target.files[0];
-      if (file && !file.name.endsWith('.ics')) {
-        this.$emit('error', 'Proszę wybrać prawidłowy plik ICS');
-        this.selectedFile = null;
-        this.$refs.fileInput.value = '';
-        return;
-      }
-      this.selectedFile = file;
-    },
+const canUpload = computed(() => {
+  return selectedFile.value && groupName.value.trim().length > 0;
+});
 
-    async checkUploadStatus(groupName, retryCount = 0) {
-      try {
-        const response = await fetch('/api/schedule', {
-          credentials: 'include'
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to check schedule status');
-        }
-
-        const schedules = await response.json();
-        const groupExists = schedules.some(schedule => schedule.group === groupName);
-
-        if (groupExists) {
-          return true;
-        }
-
-        if (retryCount < this.maxRetries) {
-          await new Promise(resolve => setTimeout(resolve, this.retryDelay));
-          return this.checkUploadStatus(groupName, retryCount + 1);
-        }
-
-        throw new Error('Upload verification timeout');
-      } catch (error) {
-        console.error('Error checking upload status:', error);
-        throw error;
-      }
-    },
-
-    async handleUpload() {
-      if (!this.canUpload || this.isUploading) return;
-
-      this.isUploading = true;
-      const formData = new FormData();
-      formData.append('file', this.selectedFile);
-      formData.append('groupName', this.groupName.trim());
-
-      try {
-        const response = await fetch('/api/schedule/upload', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!response.ok) {
-          throw new Error('Błąd wgrywania');
-        }
-
-        // Show success message
-        this.showSuccessMessage('Wgrywanie planu...');
-
-        // Wait for the upload to be processed
-        await this.checkUploadStatus(this.groupName.trim());
-
-        // Emit success event
-        this.$emit('upload-success');
-        
-        // Update success message
-        this.showSuccessMessage('Plan został pomyślnie wgrany. Odświeżanie strony...');
-
-        // Reset form
-        this.resetForm();
-
-        // Refresh page
-        window.location.reload();
-
-      } catch (err) {
-        this.$emit('error', 'Nie udało się wgrać planu zajęć');
-        this.showErrorMessage('Wystąpił błąd podczas wgrywania planu');
-      } finally {
-        this.isUploading = false;
-      }
-    },
-
-    resetForm() {
-      this.selectedFile = null;
-      this.groupName = '';
-      this.$refs.fileInput.value = '';
-    },
-
-    showSuccessMessage(message) {
-      this.showMessage(message, 'bg-green-500');
-    },
-
-    showErrorMessage(message) {
-      this.showMessage(message, 'bg-red-500');
-    },
-
-    showMessage(message, className) {
-      // Remove any existing messages
-      const existingMessage = document.querySelector('.status-message');
-      if (existingMessage) {
-        existingMessage.remove();
-      }
-
-      // Create message element
-      const messageDiv = document.createElement('div');
-      messageDiv.className = `status-message fixed top-4 right-4 ${className} text-white px-6 py-3 rounded shadow-lg z-50 transition-opacity duration-500`;
-      messageDiv.textContent = message;
-      
-      // Add to document
-      document.body.appendChild(messageDiv);
-    }
+const onFileChange = (event) => {
+  const file = event.target.files[0];
+  if (file && !file.name.endsWith('.ics')) {
+    emit('error', 'Proszę wybrać plik ICS');
+    selectedFile.value = null;
+    event.target.value = '';
+    return;
   }
-}
+  selectedFile.value = file;
+};
+
+const handleUpload = async () => {
+  if (!canUpload.value || isUploading.value) return;
+
+  isUploading.value = true;
+  const formData = new FormData();
+  formData.append('file', selectedFile.value);
+  formData.append('groupName', groupName.value.trim());
+
+  try {
+    const response = await fetch('/api/schedule/upload', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Wystąpił błąd podczas przesyłania planu');
+    }
+
+    emit('upload-success');
+    resetForm();
+  } catch (err) {
+    emit('error', 'Przesyłanie planu nie powiodło się');
+  } finally {
+    isUploading.value = false;
+  }
+};
+
+const resetForm = () => {
+  selectedFile.value = null;
+  groupName.value = '';
+  if (fileInput.value) {
+    fileInput.value.value = '';
+  }
+};
 </script>
-
-<style scoped>
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.status-message {
-  animation: fadeIn 0.3s ease-in-out;
-}
-</style>
