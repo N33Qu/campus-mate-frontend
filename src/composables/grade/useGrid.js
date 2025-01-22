@@ -41,9 +41,13 @@ export function useGrid(grades, canManageGrades) {
             field: 'Actions',
             cellRenderer: () => {
                 return `
-                    <div class="flex justify-center space-x-2">
-                        <button class="edit-btn text-editButton hover:text-editButtonHover">Edytuj</button>
-                        <button class="delete-btn text-deleteButton hover:text-deleteButtonHover">Usuń</button>
+                    <div class="flex justify-center space-x-5">
+                        <button class="edit-btn text-editButton hover:text-editButtonHover">
+                            <i class="pi pi-pencil"></i>
+                        </button>
+                        <button class="delete-btn text-deleteButton hover:text-deleteButtonHover">
+                            <i class="pi pi-trash"></i>
+                        </button>
                     </div>
                 `;
             },

@@ -1,9 +1,14 @@
 import api from '@/config/axiosConfig.js'
+import { useAuthStore } from '@/stores/authStore.js';
+
+
 
 
 export async function fetchGrades(){
     try {
-        const response = await api.get("/grade");
+        const authStore = useAuthStore();
+        const role = authStore.userRole;
+        const response = role === "ROLE_STUDENT" ? await api.get(`/grade/user/${authStore.userId}`) : await api.get(`/grade/creator/${authStore.userId}`);
         if (!response) {
             return [];
         }
@@ -22,11 +27,13 @@ export async function fetchGrades(){
 
 export async function addGrade(gradeData){
     try {
+        const authStore = useAuthStore();
         const response = await api.post("/grade", {
             subjectName: gradeData.subjectName,
             grade: gradeData.grade,
             comment: gradeData.comment,
-            userId: gradeData.userId
+            userId: gradeData.userId,
+            creatorId: authStore.userId
         });
 
         return {
