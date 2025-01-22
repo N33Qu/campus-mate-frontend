@@ -1,64 +1,81 @@
 <template>
-    <div class="group-list">
-      <h3 class="text-lg font-semibold mb-4">Groups</h3>
-      <div class="space-y-2">
-        <div 
-          v-for="group in groups" 
-          :key="group.id"
-          class="flex items-center justify-between p-2 rounded hover:bg-gray-100 cursor-pointer"
-          :class="{ 'bg-primary/10': selectedGroup === group.name }"
-          @click="selectGroup(group.name)"
-        >
-          <span>{{ group.name }}</span>
-          <button 
-            @click.stop="deleteGroup(group.id)"
-            class="text-red-500 hover:text-red-700"
-          >
-            <i class="fas fa-trash"></i>
-          </button>
-        </div>
-      </div>
+  <div class="group-list">
+    <h3 class="text-lg font-medium mb-4">Grupy</h3>
+    <div class="space-y-2">
+      <button
+        v-for="group in groups"
+        :key="group"
+        @click="handleGroupSelect(group)"
+        class="w-full px-4 py-2 text-left rounded transition-colors duration-200"
+        :class="[
+          selectedGroup === group 
+            ? 'bg-blue-100 text-blue-800' 
+            : 'hover:bg-gray-100'
+        ]"
+      >
+        {{ group }}
+      </button>
     </div>
-  </template>
+    <div v-if="groups.length === 0" class="text-gray-500 text-sm">
+      Brak grup
+    </div>
+  </div>
+</template>
+
+<script>
+import { ref, onMounted } from 'vue'
+
+export default {
+  name: 'GroupList',
   
-  <script>
-  export default {
-    name: 'GroupList',
-    props: {
-      selectedGroup: String
-    },
-    data() {
-      return {
-        groups: []
-      }
-    },
-    methods: {
-      async fetchGroups() {
-        try {
-          const response = await fetch('/api/schedule/groups');
-          if (!response.ok) throw new Error('Failed to fetch groups');
-          this.groups = await response.json();
-        } catch (err) {
-          this.$emit('error', 'Failed to load groups');
+  props: {
+    selectedGroup: {
+      type: String,
+      default: null
+    }
+  },
+
+  emits: ['group-selected', 'error'],
+
+  setup(props, { emit }) {
+    const groups = ref([])
+
+    const handleGroupSelect = (group) => {
+      emit('group-selected', group)
+    }
+
+    const fetchGroups = async () => {
+      try {
+        const response = await fetch('/api/schedule', {
+          credentials: 'include'
+        })
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch groups')
         }
-      },
-      selectGroup(groupName) {
-        this.$emit('group-selected', groupName);
-      },
-      async deleteGroup(groupId) {
-        try {
-          const response = await fetch(`/api/schedule/groups/${groupId}`, {
-            method: 'DELETE'
-          });
-          if (!response.ok) throw new Error('Failed to delete group');
-          await this.fetchGroups();
-        } catch (err) {
-          this.$emit('error', 'Failed to delete group');
-        }
+
+        const schedules = await response.json()
+        // Extract unique group names from schedules
+        groups.value = [...new Set(schedules.map(schedule => schedule.group))]
+      } catch (err) {
+        emit('error', 'Failed to load groups')
       }
-    },
-    mounted() {
-      this.fetchGroups();
+    }
+
+    // Expose fetchGroups method to parent component
+    const refresh = () => {
+      return fetchGroups()
+    }
+
+    onMounted(() => {
+      fetchGroups()
+    })
+
+    return {
+      groups,
+      handleGroupSelect,
+      refresh
     }
   }
-  </script>
+}
+</script>

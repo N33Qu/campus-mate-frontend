@@ -1,10 +1,10 @@
 <template>
     <div class="flex justify-between items-center mb-4">
-      <button @click="$emit('previous-week')" class="btn btn-outline">&larr; Previous Week</button>
+      <button @click="$emit('previous-week')" class="btn btn-outline">&larr; Poprzedni tydzień</button>
       <span class="font-medium">
         {{ formatDateRange(startDate, endDate) }}
       </span>
-      <button @click="$emit('next-week')" class="btn btn-outline">Next Week &rarr;</button>
+      <button @click="$emit('next-week')" class="btn btn-outline">Następny tydzień &rarr;</button>
     </div>
   </template>
   

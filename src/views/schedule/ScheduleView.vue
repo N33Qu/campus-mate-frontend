@@ -1,430 +1,228 @@
-   <!-- <!-- <template>
-     <div class="schedule-container">
-       <div class="card">
-         <div class="card-header flex justify-between items-center">
-           <h2 class="card-title flex items-center gap-2">
-             <i class="calendar-icon"></i>
-             Schedule Viewer
-           </h2>
-           <FileUploader @file-change="handleFileUpload" />
-         </div>
-   
-         <div class="card-content">
-           <ErrorDisplay :message="error" />
-           
-           <WeekNavigation 
-             :start-date="currentWeek"
-             :end-date="getEndOfWeek(currentWeek)"
-             @previous-week="previousWeek"
-             @next-week="nextWeek"
-           />
-   
-           <WeekCalendar 
-             :events="events"
-             :current-week="currentWeek"
-           />
-         </div>
-       </div>
-     </div>
-   </template> -->
-   <!-- <template>
-    <div class="schedule-container">
-      <div class="grid grid-cols-4 gap-4">
-         Group List Sidebar -->
-        <!-- <div class="col-span-1">
-          <div class="card">
-            <div class="card-header">
-              <FileUploader 
-                @error="error = $event"
-                @upload-success="handleUploadSuccess"
-              />
+<template>
+  <div class="schedule-container">
+    <div class="grid lg:grid-cols-5 md:grid-cols-1 gap-6">
+      <!-- Group List Sidebar - Made wider -->
+      <div class="lg:col-span-1 md:col-span-1">
+        <div class="card h-full">
+          <div class="card-header">
+            <FileUploader 
+              @error="handleError"
+              @upload-success="handleUploadSuccess"
+            />
+          </div>
+          <div class="card-content">
+            <div class="flex lg:hidden mb-4">
+              <button 
+                @click="toggleGroups"
+                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                {{ showGroups ? 'Hide Groups' : 'Show Groups' }}
+              </button>
             </div>
-            <div class="card-content">
+            <div :class="{'hidden md:block lg:block': !showGroups}">
               <GroupList 
                 :selected-group="selectedGroup"
                 @group-selected="handleGroupSelect"
-                @error="error = $event"
+                @error="handleError"
+                ref="groupList"
               />
             </div>
           </div>
         </div>
-  
-        < Calendar Section -->
-        <!-- <div class="col-span-3">
-          <div class="card">
-            <div class="card-header flex justify-between items-center">
-              <h2 class="card-title flex items-center gap-2">
+      </div>
+
+      <!-- Calendar Section - Made wider -->
+      <div class="lg:col-span-4 md:col-span-1">
+        <div class="card">
+          <div class="card-header">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+              <h2 class="text-xl font-semibold flex items-center gap-2">
                 <i class="calendar-icon"></i>
                 Schedule Viewer
                 <span v-if="selectedGroup" class="text-sm text-gray-600">
                   ({{ selectedGroup }})
                 </span>
               </h2>
-            </div>
-  
-            <div class="card-content">
-              <ErrorDisplay :message="error" />
               
               <WeekNavigation 
                 :start-date="currentWeek"
                 :end-date="getEndOfWeek(currentWeek)"
                 @previous-week="previousWeek"
                 @next-week="nextWeek"
-              />
-  
-              <WeekCalendar 
-                :events="filteredEvents"
-                :current-week="currentWeek"
+                class="w-full md:w-auto"
               />
             </div>
+          </div>
+
+          <div class="card-content overflow-x-auto">
+            <ErrorDisplay :message="error" />
+            <WeekCalendar 
+              :events="filteredEvents"
+              :current-week="currentWeek"
+              class="min-w-[1000px]"
+            />
           </div>
         </div>
       </div>
     </div>
-  </template> -->
-<!--    
-   <script>
-   import { ref, onMounted } from 'vue';
-   import FileUploader from '@/components/schedule/FileUploader.vue';
-   import ErrorDisplay from '@/components/schedule/ErrorDisplay.vue';
-   import WeekNavigation from '@/components/schedule/WeekNavigation.vue';
-   import WeekCalendar from '@/components/schedule/WeekCalendar.vue';  -->
-<!--    
-   // Utility functions declared outside of setup
-//    const getStartOfWeek = (date) => {
-//      const newDate = new Date(date);
-//      const day = newDate.getDay();
-//      const diff = newDate.getDate() - day + (day === 0 ? -6 : 1);
-//      newDate.setDate(diff);
-//      newDate.setHours(0, 0, 0, 0);
-//      return newDate;
-//    };
-   
-//    const getEndOfWeek = (date) => {
-//      const endDate = new Date(date);
-//      endDate.setDate(endDate.getDate() + 6);
-//      endDate.setHours(23, 59, 59, 999);
-//      return endDate;
-//    };
-   
-//    export default {
-//      name: 'ScheduleView',
-//      components: {
-//        FileUploader,
-//        ErrorDisplay,
-//        WeekNavigation,
-//        WeekCalendar
-//      },
-//      setup() {
-//        // State
-//        const currentWeek = ref(getStartOfWeek(new Date()));
-//        const events = ref([]);
-//        const error = ref('');
-//        const loading = ref(false);
-   
-//        // Methods
-//        const fetchSchedule = async () => {
-//          try {
-//            loading.value = true;
-//            const response = await fetch('/api/schedule', {
-//              credentials: 'include'
-//            });
-           
-//            if (!response.ok) {
-//              throw new Error('Failed to fetch schedule');
-//            }
-   
-//            const data = await response.json();
-//            const filteredEvents = data.filter(event => {
-//              const eventStart = new Date(event.startTime);
-//              const eventEnd = new Date(event.endTime);
-//              return eventStart >= currentWeek.value && 
-//                     eventEnd <= getEndOfWeek(currentWeek.value);
-//            });
-   
-//            events.value = filteredEvents;
-//          } catch (err) {
-//            error.value = 'Failed to load schedule. Please try again later.';
-//          } finally {
-//            loading.value = false;
-//          }
-//        };
-   
-//        const handleFileUpload = async ({ file, groupName }) => {
-//       if (!file || !file.name.endsWith('.ics')) {
-//         error.value = 'Please select a valid ICS file';
-//         return;
-//       }
+  </div>
+</template>
 
-//       const formData = new FormData();
-//       formData.append('file', file);
-//       formData.append('groupName', groupName);
+<script>
+import { ref, computed } from 'vue';
+import FileUploader from '@/components/schedule/FileUploader.vue';
+import GroupList from '@/components/schedule/GroupList.vue';
+import ErrorDisplay from '@/components/schedule/ErrorDisplay.vue';
+import WeekNavigation from '@/components/schedule/WeekNavigation.vue';
+import WeekCalendar from '@/components/schedule/WeekCalendar.vue';
 
-//       try {
-//         loading.value = true;
-//         const response = await fetch('/api/schedule/upload', {
-//           method: 'POST',
-//           body: formData,
-//         });
+const getStartOfWeek = (date) => {
+  const newDate = new Date(date);
+  const day = newDate.getDay();
+  const diff = newDate.getDate() - day + (day === 0 ? -6 : 1);
+  newDate.setDate(diff);
+  newDate.setHours(0, 0, 0, 0);
+  return newDate;
+};
 
-//         if (!response.ok) {
-//           throw new Error('Upload failed');
-//         }
+const getEndOfWeek = (date) => {
+  const endDate = new Date(date);
+  endDate.setDate(endDate.getDate() + 6);
+  endDate.setHours(23, 59, 59, 999);
+  return endDate;
+};
 
-//         await fetchGroups(); // Odśwież listę grup po dodaniu nowej
-//         await fetchSchedule();
-//         error.value = '';
-//       } catch (err) {
-//         error.value = 'Failed to upload schedule. Please try again.';
-//       } finally {
-//         loading.value = false;
-//       }
-//     };
-//        const previousWeek = () => {
-//          const newDate = new Date(currentWeek.value);
-//          newDate.setDate(newDate.getDate() - 7);
-//          currentWeek.value = getStartOfWeek(newDate);
-//        };
-   
-//        const nextWeek = () => {
-//          const newDate = new Date(currentWeek.value);
-//          newDate.setDate(newDate.getDate() + 7);
-//          currentWeek.value = getStartOfWeek(newDate);
-//        };
-   
-//        // Lifecycle hooks
-//        onMounted(() => {
-//          fetchSchedule();
-//        });
-   
-//        // Expose to template
-//        return {
-//          currentWeek,
-//          events,
-//          error,
-//          loading,
-//          handleFileUpload,
-//          previousWeek,
-//          nextWeek,
-//          getEndOfWeek
-//        };
-//      }
-//    };
-//    </script>
-   
-//    <style scoped>
-//    .schedule-container {
-//      max-width: 1200px;
-//      margin: 0 auto;
-//      padding: 20px;
-//    }
-   
-//    .card {
-//      background: white;
-//      border-radius: 8px;
-//      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-//    }
-   
-//    .card-header {
-//      padding: 1rem;
-//      border-bottom: 1px solid #eee;
-//    }
-   
-//    .card-content {
-//      padding: 1rem;
-//    }
-//    </style> -->
+export default {
+  name: 'ScheduleView',
+  components: {
+    FileUploader,
+    GroupList,
+    ErrorDisplay,
+    WeekNavigation,
+    WeekCalendar
+  },
+  
+  setup() {
+    const currentWeek = ref(getStartOfWeek(new Date()));
+    const events = ref([]);
+    const error = ref('');
+    const loading = ref(false);
+    const selectedGroup = ref(null);
+    const showGroups = ref(false);
 
-<template>
-    <div class="schedule-container">
-      <div class="grid grid-cols-4 gap-4">
-        <!-- Group List Sidebar -->
-        <div class="col-span-1">
-          <div class="card">
-            <div class="card-header">
-              <FileUploader 
-                @error="error = $event"
-                @upload="handleUpload"
-              />
-            </div>
-          </div>
-        </div>
-  
-        <!-- Calendar Section -->
-        <div class="col-span-3">
-          <div class="card">
-            <div class="card-header flex justify-between items-center">
-              <h2 class="card-title flex items-center gap-2">
-                <i class="calendar-icon"></i>
-                Schedule Viewer
-              </h2>
-            </div>
-  
-            <div class="card-content">
-              <ErrorDisplay :message="error" />
-              
-              <WeekNavigation 
-                :start-date="currentWeek"
-                :end-date="getEndOfWeek(currentWeek)"
-                @previous-week="previousWeek"
-                @next-week="nextWeek"
-              />
-  
-              <WeekCalendar 
-                :events="events"
-                :current-week="currentWeek"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </template>
-  
-  <script>
-  import { ref, computed } from 'vue';
-  import FileUploader from '@/components/schedule/FileUploader.vue';
-  import ErrorDisplay from '@/components/schedule/ErrorDisplay.vue';
-  import WeekNavigation from '@/components/schedule/WeekNavigation.vue';
-  import WeekCalendar from '@/components/schedule/WeekCalendar.vue';
-  
-  // Utility functions
-  const getStartOfWeek = (date) => {
-    const newDate = new Date(date);
-    const day = newDate.getDay();
-    const diff = newDate.getDate() - day + (day === 0 ? -6 : 1);
-    newDate.setDate(diff);
-    newDate.setHours(0, 0, 0, 0);
-    return newDate;
-  };
-  
-  const getEndOfWeek = (date) => {
-    const endDate = new Date(date);
-    endDate.setDate(endDate.getDate() + 6);
-    endDate.setHours(23, 59, 59, 999);
-    return endDate;
-  };
-  
-  export default {
-    name: 'ScheduleView',
-    components: {
-      FileUploader,
-      ErrorDisplay,
-      WeekNavigation,
-      WeekCalendar
-    },
-    setup() {
-      const currentWeek = ref(getStartOfWeek(new Date()));
-      const events = ref([]);
-      const error = ref('');
-      const loading = ref(false);
-      const selectedGroup = ref(null);
-  
-      const fetchSchedule = async () => {
-        try {
-          loading.value = true;
-          const response = await fetch('/api/schedule', {
-            credentials: 'include'
-          });
-          
-          if (!response.ok) {
-            throw new Error('Failed to fetch schedule');
-          }
-  
-          const data = await response.json();
-          const filteredEvents = data.filter(event => {
-            const eventStart = new Date(event.startTime);
-            const eventEnd = new Date(event.endTime);
-            return eventStart >= currentWeek.value && 
-                   eventEnd <= getEndOfWeek(currentWeek.value);
-          });
-  
-          events.value = filteredEvents;
-        } catch (err) {
-          error.value = 'Failed to load schedule. Please try again later.';
-        } finally {
-          loading.value = false;
+    const toggleGroups = () => {
+      showGroups.value = !showGroups.value;
+    };
+
+    const fetchSchedule = async () => {
+      try {
+        loading.value = true;
+        const response = await fetch('/api/schedule', {
+          credentials: 'include'
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch schedule');
         }
-      };
-  
-      const handleUpload = async (uploadData) => {
-        try {
-          const formData = new FormData();
-          formData.append('file', uploadData.file);
-          formData.append('groupName', uploadData.groupName);
-  
-          const response = await fetch('/api/schedule/upload', {
-            method: 'POST',
-            body: formData,
-          });
-  
-          if (!response.ok) {
-            throw new Error('Upload failed');
-          }
-  
-          await fetchSchedule();
-          error.value = '';
-        } catch (err) {
-          error.value = 'Failed to upload schedule. Please try again.';
-        }
-      };
-  
-      const previousWeek = () => {
+
+        const data = await response.json();
+        events.value = data;
+      } catch (err) {
+        error.value = 'Failed to load schedule. Please try again later.';
+      } finally {
+        loading.value = false;
+      }
+    };
+
+    const filteredEvents = computed(() => {
+      if (!selectedGroup.value) return events.value;
+      return events.value.filter(event => {
+        const eventStart = new Date(event.startTime);
+        const eventEnd = new Date(event.endTime);
+        return event.group === selectedGroup.value &&
+               eventStart >= currentWeek.value && 
+               eventEnd <= getEndOfWeek(currentWeek.value);
+      });
+    });
+
+    const handleGroupSelect = (group) => {
+      selectedGroup.value = group;
+      // Hide groups list on mobile after selection
+      if (window.innerWidth < 1024) {
+        showGroups.value = false;
+      }
+    };
+
+    const handleUploadSuccess = async () => {
+      await fetchSchedule();
+      if (this.$refs.groupList?.refresh) {
+        await this.$refs.groupList.refresh();
+      }
+    };
+
+    // Fetch initial data
+    fetchSchedule();
+
+    return {
+      currentWeek,
+      events,
+      error,
+      loading,
+      selectedGroup,
+      showGroups,
+      toggleGroups,
+      handleGroupSelect,
+      handleUploadSuccess,
+      handleError: (msg) => error.value = msg,
+      previousWeek: () => {
         const newDate = new Date(currentWeek.value);
         newDate.setDate(newDate.getDate() - 7);
         currentWeek.value = getStartOfWeek(newDate);
-      };
-  
-      const nextWeek = () => {
+      },
+      nextWeek: () => {
         const newDate = new Date(currentWeek.value);
         newDate.setDate(newDate.getDate() + 7);
         currentWeek.value = getStartOfWeek(newDate);
-      };
-  
-      // Filter events based on selected group
-      const filteredEvents = computed(() => {
-        if (!selectedGroup.value || !events.value) return events.value;
-        return events.value.filter(event => event.group === selectedGroup.value);
-      });
-  
-      // Fetch initial data
-      fetchSchedule();
-  
-      return {
-        currentWeek,
-        events,
-        error,
-        loading,
-        selectedGroup,
-        handleUpload,
-        previousWeek,
-        nextWeek,
-        getEndOfWeek,
-        filteredEvents
-      };
-    }
-  };
-  </script>
-  
-  <style scoped>
+      },
+      getEndOfWeek,
+      filteredEvents
+    };
+  }
+};
+</script>
+
+<style scoped>
+.schedule-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+@media (max-width: 768px) {
   .schedule-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+    padding: 10px;
   }
-  
-  .card {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  
-  .card-header {
-    padding: 1rem;
-    border-bottom: 1px solid #eee;
-  }
-  
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card-header {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.card-content {
+  padding: 1rem;
+}
+
+@media (max-width: 640px) {
+  .card-header,
   .card-content {
-    padding: 1rem;
+    padding: 0.75rem;
   }
-  </style>
+}
+</style>
