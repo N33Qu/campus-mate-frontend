@@ -18,7 +18,7 @@ export function useCalendar() {
     const error = ref(null)
     const modalMode = ref('view')
     const {showNotification} = useShowNotification()
-    const { canEdit, canView, validateEdit, validateView } = usePermissions()
+    const { canEdit, validateEdit, validateView } = usePermissions()
 
     const calendarOptions = computed(() => ({
         plugins: [dayGridPlugin, interactionPlugin],
@@ -40,7 +40,7 @@ export function useCalendar() {
             validateEdit()
             isLoading.value = true
             error.value = null
-
+            console.log(eventData)
             await calendarService.createEvent(eventData)
             await fetchEvents()
             showNotification('Wydarzenie utworzone pomyślnie')

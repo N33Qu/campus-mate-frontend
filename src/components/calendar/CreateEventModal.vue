@@ -1,6 +1,9 @@
 <script setup>
 import { eventSchema } from '@/validation/eventSchema';
 import { useCalendarForm } from '@/composables/calendar/useCalendarForm.js';
+import {onMounted, ref, watch} from "vue";
+import {userService} from "@/services/userService.js";
+import {useAuthStore} from "@/stores/authStore.js";
 
 const props = defineProps({
   isOpen: {
@@ -16,6 +19,7 @@ const props = defineProps({
   }
 });
 
+const authStore = useAuthStore();
 const emit = defineEmits(['close', 'save']);
 
 const {
@@ -37,6 +41,8 @@ const {
   currentEvent: props.initialDates
 });
 
+const teams = ref([]);
+
 const handleSubmit = async () => {
   const result = await onSubmit();
   if (result) {
@@ -50,6 +56,21 @@ const handleSubmit = async () => {
     emit('save', eventData);
   }
 };
+
+watch ( () => props.isOpen, async (newValue) => {
+  if (!newValue) {
+    resetForm();
+
+    const response = await userService.getUserTeams(authStore.userId);
+    teams.value = response.data;
+  }
+});
+
+onMounted(async () => {
+  const response = await userService.getUserTeams(authStore.userId);
+  teams.value = response.data;
+})
+
 </script>
 
 <template>
@@ -108,14 +129,11 @@ const handleSubmit = async () => {
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700">Id zespołu</label>
-        <input
-            v-model="teamId"
-            v-bind="teamIdProps"
-            type="number"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-            :class="{ 'border-red-500': errors.teamId }"
-        />
+        <label class="block text-sm font-medium text-gray-700">Zespół</label>
+        <select v-model="teamId" v-bind="teamIdProps" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500" :class="{ 'border-red-500': errors.teamId }">
+          <option value="" disabled>Wybierz zespół</option>
+          <option v-for="team in teams" :key="team.teamId" :value="team.teamId">{{ team.teamName }}</option>
+        </select>
         <span v-if="errors.teamId" class="text-sm text-red-500">{{ errors.teamId }}</span>
       </div>
 

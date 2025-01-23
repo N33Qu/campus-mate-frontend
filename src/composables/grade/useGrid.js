@@ -1,4 +1,3 @@
-import { computed } from 'vue';
 
 export function useGrid(grades, canManageGrades) {
     const columnDefs = [
@@ -43,10 +42,10 @@ export function useGrid(grades, canManageGrades) {
                 return `
                     <div class="flex justify-center space-x-5">
                         <button class="edit-btn text-editButton hover:text-editButtonHover">
-                            <i class="pi pi-pencil"></i>
+                            <i class="edit-btn pi pi-pencil"></i>
                         </button>
-                        <button class="delete-btn text-deleteButton hover:text-deleteButtonHover">
-                            <i class="pi pi-trash"></i>
+                        <button class="delete-btn text-deleteButton hover:text-deleteButtonHover ">
+                            <i class="delete-btn pi pi-trash"></i>
                         </button>
                     </div>
                 `;

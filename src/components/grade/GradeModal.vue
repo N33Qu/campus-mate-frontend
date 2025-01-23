@@ -1,7 +1,6 @@
 <script setup>
 import { gradeSchema } from '@/validation/gradeSchema'
 import { useGradeForm } from '@/composables/grade/useGradeForm.js'
-import {watch} from "vue";
 
 const props = defineProps({
   isOpen: {
@@ -35,13 +34,15 @@ const {
   onSubmit,
   students,
   isLoadingStudents,
-  studentError
+  studentError,
+  teams,
+  selectedTeamId,
+  isLoadingTeams
 } = useGradeForm(gradeSchema, props)
 
 const handleSubmit = async () => {
   try {
     const result = await onSubmit();
-    console.log("Result", result)
     emit('save-grade', result);
   } catch (error) {
     console.error('Form submission error:', error);
@@ -110,6 +111,26 @@ const handleSubmit = async () => {
         </div>
 
         <div v-if="mode === 'add'">
+          <label class="block text-gray-700 font-bold mb-2" for="teamId">
+            Zespół (Opcjonalny)
+          </label>
+          <select
+              v-model="selectedTeamId"
+              id="teamId"
+              class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Wybierz zespół (opcjonalnie)</option>
+            <option
+                v-for="team in teams"
+                :key="team.teamId"
+                :value="team.teamId"
+            >
+              {{ team.teamName }}
+            </option>
+          </select>
+        </div>
+
+        <div v-if="mode === 'add'">
           <label class="block text-gray-700 font-bold mb-2" for="userId">
             Uczeń
           </label>
@@ -125,7 +146,11 @@ const handleSubmit = async () => {
               :class="{ 'border-red-500': errors.userId }"
           >
             <option value=""></option>
-            <option v-for="student in students" :key="student.userId" :value="student.userId">
+            <option
+                v-for="student in students"
+                :key="student.userId"
+                :value="student.userId"
+            >
               {{ student.firstName }} {{ student.lastName }}
             </option>
           </select>

@@ -52,7 +52,6 @@ const handleSubmit = async () => {
     endDate: new Date(formResult.end).toISOString(),
   };
 
-  console.log('Final event data:', eventData);
   emit('save', eventData);
 };
 </script>

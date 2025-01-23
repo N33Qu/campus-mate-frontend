@@ -1,12 +1,16 @@
 import {useForm} from "vee-validate";
-import {onMounted, ref, watch} from "vue";
+import {ref, watch} from "vue";
 import {userService} from '@/services/userService.js';
+import {teamService} from '@/services/teamService.js';
 
 export function useGradeForm(schema, props) {
     const isSubmitting = ref(false);
     const students = ref([]);
     const isLoadingStudents = ref(false);
     const studentError = ref('');
+    const teams = ref([]);
+    const selectedTeamId = ref('');
+    const isLoadingTeams = ref(false);
 
     const defaultValues = {
         subjectName: '',
@@ -30,11 +34,36 @@ export function useGradeForm(schema, props) {
         }
     });
 
-    const fetchStudents = async () => {
+    const fetchTeams = async () => {
+        try {
+            isLoadingTeams.value = true;
+            const response = await teamService.getTeams();
+            teams.value = response.data;
+        } catch (error) {
+            console.error('Error fetching teams:', error);
+        } finally {
+            isLoadingTeams.value = false;
+        }
+    };
+
+    const fetchStudents = async (teamId = null) => {
         try {
             isLoadingStudents.value = true;
             studentError.value = '';
-            students.value = await userService.getAllUsersByRole('ROLE_STUDENT');
+
+            let fetchedStudents;
+            if (teamId) {
+                const response = await teamService.getTeamUsers(teamId);
+                fetchedStudents = response.data.filter(user => user.role === 'ROLE_STUDENT');
+            } else {
+                fetchedStudents = await userService.getAllUsersByRole('ROLE_STUDENT');
+            }
+
+            students.value = fetchedStudents;
+
+            if (!fetchedStudents || fetchedStudents.length === 0) {
+                studentError.value = 'Brak użytkowników';
+            }
         } catch (error) {
             console.error('Error fetching students:', error);
             studentError.value = 'Nie udało się pobrać listy uczniów';
@@ -43,7 +72,13 @@ export function useGradeForm(schema, props) {
         }
     };
 
+    fetchTeams();
+    fetchStudents();
 
+
+    watch(selectedTeamId, (newTeamId) => {
+        fetchStudents(newTeamId || null);
+    });
 
     watch(props, () => {
         if (props.mode === 'edit' && props.currentGrade) {
@@ -96,6 +131,9 @@ export function useGradeForm(schema, props) {
         students,
         isLoadingStudents,
         studentError,
+        teams,
+        selectedTeamId,
+        isLoadingTeams,
         fetchStudents
     };
 }
