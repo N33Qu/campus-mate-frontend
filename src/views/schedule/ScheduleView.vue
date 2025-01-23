@@ -16,7 +16,7 @@
                 @click="toggleGroups"
                 class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
               >
-                {{ showGroups ? 'Hide Groups' : 'Show Groups' }}
+                {{ showGroups ? 'Schowaj grupy' : 'Poka grupy' }}
               </button>
             </div>
             <div :class="{'hidden md:block lg:block': !showGroups}">
@@ -56,7 +56,19 @@
 
           <div class="card-content overflow-x-auto">
             <ErrorDisplay :message="error" />
+            <div v-if="hasNoPlans" class="text-center py-8">
+              <artifact identifier="no-plan-view" type="text/html" title="No Plans Available View">
+                <div class="flex justify-center items-center h-full">
+                  <div class="text-center">
+                    <i class="fa fa-calendar-times-o text-4xl text-gray-400 mb-4"></i>
+                    <h2 class="text-xl font-medium text-gray-700">Brak dostępnych planów</h2>
+                    <p class="text-gray-500">Wczytaj plik ICS, aby wyświetlić plan.</p>
+                  </div>
+                </div>
+                </artifact>
+            </div>
             <WeekCalendar 
+              v-else
               :events="filteredEvents"
               :current-week="currentWeek"
               class="min-w-[800px]"
@@ -68,8 +80,8 @@
   </div>
 </template>
 
-<script>
-import { ref, computed } from 'vue';
+<script setup>
+import { ref, computed, onMounted } from 'vue';
 import FileUploader from '@/components/schedule/FileUploader.vue';
 import GroupList from '@/components/schedule/GroupList.vue';
 import ErrorDisplay from '@/components/schedule/ErrorDisplay.vue';
@@ -92,103 +104,81 @@ const getEndOfWeek = (date) => {
   return endDate;
 };
 
-export default {
-  name: 'ScheduleView',
-  components: {
-    FileUploader,
-    GroupList,
-    ErrorDisplay,
-    WeekNavigation,
-    WeekCalendar
-  },
-  
-  setup() {
-    const currentWeek = ref(getStartOfWeek(new Date()));
-    const events = ref([]);
-    const error = ref('');
-    const loading = ref(false);
-    const selectedGroup = ref(null);
-    const showGroups = ref(false);
+const currentWeek = ref(getStartOfWeek(new Date()));
+const events = ref([]);
+const error = ref('');
+const loading = ref(false);
+const selectedGroup = ref(null);
+const showGroups = ref(false);
+const groupListRef = ref(null);
 
-    const toggleGroups = () => {
-      showGroups.value = !showGroups.value;
-    };
-
-    const fetchSchedule = async () => {
-      try {
-        loading.value = true;
-        const response = await fetch('/api/schedule', {
-          credentials: 'include'
-        });
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch schedule');
-        }
-
-        const data = await response.json();
-        events.value = data;
-      } catch (err) {
-        error.value = 'Failed to load schedule. Please try again later.';
-      } finally {
-        loading.value = false;
-      }
-    };
-
-    const filteredEvents = computed(() => {
-      if (!selectedGroup.value) return events.value;
-      return events.value.filter(event => {
-        const eventStart = new Date(event.startTime);
-        const eventEnd = new Date(event.endTime);
-        return event.group === selectedGroup.value &&
-               eventStart >= currentWeek.value && 
-               eventEnd <= getEndOfWeek(currentWeek.value);
-      });
+const fetchSchedule = async () => {
+  try {
+    loading.value = true;
+    const response = await fetch('/api/schedule', {
+      credentials: 'include'
     });
-
-    const handleGroupSelect = (group) => {
-      selectedGroup.value = group;
-      // Hide groups list on mobile after selection
-      if (window.innerWidth < 1024) {
-        showGroups.value = false;
-      }
-    };
-
-    const handleUploadSuccess = async () => {
-      await fetchSchedule();
-      if (this.$refs.groupList?.refresh) {
-        await this.$refs.groupList.refresh();
-      }
-    };
-
-    // Fetch initial data
-    fetchSchedule();
-
-    return {
-      currentWeek,
-      events,
-      error,
-      loading,
-      selectedGroup,
-      showGroups,
-      toggleGroups,
-      handleGroupSelect,
-      handleUploadSuccess,
-      handleError: (msg) => error.value = msg,
-      previousWeek: () => {
-        const newDate = new Date(currentWeek.value);
-        newDate.setDate(newDate.getDate() - 7);
-        currentWeek.value = getStartOfWeek(newDate);
-      },
-      nextWeek: () => {
-        const newDate = new Date(currentWeek.value);
-        newDate.setDate(newDate.getDate() + 7);
-        currentWeek.value = getStartOfWeek(newDate);
-      },
-      getEndOfWeek,
-      filteredEvents
-    };
+    if (!response.ok) {
+      throw new Error('Failed to fetch schedule');
+    }
+    events.value = await response.json();
+  } catch (err) {
+    error.value = 'Wystąpił błąd podczas pobierania planu. Spróbuj ponownie później.';
+  } finally {
+    loading.value = false;
   }
 };
+
+const hasNoPlans = computed(() => events.value.length === 0);
+
+const filteredEvents = computed(() => {
+  if (!selectedGroup.value) return events.value;
+  return events.value.filter(event => {
+    const eventStart = new Date(event.startTime);
+    const eventEnd = new Date(event.endTime);
+    return event.group === selectedGroup.value &&
+           eventStart >= currentWeek.value && 
+           eventEnd <= getEndOfWeek(currentWeek.value);
+  });
+});
+
+const toggleGroups = () => {
+  showGroups.value = !showGroups.value;
+};
+
+const handleGroupSelect = (group) => {
+  selectedGroup.value = group;
+  if (window.innerWidth < 1024) {
+    showGroups.value = false;
+  }
+};
+
+const handleUploadSuccess = async () => {
+  await fetchSchedule();
+  if (groupListRef.value) {
+    await groupListRef.value.refresh();
+  }
+};
+
+const handleError = (msg) => {
+  error.value = msg;
+};
+
+const previousWeek = () => {
+  const newDate = new Date(currentWeek.value);
+  newDate.setDate(newDate.getDate() - 7);
+  currentWeek.value = getStartOfWeek(newDate);
+};
+
+const nextWeek = () => {
+  const newDate = new Date(currentWeek.value);
+  newDate.setDate(newDate.getDate() + 7);
+  currentWeek.value = getStartOfWeek(newDate);
+};
+
+onMounted(() => {
+  fetchSchedule();
+});
 </script>
 
 <style scoped>

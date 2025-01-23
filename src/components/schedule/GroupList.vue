@@ -11,7 +11,7 @@
         </button>
       </div>
     </div>
-    <div class="space-y-3">
+    <div class="space-y-3 max-h-[400px] overflow-y-auto">
       <button
         v-for="group in sortedGroups"
         :key="group"
