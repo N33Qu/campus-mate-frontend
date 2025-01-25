@@ -18,7 +18,7 @@ export function useCalendar() {
     const error = ref(null)
     const modalMode = ref('view')
     const {showNotification} = useShowNotification()
-    const { canEdit, validateEdit, validateView } = usePermissions()
+    const { canEdit, canView, validateEdit, validateView } = usePermissions()
 
     const calendarOptions = computed(() => ({
         plugins: [dayGridPlugin, interactionPlugin],
