@@ -54,7 +54,7 @@ const router = createRouter({
             path: '/schedule',
             name: 'schedule',
             component: () => import('@/views/schedule/ScheduleView.vue'),
-            meta: {  roles: ['ROLE_STUDENT', 'ROLE_LECTURER'] },
+            meta: {  roles: ['ROLE_STUDENT', 'ROLE_LECTURER', 'ROLE_ADMIN'] },
         },
         // Teams Routes
         {
@@ -69,13 +69,6 @@ const router = createRouter({
             component: () => import('@/views/team/TeamView.vue'),
             meta: { roles: ['ROLE_STUDENT', 'ROLE_LECTURER'] },
         },
-        // Users Routes
-        // {
-        //     path: '/users',
-        //     name: 'users',
-        //     component: () => import('@/views/user/UsersView.vue'),
-        //     meta: { roles: ['ROLE_ADMIN'] },
-        // },
         // User Profile Route
         {
             path: '/profile/:id',

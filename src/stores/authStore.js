@@ -15,7 +15,8 @@ export const useAuthStore = defineStore('auth', {
         isLoggedIn: false,
         role: null,
         id: null,
-        isFirstPasswordChanged: false
+        isFirstPasswordChanged: false,
+        group : null
     }),
     actions: {
         login() {
@@ -93,6 +94,17 @@ export const useAuthStore = defineStore('auth', {
             } catch (error) {
                 console.error('Error retrieving isFirstPasswordChanged from JWT:', error);
                 return false;
+            }
+        },
+
+        getGroup() {
+            try {
+                const token = Cookies.get('jwt');
+                const decodedToken = jwtDecode(token);
+                return decodedToken.group || null;
+            } catch (error) {
+                console.error('Error retrieving group from JWT:', error);
+                return null;
             }
         },
     },

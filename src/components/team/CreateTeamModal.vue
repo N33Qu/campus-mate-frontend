@@ -18,11 +18,11 @@ const { handleSubmit, errors, values, setFieldValue } = useForm({
 const onSubmit = handleSubmit(async (values) => {
   try {
     await teamService.createTeam(values);
-    toast.success('Team created successfully');
+    toast.success('Zespoł utworzony pomyślnie');
     emit('team-created');
     emit('close');
   } catch (error) {
-    toast.error('Error creating team');
+    toast.error('Błąd podczas tworzenia zespołu');
     console.error('Error:', error);
   }
 });
@@ -32,14 +32,14 @@ const onSubmit = handleSubmit(async (values) => {
   <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg w-full max-w-lg mx-4">
       <div class="p-6 border-b">
-        <h2 class="text-2xl font-bold">Create New Team</h2>
+        <h2 class="text-2xl font-bold">Stwórz nowy zespół</h2>
       </div>
 
       <form @submit.prevent="onSubmit" class="p-6">
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">
-              Team Name
+              Nazwa zespołu
             </label>
             <input
                 type="text"
@@ -54,7 +54,7 @@ const onSubmit = handleSubmit(async (values) => {
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">
-              Description
+              Opis (opcjonalne)
             </label>
             <textarea
                 :value="values.description"

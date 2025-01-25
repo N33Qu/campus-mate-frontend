@@ -20,30 +20,48 @@ const isMenuOpen = ref(false);
 const isNavbarVisible = ref(true);
 let lastScrollPosition = 0;
 
-const links = computed(() => [
-  ...(userRole.value !== 'ROLE_ADMIN' && isLoggedIn.value
-      ? [
-        { path: '/', label: 'Strona Główna', icon: 'pi pi-home' },
-        { path: '/calendar', label: 'Kalendarz', icon: 'pi pi-calendar' },
-      ]: []),
-  ...(isLoggedIn.value
-      ? [{ path: '/addressbook', label: 'Książka Adresowa', icon: 'pi pi-address-book' },
-      ]: []),
-  ...(userRole.value !== 'ROLE_ADMIN' && isLoggedIn.value
-      ? [{ path: '/grades', label: 'Oceny', icon: 'pi pi-chart-line' },
-        { path: '/posts', label: 'Ogłoszenia', icon: 'pi pi-file' },
-        {path: '/schedule', label: 'Plan', icon: 'pi pi-server' },
-        { path: '/teams', label: 'Zespoły', icon: 'pi pi-users' },
-      ]: []),
-  ...(userRole.value === 'ROLE_ADMIN'
-      ? [{ path: '/adminPanel', label: 'Panel Administratora', icon: 'pi pi-cog' },
-      ]: []),
-  ...(isLoggedIn.value
-      ? [{ path: '/profile/' + userId.value, label: 'Profil', icon: 'pi pi-user' },
-        { path: '/logout', label: 'Wyloguj Się', icon: 'pi pi-sign-out' },
-      ]
-      : [{ path: '/login', label: 'Zaloguj Się', icon: 'pi pi-sign-in' }]),
-]);
+const menuLinks = {
+  admin: [
+    { path: '/adminPanel', label: 'Panel Administratora', icon: 'pi pi-cog' },
+  ],
+  user: [
+    { path: '/', label: 'Strona Główna', icon: 'pi pi-home' },
+    { path: '/calendar', label: 'Kalendarz', icon: 'pi pi-calendar' },
+    { path: '/grades', label: 'Oceny', icon: 'pi pi-chart-line' },
+    { path: '/posts', label: 'Ogłoszenia', icon: 'pi pi-file' },
+    { path: '/teams', label: 'Zespoły', icon: 'pi pi-users' },
+  ],
+  common: [
+    { path: '/addressbook', label: 'Książka Adresowa', icon: 'pi pi-address-book' },
+    { path: '/schedule', label: 'Plan', icon: 'pi pi-server' },
+  ]
+};
+
+const links = computed(() => {
+  let baseLinks = [];
+
+  if (isLoggedIn.value) {
+    if (userRole.value !== 'ROLE_ADMIN') {
+      baseLinks.push({ path: '/', label: 'Strona Główna', icon: 'pi pi-home' });
+    }
+
+    const otherLinks = [
+      ...(userRole.value === 'ROLE_ADMIN' ? menuLinks.admin : menuLinks.user.slice(1)),
+      ...menuLinks.common.map(link => ({
+        ...link,
+        path: typeof link.path === 'function' ? link.path(userId.value) : link.path
+      }))
+    ].sort((a, b) => a.label.localeCompare(b.label));
+
+    baseLinks = [...baseLinks, ...otherLinks];
+    baseLinks.push({ path: '/profile/' + userId.value, label: 'Profil', icon: 'pi pi-user' });
+    baseLinks.push({ path: '/logout', label: 'Wyloguj Się', icon: 'pi pi-sign-out' });
+  } else {
+    baseLinks = [{ path: '/login', label: 'Zaloguj Się', icon: 'pi pi-sign-in' }];
+  }
+
+  return baseLinks;
+});
 
 const handleScroll = () => {
   const currentScrollPosition = window.scrollY;
