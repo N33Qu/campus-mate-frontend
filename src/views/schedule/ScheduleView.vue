@@ -18,7 +18,6 @@ const {getEndOfWeek} = useDate();
 
 const selectedGroup = ref(null);
 const showGroups = ref(false);
-const groupListRef = ref(null);
 
 const hasNoPlans = computed(() => events.value.length === 0);
 const filteredEventsData = computed(() => filteredEvents(selectedGroup.value).value);
@@ -36,15 +35,20 @@ const handleGroupSelect = (group) => {
 
 const handleUploadSuccess = async () => {
   if (!isAdmin.value) return;
-
-  await fetchSchedule();
-  if (groupListRef.value) {
-    await groupListRef.value.refresh();
-  }
+  await initializeGroup()
+  location.reload();
 };
 
 const handleError = (msg) => {
   error.value = msg;
+};
+
+const handleGroupDeleted = async (group) => {
+  if (selectedGroup.value === group) {
+    selectedGroup.value = null;
+  }
+  await fetchSchedule();
+  location.reload();
 };
 
 const initializeGroup = async () => {
@@ -77,10 +81,14 @@ onUnmounted(() => {
   window.removeEventListener('resize', handleResize);
 });
 
+watch(events.value, async () => {
+  await fetchSchedule();
+}, { deep: true })
+
 </script>
 
 <template>
-  <div class="max-w-[1200px] mx-auto p-5 md:p-4">
+  <div class="max-w-[1200px] mx-auto p-5 md:p-4" >
     <div class="grid lg:grid-cols-4 md:grid-cols-1 gap-4">
       <div class="lg:col-span-1 md:col-span-1">
         <div class="bg-elementLight rounded-lg shadow-sm">
@@ -102,6 +110,7 @@ onUnmounted(() => {
               <GroupList
                   :selected-group="selectedGroup"
                   @group-selected="handleGroupSelect"
+                  @group-deleted="handleGroupDeleted"
                   @error="handleError"
                   ref="groupList"
               />
@@ -135,8 +144,9 @@ onUnmounted(() => {
           <div class="p-4 overflow-x-auto">
             <ErrorDisplay :message="error"/>
             <div v-if="hasNoPlans" class="text-center py-8">
-              <div class="flex justify-center items-center h-full">
+              <div class="flex justify-center items-center">
                 <div class="text-center">
+                  <i class="pi pi-calendar-times text-4xl text-gray-400 mb-4"></i>
                   <h2 class="text-xl font-medium text-gray-700">Brak dostępnych planów</h2>
                   <p class="text-gray-500">
                     <template v-if="isAdmin">
@@ -153,7 +163,7 @@ onUnmounted(() => {
                 v-else
                 :events="filteredEventsData"
                 :current-week="currentWeek"
-                class="min-w-[800px]"
+                class="min-w-[800px] xl:min-w-full"
             />
           </div>
         </div>

@@ -1,5 +1,4 @@
 import api from '@/config/axiosConfig';
-import { usePermissions } from '@/composables/usePermissions';
 
 export const scheduleService = {
     async fetchSchedules() {
@@ -7,12 +6,18 @@ export const scheduleService = {
         return response.data;
     },
 
-    async uploadSchedule(file, groupName) {
-        const { isAdmin } = usePermissions();
-        if (!isAdmin.value) {
-            throw new Error('Unauthorized: Admin access required');
-        }
+    async fetchGroups() {
+        const response = await api.get('/schedule');
+        const schedules = response.data;
+        return [...new Set(schedules.map(schedule => schedule.group))];
+    },
 
+    async deleteSchedule(groupName) {
+        const response = await api.delete(`/schedule/${groupName}`);
+        return response.data;
+    },
+
+    async uploadSchedule(file, groupName) {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('groupName', groupName);

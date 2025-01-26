@@ -48,9 +48,10 @@ const handleUpload = async () => {
 
   isUploading.value = true;
   try {
-    await scheduleService.uploadSchedule(selectedFile.value, groupName.value.trim());
-    emit('upload-success');
+    const result = await scheduleService.uploadSchedule(selectedFile.value, groupName.value.trim());
     resetForm();
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    emit('upload-success');
   } catch (err) {
     emit('error', 'Przesyłanie planu nie powiodło się');
   } finally {
@@ -75,7 +76,7 @@ const resetForm = () => {
           @dragleave.prevent="dragLeave"
           @drop.prevent="dropFile"
           class="flex flex-col space-y-4 p-6 border-2 border-dashed rounded-lg transition-colors duration-200"
-          :class="[isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300 bg-white hover:border-blue-500']"
+          :class="[isDragging ? 'border-element' : 'border-gray-300 bg-white hover:border-elementHover']"
       >
         <div class="flex flex-col items-center justify-center text-center">
           <input type="file" ref="fileInput" accept=".ics" @change="onFileChange" class="hidden" />
@@ -85,7 +86,7 @@ const resetForm = () => {
             </svg>
             <p class="text-sm text-gray-600">
               Przeciągnij i upuść plik ICS lub
-              <span @click="$refs.fileInput.click()" class="text-blue-600 hover:underline cursor-pointer">
+              <span @click="$refs.fileInput.click()" class="text-textLink hover:underline cursor-pointer">
                 wybierz plik
               </span>
             </p>
@@ -95,7 +96,7 @@ const resetForm = () => {
         <input
             v-model="groupName"
             type="text"
-            class="px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700 placeholder-gray-400 bg-white"
+            class="px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-appBg focus:border-transparent outline-none text-gray-700 placeholder-gray-400 bg-white"
             placeholder="Wprowadź nazwę grupy"
         />
 
@@ -107,7 +108,7 @@ const resetForm = () => {
             @click="handleUpload"
             :disabled="!canUpload || isUploading"
             class="px-4 py-2.5 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-2"
-            :class="[canUpload && !isUploading ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-gray-100 text-gray-400 cursor-not-allowed']"
+            :class="[canUpload && !isUploading ? 'bg-addButton text-white hover:bg-addButtonHover' : 'bg-gray-100 text-gray-400 cursor-not-allowed']"
         >
           <svg v-if="isUploading" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>

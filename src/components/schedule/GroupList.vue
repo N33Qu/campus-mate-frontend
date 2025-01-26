@@ -1,5 +1,8 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import {ref, computed, onMounted, watch} from 'vue';
+import { scheduleService } from '@/services/scheduleService';
+import { usePermissions } from '@/composables/schedule/usePermission';
+import DeleteConfirmationModal from '@/components/ui/DeleteConfirmationModal.vue';
 
 const props = defineProps({
   selectedGroup: {
@@ -8,10 +11,13 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['group-selected', 'error']);
+const emit = defineEmits(['group-selected', 'error', 'group-deleted']);
+const { isAdmin } = usePermissions();
 const groups = ref([]);
 const sortAscending = ref(true);
 const searchQuery = ref('');
+const showDeleteModal = ref(false);
+const groupToDelete = ref(null);
 
 const filteredGroups = computed(() => {
   let filtered = groups.value;
@@ -42,23 +48,34 @@ const handleGroupSelect = (group) => {
 
 const fetchGroups = async () => {
   try {
-    const response = await fetch('/api/schedule', {
-      credentials: 'include'
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch groups');
-    }
-
-    const schedules = await response.json();
-    groups.value = [...new Set(schedules.map(schedule => schedule.group))];
+    groups.value = await scheduleService.fetchGroups();
   } catch (err) {
     emit('error', 'Failed to load groups');
   }
 };
 
-const refresh = () => {
-  return fetchGroups();
+const handleDeleteClick = (group, event) => {
+  event.stopPropagation();
+  groupToDelete.value = group;
+  showDeleteModal.value = true;
+};
+
+const handleDeleteConfirm = async () => {
+  try {
+    await scheduleService.deleteSchedule(groupToDelete.value);
+    emit('group-deleted', groupToDelete.value);
+    await fetchGroups();
+  } catch (err) {
+    emit('error', 'Nie udało się usunąć planu');
+  } finally {
+    showDeleteModal.value = false;
+    groupToDelete.value = null;
+  }
+};
+
+const handleDeleteCancel = () => {
+  showDeleteModal.value = false;
+  groupToDelete.value = null;
 };
 
 onMounted(() => {
@@ -66,12 +83,13 @@ onMounted(() => {
 });
 
 defineExpose({
-  refresh
+  refresh: fetchGroups
 });
+
 </script>
 
 <template>
-  <div class="p-6 bg-white rounded-lg shadow-sm">
+  <div class="p-6 bg-elementLight rounded-lg shadow-sm">
     <div class="flex flex-col gap-4">
       <!-- Search -->
       <div class="relative">
@@ -103,10 +121,17 @@ defineExpose({
             v-for="group in filteredGroups"
             :key="group"
             @click="handleGroupSelect(group)"
-            class="w-full px-5 py-3 text-left rounded-lg transition-colors duration-200 hover:bg-elementHover"
+            class="w-full px-5 py-3 text-left rounded-lg transition-colors duration-200 hover:bg-elementHover flex justify-between items-center"
             :class="[selectedGroup === group ? 'bg-element' : 'text-gray-700']"
         >
-          {{ group }}
+          <span>{{ group }}</span>
+          <button
+              v-if="isAdmin"
+              @click="handleDeleteClick(group, $event)"
+              class="text-red-600 hover:text-red-800 p-1"
+          >
+           <i class="pi pi-trash"></i>
+          </button>
         </button>
       </div>
 
@@ -114,5 +139,13 @@ defineExpose({
         {{ groups.length === 0 ? 'Brak grup' : 'Nie znaleziono grup' }}
       </div>
     </div>
+
+    <DeleteConfirmationModal
+        v-if="showDeleteModal"
+        title="Usuń plan"
+        :message="`Czy na pewno chcesz usunąć plan dla grupy ${groupToDelete}?`"
+        @confirm="handleDeleteConfirm"
+        @cancel="handleDeleteCancel"
+    />
   </div>
 </template>
