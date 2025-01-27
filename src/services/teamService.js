@@ -30,15 +30,10 @@ export const teamService = {
     },
 
     async addUsersToTeam(teamId, userIds) {
-        console.log(userIds);
         return api.post(`/team/${teamId}/addUsers`, { userIds });
     },
 
     async removeUserFromTeam(teamId, userId) {
         return api.delete(`/team/${teamId}/removeUser/${userId}`);
     },
-
-    async getAvailableUsers(teamId) {
-        return api.get(`/team/${teamId}/available-users`);
-    }
 };

@@ -18,8 +18,8 @@ const emit = defineEmits(['delete', 'edit', 'view']);
         :key="entry.entryId"
         :entry="entry"
         @delete="(entryId) => emit('delete', entryId)"
-        @edit="(entry) => emit('edit', entry)"
-        @view="(entry) => emit('view', entry)"
+        @edit="() => emit('edit', entry)"
+        @view="() => emit('view', entry)"
     />
   </div>
 </template>

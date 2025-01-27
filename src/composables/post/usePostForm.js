@@ -4,11 +4,10 @@ import * as yup from 'yup';
 import { useTeams } from '@/composables/team/useTeams.js';
 import { usePost } from '@/composables/post/usePost';
 import {useAuthStore} from "@/stores/authStore.js";
-import {teamService} from "@/services/teamService.js";
 
 export const usePostForm = (props, emit) => {
-    const { teams, fetchTeams, fetchUserTeams } = useTeams();
-    const { post, fetchPost, createPost, updatePost } = usePost();
+    const {teams, fetchTeams, fetchUserTeams } = useTeams();
+    const { fetchPost, createPost, updatePost } = usePost();
 
     const isEditing = computed(() => !!props.postId);
     const modalTitle = computed(() => isEditing.value ? 'Edytuj Ogłoszenie' : 'Dodaj Ogłoszenie');
@@ -80,7 +79,6 @@ export const usePostForm = (props, emit) => {
                 };
                 await updatePost(props.postId, updateData);
             } else {
-                console.log('Selected teams:', values);
                 await createPost({
                     postTitle: values.postTitle,
                     postContent: values.postContent,

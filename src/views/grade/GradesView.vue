@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, watch} from 'vue';
+import {onMounted} from 'vue';
 import GradesGrid from '@/components/grade/GradesGrid.vue';
 import GradeModal from '@/components/grade/GradeModal.vue';
 import GradeDetailsView from '@/components/grade/GradeDetails.vue';

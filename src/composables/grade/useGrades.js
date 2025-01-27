@@ -10,7 +10,6 @@ export function useGrades() {
     const modalMode = ref('add');
     const gridApi = ref(null);
     const selectedGrade = ref(null);
-    const message = ref(null);
     const { showNotification } = useShowNotification()  // Destructure the function
 
     watch(grades, () => {

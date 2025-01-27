@@ -36,8 +36,7 @@ const {
   isLoadingStudents,
   studentError,
   teams,
-  selectedTeamId,
-  isLoadingTeams
+  selectedTeamId
 } = useGradeForm(gradeSchema, props)
 
 const handleSubmit = async () => {

@@ -10,8 +10,3 @@ export const teamValidationSchema = yup.object({
     users: yup.array()
         .of(yup.number())
 });
-
-export const teamSearchValidationSchema = yup.object({
-    searchQuery: yup.string()
-        .max(50, 'Search query cannot exceed 50 characters')
-});

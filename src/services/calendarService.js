@@ -4,7 +4,6 @@ export const calendarService = {
 
     async createEvent(eventData) {
         try {
-            console.log(eventData)
             const response = await api.post('/event', {
                 eventName: eventData.eventName,
                 startDate: new Date(eventData.startDate).toISOString(),

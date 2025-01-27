@@ -31,8 +31,7 @@ const filteredUsers = computed(() => {
 const fetchAvailableUsers = async () => {
   isLoading.value = true;
   try {
-    const response = await userService.getAllUsersByRole('ROLE_STUDENT');
-    availableUsers.value = response;
+    availableUsers.value = await userService.getAllUsersByRole('ROLE_STUDENT');
   } catch (error) {
     toast.error('Error fetching available users');
     console.error('Error:', error);

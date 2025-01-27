@@ -1,13 +1,11 @@
 <script setup>
 import RiseLoader from 'vue-spinner/src/RiseLoader.vue';
-import BackButton from '@/components/ui/TextButton.vue';
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import { usePost } from '@/composables/post/usePost';
 import PostModal from "@/components/post/PostModal.vue";
 import {usePermissions} from "@/composables/usePermissions.js";
-import Button from "@/components/ui/Button.vue";
 
 const route = useRoute();
 const router = useRouter();

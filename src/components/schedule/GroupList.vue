@@ -1,5 +1,5 @@
 <script setup>
-import {ref, computed, onMounted, watch} from 'vue';
+import {ref, computed, onMounted} from 'vue';
 import { scheduleService } from '@/services/scheduleService';
 import { usePermissions } from '@/composables/schedule/usePermission';
 import DeleteConfirmationModal from '@/components/ui/DeleteConfirmationModal.vue';

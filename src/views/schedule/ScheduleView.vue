@@ -13,7 +13,7 @@ import {useAuthStore} from "@/stores/authStore.js";
 const authStore = useAuthStore();
 
 const {isAdmin} = usePermissions();
-const {currentWeek, events, error, loading, fetchSchedule, filteredEvents, previousWeek, nextWeek} = useSchedule();
+const {currentWeek, events, error, fetchSchedule, filteredEvents, previousWeek, nextWeek} = useSchedule();
 const {getEndOfWeek} = useDate();
 
 const selectedGroup = ref(null);

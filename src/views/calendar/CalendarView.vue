@@ -1,6 +1,5 @@
 <script setup>
 import FullCalendar from '@fullcalendar/vue3'
-import {ref} from 'vue'
 import {useCalendar} from '@/composables/calendar/useCalendar.js'
 import RiseLoader from 'vue-spinner/src/RiseLoader.vue'
 import EventModal from '@/components/calendar/EventModal.vue'
@@ -21,7 +20,7 @@ const {
   deleteEvent
 } = useCalendar()
 
-const { canEdit, canView, validateEdit, validateView } = usePermissions()
+const { canEdit, canView} = usePermissions()
 
 const handleEditMode = () => {
   modalMode.value = 'edit'

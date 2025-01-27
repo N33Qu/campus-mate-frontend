@@ -1,4 +1,4 @@
-import {ref, watchSyncEffect} from 'vue';
+import {ref} from 'vue';
 import { addressBookService } from '@/services/addressBookService.js';
 import {useShowNotification} from "@/composables/useShowNotification.js";
 import { useAddressBookPermissions } from '@/composables/addressBook/useAddressBookPermissions.js';

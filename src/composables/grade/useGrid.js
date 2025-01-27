@@ -30,10 +30,7 @@ export function useGrid(grades, canManageGrades) {
         {
             headerName: 'Data',
             field: 'dateOfReceipt',
-            sortable: true,
-            valueFormatter: (params) => {
-                return new Date(params.value).toLocaleDateString();
-            }
+            sortable: true
         },
         ...(canManageGrades ? [{
             headerName: '',

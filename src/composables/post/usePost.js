@@ -41,7 +41,6 @@ export function usePost() {
         isLoading.value = true;
         try {
             const response = await postService.getPost(postId);
-            console.log(response)
             post.value = response.data;
             return response.data;
         } catch (error) {
@@ -66,7 +65,6 @@ export function usePost() {
     };
 
     const updatePost = async (postId, postData) => {
-        console.log('Updating post with ID:', postId, 'with data:', postData);
         try {
             const response = await postService.updatePost(postId, postData);
             toast.success('Ogłoszenie zaktualizowane pomyślnie');
@@ -79,7 +77,6 @@ export function usePost() {
     };
 
     const deletePost = async (postId) => {
-        console.log('Deleting post with ID:', postId);
         try {
             await postService.deletePost(postId);
             toast.success('Ogłoszenie usunięte pomyślnie');

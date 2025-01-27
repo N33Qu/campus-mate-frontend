@@ -8,7 +8,6 @@ export function useAddressBookPermissions() {
     };
 
     const canEditEntry = (entryUserId) => {
-        console.log(authStore.role, entryUserId, authStore.userId);
         if (authStore.userRole === 'ROLE_ADMIN') {
             return true;
         }

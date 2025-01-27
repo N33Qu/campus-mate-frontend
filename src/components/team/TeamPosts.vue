@@ -19,7 +19,7 @@ const props = defineProps({
 const showPostModal = ref(false);
 const showDeleteModal = ref(false);
 const selectedPostId = ref(null);
-const { createPost, updatePost, deletePost } = usePost();
+const { deletePost } = usePost();
 const { canCreate, canEdit, canDelete } = usePermissions();
 
 const handleAddPost = () => {

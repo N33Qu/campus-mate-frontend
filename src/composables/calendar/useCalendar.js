@@ -40,7 +40,6 @@ export function useCalendar() {
             validateEdit()
             isLoading.value = true
             error.value = null
-            console.log(eventData)
             await calendarService.createEvent(eventData)
             await fetchEvents()
             showNotification('Wydarzenie utworzone pomyślnie')

@@ -1,5 +1,5 @@
-import { useForm } from 'vee-validate';
-import { ref } from 'vue';
+import {useForm} from 'vee-validate';
+import {ref} from 'vue';
 
 export function useCalendarForm(schema, { mode, currentEvent }) {
     const isSubmitting = ref(false);
@@ -44,23 +44,18 @@ export function useCalendarForm(schema, { mode, currentEvent }) {
 
         try {
             const validationResult = await validate();
-            console.log('Validation result:', validationResult);
-
             if (!validationResult.valid) {
                 console.log('Validation failed:', errors.value);
                 return null;
             }
 
-            const formValues = {
+            return {
                 title: values.title,
                 description: values.description || '',
                 start: values.start,
                 end: values.end,
                 teamId: values.teamId ? parseInt(values.teamId) : undefined
             };
-
-            console.log('Form values before return:', formValues);
-            return formValues;
         } catch (error) {
             console.error('Validation error:', error);
             return null;

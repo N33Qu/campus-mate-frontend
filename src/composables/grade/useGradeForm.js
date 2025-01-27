@@ -38,6 +38,7 @@ export function useGradeForm(schema, props) {
         try {
             isLoadingTeams.value = true;
             const response = await teamService.getTeams();
+            if(!response) return
             teams.value = response.data;
         } catch (error) {
             console.error('Error fetching teams:', error);
@@ -72,12 +73,12 @@ export function useGradeForm(schema, props) {
         }
     };
 
-    fetchTeams();
-    fetchStudents();
+    fetchTeams().then();
+    fetchStudents().then();
 
 
     watch(selectedTeamId, (newTeamId) => {
-        fetchStudents(newTeamId || null);
+        fetchStudents(newTeamId || null).then();
     });
 
     watch(props, () => {
@@ -94,7 +95,7 @@ export function useGradeForm(schema, props) {
             resetForm({
                 values: defaultValues
             });
-            fetchStudents();
+            fetchStudents().then();
         }
     });
 

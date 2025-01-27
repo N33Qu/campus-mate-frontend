@@ -48,7 +48,7 @@ const handleUpload = async () => {
 
   isUploading.value = true;
   try {
-    const result = await scheduleService.uploadSchedule(selectedFile.value, groupName.value.trim());
+    await scheduleService.uploadSchedule(selectedFile.value, groupName.value.trim());
     resetForm();
     await new Promise(resolve => setTimeout(resolve, 1000));
     emit('upload-success');

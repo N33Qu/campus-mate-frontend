@@ -1,9 +1,6 @@
 import api from '@/config/axiosConfig';
 
 class PostService {
-    async getPosts() {
-        return api.get('/post');
-    }
 
     async getPost(postId) {
         return api.get(`/post/${postId}`);

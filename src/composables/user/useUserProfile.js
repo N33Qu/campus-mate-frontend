@@ -15,7 +15,6 @@ export function useUserProfile(userId) {
             isLoading.value = true;
             error.value = null;
             const data = await userService.getUser(userId);
-            console.log(data)
             Object.assign(profile, {
                 firstName: data.firstName,
                 lastName: data.lastName,

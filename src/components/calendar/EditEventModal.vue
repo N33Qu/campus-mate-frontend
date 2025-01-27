@@ -34,10 +34,7 @@ const {
 });
 
 const handleSubmit = async () => {
-  console.log('Current form values before submit:', values);
-
   const formResult = await onSubmit();
-  console.log('Form result:', formResult);
 
   if (!formResult) {
     console.error('Form validation failed');

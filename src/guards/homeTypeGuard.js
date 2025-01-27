@@ -1,6 +1,6 @@
 import { useAuthStore } from '@/stores/authStore'
 
-export const homeTypeGuard = (to, from) => {
+export const homeTypeGuard = () => {
     const authStore = useAuthStore()
     const role = authStore.userRole
 

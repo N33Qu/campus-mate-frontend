@@ -14,7 +14,6 @@ const teamId = route.params.id;
 
 const {
   team,
-  users,
   posts,
   isLoading,
   showEditModal,

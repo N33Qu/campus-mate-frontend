@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch } from 'vue';
 import { usePostForm } from '@/composables/post/usePostForm';
 
 const props = defineProps({

@@ -1,5 +1,4 @@
 import { ref } from 'vue';
-import { useToast } from 'vue-toastification';
 import {teamService} from '@/services/teamService';
 import {userService} from "@/services/userService.js";
 
@@ -26,6 +25,7 @@ export function useTeams() {
         isLoading.value = true;
         try {
             const response = await userService.getUserTeams(userId);
+            if (!response) return
             teams.value = response.data;
             return response.data;
         } catch (error) {

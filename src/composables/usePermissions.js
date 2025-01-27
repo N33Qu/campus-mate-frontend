@@ -11,12 +11,12 @@ export function usePermissions() {
         return ['ROLE_LECTURER'].includes(authStore.userRole);
     };
 
-    const canEdit = (authorId) => {
+    const canEdit = () => {
         return authStore.userRole === 'ROLE_LECTURER';
 
     };
 
-    const canDelete = (authorId) => {
+    const canDelete = () => {
         return authStore.userRole === 'ROLE_LECTURER';
 
     };
