@@ -9,18 +9,20 @@ export function useCalendarForm(schema, { mode, currentEvent }) {
             return {
                 title: currentEvent.eventName || '',
                 description: currentEvent.eventDescription || '',
-                start: new Date(currentEvent.startDate).toISOString().slice(0, 16),
-                end: new Date(currentEvent.endDate).toISOString().slice(0, 16),
+                start: new Date(currentEvent.startDate).toISOString().split('T')[0],
+                end: new Date(currentEvent.endDate).toISOString().split('T')[0],
             };
         }
 
+        const startDate = currentEvent?.startDate ? new Date(currentEvent.startDate) : new Date();
+        const endDate = currentEvent?.endDate ? new Date(currentEvent.endDate) : new Date();
         return {
             title: '',
             description: '',
-            start: new Date().toISOString().slice(0, 16),
-            end: new Date(Date.now() + 3600000).toISOString().slice(0, 16),
+            start: startDate.toISOString().split('T')[0],
+            end: endDate.toISOString().split('T')[0],
         };
-    };
+    }
 
     const {
         errors,

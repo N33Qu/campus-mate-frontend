@@ -33,7 +33,7 @@ const fetchAvailableUsers = async () => {
   try {
     availableUsers.value = await userService.getAllUsersByRole('ROLE_STUDENT');
   } catch (error) {
-    toast.error('Error fetching available users');
+    toast.error('Błąd podczas pobierania dostepnych uczestników');
     console.error('Error:', error);
   } finally {
     isLoading.value = false;
@@ -51,17 +51,17 @@ const toggleUser = (userId) => {
 
 const addUsers = async () => {
   if (selectedUsers.value.length === 0) {
-    toast.warning('Please select at least one user');
+    toast.warning('Prosze wybrać uczestników');
     return;
   }
   isLoading.value = true;
   try {
     await teamService.addUsersToTeam(props.teamId, selectedUsers.value);
-    toast.success('Users added successfully');
+    toast.success('Użytkownicy zostali dodani');
     emit('users-added');
     emit('close');
   } catch (error) {
-    toast.error('Error adding users');
+    toast.error('Bład podczas dodawania uczestników');
     console.error('Error:', error);
   } finally {
     isLoading.value = false;
@@ -75,7 +75,7 @@ fetchAvailableUsers();
   <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg w-full max-w-2xl mx-4">
       <div class="p-6 border-b">
-        <h2 class="text-2xl font-bold">Add Team Members</h2>
+        <h2 class="text-2xl font-bold">Dodaj uczestników</h2>
       </div>
 
       <div class="p-6">
@@ -94,7 +94,7 @@ fetchAvailableUsers();
           </div>
 
           <div v-else-if="filteredUsers.length === 0" class="p-4 text-center text-gray-500">
-            No users found
+            Brak uźytkowników
           </div>
 
           <div v-else class="divide-y">
@@ -122,7 +122,7 @@ fetchAvailableUsers();
             class="px-4 py-2 border rounded-lg hover:bg-gray-50"
             :disabled="isLoading"
         >
-          Cancel
+          Anuluj
         </button>
         <button
             type="button"
@@ -130,7 +130,7 @@ fetchAvailableUsers();
             class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
             :disabled="isLoading || selectedUsers.length === 0"
         >
-          {{ isLoading ? 'Adding...' : 'Add Selected' }}
+          {{ isLoading ? 'Dodawanie...' : 'Dodaj wybranych' }}
         </button>
       </div>
     </div>

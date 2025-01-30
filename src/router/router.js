@@ -138,6 +138,13 @@ router.beforeEach(async (to) => {
         };
     }
 
+    if (!authStore.isFirstPasswordChanged && authStore.isTokenValid && to.name !== 'profile') {
+        return {
+            name: 'profile',
+            params: { id: authStore.userId }
+        };
+    }
+
 
     if (to.meta.roles) {
         const userRole = authStore.userRole;

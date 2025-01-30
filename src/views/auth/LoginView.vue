@@ -31,7 +31,7 @@ const {
             id="email"
             name="email"
             class="border rounded w-full py-2 px-3 mb-1"
-            placeholder="email@domain.com"
+            placeholder="email@email.com"
             autocomplete="current-email"
         />
         <p v-if="errors.email" class="text-red-500 text-sm">

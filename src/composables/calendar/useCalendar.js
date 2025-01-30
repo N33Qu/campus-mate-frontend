@@ -44,7 +44,7 @@ export function useCalendar() {
             await fetchEvents()
             showNotification('Wydarzenie utworzone pomyślnie')
         } catch (err) {
-            error.value = err.message || 'Błąd tworzenia wydarzenia'
+            error.value = 'Błąd tworzenia wydarzenia'
             console.error('Error creating event:', err)
             showNotification(error.value, 'error')
         } finally {
@@ -73,9 +73,13 @@ export function useCalendar() {
     }
 
     const handleDateSelect = (selectInfo) => {
+        const start = new Date(selectInfo.startStr + 'T00:00:00');
+        const end = new Date(selectInfo.endStr + 'T00:00:00');
+
+
         selectedEvent.value = {
-            startDate: selectInfo.start,
-            endDate: selectInfo.end
+            startDate: start,
+            endDate: end
         }
         modalMode.value = 'create'
         isEventModalOpen.value = true
@@ -125,9 +129,9 @@ export function useCalendar() {
 
             await calendarService.deleteEvent(eventId)
             events.value = events.value.filter(event => event.eventId !== eventId)
-            showNotification('Wydarzenie usunięte pomyślnie')
+            // showNotification('Wydarzenie usunięte pomyślnie')
         } catch (err) {
-            error.value = err.message || 'Błąd usuwania wydarzenia'
+            error.value = 'Błąd usuwania wydarzenia'
             console.error('Error deleting event:', err)
             showNotification(error.value, 'error')
         } finally {

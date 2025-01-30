@@ -94,7 +94,7 @@ onBeforeUnmount(() => {
         <!-- Logo -->
         <div class="flex items-center flex-grow">
           <RouterLink class="flex items-center mr-4" to="/">
-            <img class="h-10 w-auto" :src="logo" alt="Campus Mate" />
+            <img class="h-12 w-auto" :src="logo" alt="Campus Mate" />
             <span class="hidden md:block text-white text-2xl font-bold ml-2">
               CampusMate
             </span>
@@ -118,14 +118,14 @@ onBeforeUnmount(() => {
         </div>
 
         <!-- Desktop menu - zawsze widoczne dla niezalogowanych, dla zalogowanych tylko na xl -->
-        <div :class="[isLoggedIn ? 'hidden xl:flex lg:space-x-8 xl:space-x-16' : 'flex lg:space-x-8 xl:space-x-16']">
+        <div :class="[isLoggedIn ? 'hidden xl:flex xl:flex-1 lg:space-x-8 xl:space-x-10' : 'flex lg:space-x-8 xl:space-x-16']">
           <RouterLink
               v-for="link in links"
               :key="link.path"
               :to="link.path"
               :class="[
               isActiveLink(link.path) ? 'bg-stone-800 text-white' : 'text-gray-300 hover:bg-stone-700 hover:text-white',
-              'px-3 py-2 rounded-md text-lg font-medium transition'
+              'px-3 py-2 rounded-md text-lg font-medium transition whitespace-nowrap flex items-center'
             ]"
           >
             <div class="flex items-center">

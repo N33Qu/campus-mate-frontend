@@ -13,11 +13,12 @@ const props = defineProps({
   initialDates: {
     type: Object,
     default: () => ({
-      startDate: new Date(),
+      startDate: new Date(Date.now()),
       endDate: new Date(Date.now() + 3600000)
     })
   }
 });
+
 
 const authStore = useAuthStore();
 const emit = defineEmits(['close', 'save']);
@@ -49,8 +50,8 @@ const handleSubmit = async () => {
     const eventData = {
       eventName: result.title,
       eventDescription: result.description || '',
-      startDate: result.start,
-      endDate: result.end,
+      startDate: new Date(result.start + 'T00:00:00'),
+      endDate: new Date(result.end + 'T23:59:59'),
       teamId: result.teamId
     };
     emit('save', eventData);
@@ -109,7 +110,7 @@ onMounted(async () => {
         <input
             v-model="start"
             v-bind="startProps"
-            type="datetime-local"
+            type="date"
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
             :class="{ 'border-red-500': errors.start }"
         />
@@ -121,7 +122,7 @@ onMounted(async () => {
         <input
             v-model="end"
             v-bind="endProps"
-            type="datetime-local"
+            type="date"
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
             :class="{ 'border-red-500': errors.end }"
         />

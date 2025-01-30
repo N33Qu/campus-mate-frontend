@@ -50,6 +50,7 @@ const handlePasswordUpdate = async (values) => {
     authStore.logout();
     await authService.logout();
     await router.push('/');
+    await location.reload();
   } catch (err) {
     console.error('Failed to update password:', err);
   }

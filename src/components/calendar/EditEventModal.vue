@@ -45,8 +45,8 @@ const handleSubmit = async () => {
     eventId: props.currentEvent.eventId,
     eventName: formResult.title,
     eventDescription: formResult.description,
-    startDate: new Date(formResult.start).toISOString(),
-    endDate: new Date(formResult.end).toISOString(),
+    startDate: new Date(formResult.start + 'T00:00:00').toISOString(),
+    endDate: new Date(formResult.end + 'T23:59:59').toISOString(),
   };
 
   emit('save', eventData);
@@ -89,7 +89,7 @@ const handleSubmit = async () => {
         <input
             v-model="start"
             v-bind="startProps"
-            type="datetime-local"
+            type="date"
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
             :class="{ 'border-red-500': errors.start }"
         />
@@ -101,7 +101,7 @@ const handleSubmit = async () => {
         <input
             v-model="end"
             v-bind="endProps"
-            type="datetime-local"
+            type="date"
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
             :class="{ 'border-red-500': errors.end }"
         />

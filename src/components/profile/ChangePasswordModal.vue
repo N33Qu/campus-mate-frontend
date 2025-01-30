@@ -1,7 +1,9 @@
 <script setup>
 import { Form, Field, ErrorMessage } from 'vee-validate';
 import { passwordSchema } from '@/validation/passwordSchema.js';
+import {useAuthStore} from "@/stores/authStore.js";
 
+const authStore = useAuthStore();
 const props = defineProps({
   modelValue: Boolean,
   isLoading: Boolean
@@ -42,7 +44,7 @@ const onSubmit = async (values) => {
 
             <!-- New Password -->
             <div>
-              <label class="block text-sm font-medium text-gray-700">New Password</label>
+              <label class="block text-sm font-medium text-gray-700">Nowe hasło</label>
               <Field
                   name="newPassword"
                   type="password"
@@ -54,7 +56,7 @@ const onSubmit = async (values) => {
 
             <!-- Confirm Password -->
             <div>
-              <label class="block text-sm font-medium text-gray-700">Confirm Password</label>
+              <label class="block text-sm font-medium text-gray-700">Potwierdź nowe hasło</label>
               <Field
                   name="confirmPassword"
                   type="password"
@@ -69,15 +71,16 @@ const onSubmit = async (values) => {
                   type="button"
                   @click="$emit('update:modelValue', false)"
                   class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                  :disabled="isLoading || !authStore.isFirstPasswordChanged"
               >
-                Cancel
+                Anuluj
               </button>
               <button
                   type="submit"
                   :disabled="isLoading"
                   class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-saveButton hover:bg-saveButtonHover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
               >
-                {{ isLoading ? 'Saving...' : 'Change Password' }}
+                {{ isLoading ? 'Zapisywanie...' : 'Zmień hasło' }}
               </button>
             </div>
           </div>

@@ -10,6 +10,15 @@ const props = defineProps({
   }
 })
 
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('pl-PL', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+};
+
 const emit = defineEmits(['close', 'edit', 'delete'])
 </script>
 
@@ -29,24 +38,24 @@ const emit = defineEmits(['close', 'edit', 'delete'])
               @click="$emit('delete')"
               class="text-deleteButton pb-5 pr-4 rounded hover:text-deleteButtonHover transition-colors"
           >
-            <i class="pi pi-trash" @click="$emit('edit')"></i>
+            <i class="pi pi-trash" @click="$emit('delete')"></i>
           </button>
         </template>
         <button
             @click="$emit('close')"
             class="text-gray-500 pb-5 rounded hover:text-gray-700 transition-colors"
         >
-          <i class="pi pi-times"></i>
+          <i class="pi pi-times" @click="$emit('close')"></i>
         </button>
       </div>
 
     </div>
     <p class="mb-2"><span class="font-semibold">Opis:</span> {{ event.eventDescription }}</p>
     <p class="mb-2">
-      <span class="font-semibold">Rozpoczęcie:</span> {{ new Date(event.startDate).toLocaleString() }}
+      <span class="font-semibold">Rozpoczęcie:</span> {{ formatDate(event.startDate) }}
     </p>
     <p class="mb-4">
-      <span class="font-semibold">Zakończenie:</span> {{ new Date(event.endDate).toLocaleString() }}
+      <span class="font-semibold">Zakończenie:</span> {{ formatDate(event.endDate) }}
     </p>
   </div>
 </template>

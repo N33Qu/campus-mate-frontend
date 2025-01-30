@@ -74,13 +74,13 @@ const onSubmit = handleSubmit(async (values) => {
               @click="emit('close')"
               class="px-4 py-2 border rounded-lg hover:bg-gray-50"
           >
-            Cancel
+            Anuluj
           </button>
           <button
               type="submit"
               class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
-            Create Team
+            Stwórz zespół
           </button>
         </div>
       </form>

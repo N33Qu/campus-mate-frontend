@@ -2,6 +2,8 @@ import {useForm} from "vee-validate";
 import {ref, watch} from "vue";
 import {userService} from '@/services/userService.js';
 import {teamService} from '@/services/teamService.js';
+import {useAuthStore} from "@/stores/authStore.js";
+
 
 export function useGradeForm(schema, props) {
     const isSubmitting = ref(false);
@@ -12,6 +14,7 @@ export function useGradeForm(schema, props) {
     const selectedTeamId = ref('');
     const isLoadingTeams = ref(false);
 
+    const authStore = useAuthStore();
     const defaultValues = {
         subjectName: '',
         grade: '',
@@ -37,7 +40,7 @@ export function useGradeForm(schema, props) {
     const fetchTeams = async () => {
         try {
             isLoadingTeams.value = true;
-            const response = await teamService.getTeams();
+            const response = await userService.getUserTeams(authStore.userId);
             if(!response) return
             teams.value = response.data;
         } catch (error) {

@@ -17,7 +17,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['remove-user', 'search', 'add-users']);
-const { canManage } = usePermissions();
+const { canEdit } = usePermissions();
 </script>
 
 <template>
@@ -26,7 +26,7 @@ const { canManage } = usePermissions();
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-bold">Członkowie</h2>
         <button
-            v-show="canManage"
+            v-show="canEdit()"
             @click="emit('add-users')"
             class=" p-1"
         >
@@ -59,8 +59,8 @@ const { canManage } = usePermissions();
         </div>
 
         <button
-            v-show="canManage"
-            v-if="user.userId !== creatorId"
+            v-show="canEdit()"
+            v-if="user.userId !== creatorId && canEdit()"
             @click="emit('remove-user', user.userId)"
             class="p-2"
         >
